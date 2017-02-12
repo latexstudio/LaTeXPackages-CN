@@ -1,0 +1,98 @@
+\svnInfo $Id: mpman-app-numbersystems.tex 2023 2014-05-21 08:47:19Z stephanhennig $
+\section{High-precision arithmetic with MetaPost}
+\label{hparith}
+
+In addition to the fixed-point arithmetics inherited from \MF, MetaPost
+can also do higher-precision arithmetics.  In total, MetaPost can handle
+numeric quantities in four internal representation formats or number
+systems.  Number systems differ in rounding errors\index{rounding error}
+introduced by and the speed of arithmetic operations.  Simply storing a
+numeric value in a variable may already introduce a rounding error, so
+that can already be considered an arithmetic operation.
+
+The internal representation format used for numeric quantities can be
+determined by a command-line switch
+\texttt{-numbersystem}\index{command-line!mpost?\texttt{mpost}!-numbersystem?\texttt{-numbersystem}}
+when invoking the MetaPost executable.  Argument is a string and can be
+one of \texttt{scaled}, \texttt{double}, \texttt{binary}, or
+\texttt{decimal}.  The argument is stored in an internal string variable
+\texttt{numbersystem}\index{numbersystem?\texttt{numbersystem}}\label{Dnumbersystem}.
+Assigning a value to this variable at run-time triggers an error.
+
+The \texttt{scaled}\index{scaled?\texttt{scaled}} number system refers
+to 32~bit fixed-point arithmetics described in Section~\ref{datatypes}.
+This is the default number system.  Precision is ca. 10~decimal digits,
+5 digits before and after the comma.  All arithmetic operations are done
+in software.
+
+The \texttt{double}\index{double?\texttt{double}} number system does
+IEEE standard floating-point arithmetics with 64~bits (or double)
+precision.  In the internal representation, double floating-point
+numbers use $52+1$~bits for the mantissa, which determines precision,
+11~bits for the exponent, which determines the valid range of numbers,
+and one bit for the sign.  The smallest absolute value that can be
+represented is ca. $2.2\cdot10^{-308}$, the largest value is
+ca. $1.8\cdot10^{308}$.  The 53~bit mantissa makes for a precision of
+ca. 15 decimal digits.  The smallest possible difference between two
+distinct numbers in double floating-point number representation is
+$2^{-53} \approx 1.1\cdot10^{-16}$.  The largest integer value that can
+be represented exactly is $2^{53}-1 \approx 9,0\cdot10^{15}$.  Variable
+\texttt{warningcheck}\index{warningcheck?\texttt{warningcheck}} is set
+to $2^{52}$ in \texttt{double} mode.  Arithmetic operations make use of
+a hardware floating-point unit (FPU), if available.
+
+While the IEEE double precision floating-point format provides plenty
+room for storing numeric values, still, precision and range are finite
+and fix.  For users that need higher precision or range, MetaPost
+provides support for (almost) arbitrary precision floating-point
+arithmetics.  The \texttt{binary}\index{binary?\texttt{binary}} number
+system is similar to the \texttt{double} number system, except that the
+number of bits used for the mantissa is not fixed, but variable.
+Precision is determined by an internal variable
+\texttt{numberprecision}\index{numberprecision?\texttt{numberprecision}}\label{Dnumberprecision}
+in decimal digits.  Valid numbers are in the range 1 to 1000.  Higher
+values make for better precision at the expense of performance of
+arithmetic operations.  Default precision is 34~decimal digits
+(ca. 113~bits in the mantissa).  Exponent in the internal representation
+is an integer in the range $[-9,999,999; +9,999,999]$.  All arithmetic
+operations are done in software using the MPFR library~\cite{lib:mpfr}
+and are usually orders of magnitude slower than in \texttt{double} mode.
+
+Number system \texttt{decimal}\index{decimal?\texttt{decimal}} provides
+arbitrary precision floating-point arithmetics similar to the
+\texttt{binary} number system.  Except that it uses a base of~10 for the
+internal representation instead of a base of~2.  The point is that with
+base~2 floating-point numbers some decimal numbers cannot be represented
+exactly, among them such strange numbers like $0.1$.  In a base~2
+floating-point number format, this value has an infinit repeating
+representation, which cannot be stored in a mantissa of finite precision
+without introducing a rounding error.  While such initial errors may be
+small, they use to accummulate when doing calculations.  Sometimes
+increasing precision by switching from \texttt{double} to
+\texttt{binary} mode is sufficient to get satisfying results again.  On
+the other hand, there's a demand for doing calculations exactly like
+humans do with pencil and paper, e.g., for certain financial
+calculations.  The only way to ensure exact result is switching base of
+the internal representation to~10.  Again, precision can be determined
+by assigning a value to variable
+\texttt{numberprecision}\index{numberprecision?\texttt{numberprecision}}.
+Valid numbers are in the range 1 to 1000.  Default precision is
+34~decimal digits.  Exponent in the internal representation is an
+integer in the range $[-9,999,999; +9,999,999]$.  All arithmetic
+operations are done in software using the decNumber
+library~\cite{lib:decnumber} and are usually slower than in
+\texttt{binary} mode.
+
+In all number systems except the traditional fixed-point
+(\texttt{scaled}) number system, numbers can be given in scientific
+notation, i.e., input like \texttt{1.23e4} is interpreted as the value
+$12,300$ instead of the product of the numeric value $1.23$ and (array)
+variable \verb|e[4]|.
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-PDF-mode: t
+%%% TeX-master: "mpman"
+%%% End: 

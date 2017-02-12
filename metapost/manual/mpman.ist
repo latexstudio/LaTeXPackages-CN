@@ -1,0 +1,4 @@
+% MakeIndex style file for MetaPost doc, by John Hobby.  Public domain.
+
+% @ is a valid character in some entries
+actual '?' % ? instead of @

@@ -1,0 +1,125 @@
+This file contains an unsorted list of tasks to be done on the
+MetaPost manual.  Feel free to add new, move or remove finished
+items.
+
+Where to put new items?
+-----------------------
+Section 'Wanted For Release' contains items that we want to be
+finished before the next release.  Even minor issues can and
+should be added here.
+
+Items in section 'Mid Term Issues' have no dead-line, but should
+be self-contained enough to be done independent from other stuff.
+
+Items in section 'Long Term Issues' are less actively worked on.
+The reason they are less actively worked on is not lack of
+importance, but lack of developer resources.  Nevertheless, they
+are on the agenda.  Contributions are welcome!
+
+How to pick items?
+------------------
+You can indicate interest or active work on an item by putting your
+initials in parenthese in front of that item and checking the
+modified TODO file into the repository.  That way, anybody who is
+subscribed to the metapost-commits list is notified of your
+interest.  Additionally, it is wise to communicate that you're
+working on an issue (you didn't remember adding yourself) on the
+mp-implementors list or alternatively the metapost list.
+
+
+*****************************
+***   Wanted For Release  ***
+*****************************
+
+* Describe prescriptpart/postscriptpart.
+
+* Describe envelope primitive/macro.
+
+* Describe penrazor, penspeck.
+
+* Describe drawdot withpen counter-intuitivity.  Describe recent change
+  in drawdot definition.
+
+
+
+*****************************
+***   Short term issues   ***
+*****************************
+
+Integrating Text and Graphics:
+* Fix bad description of prologues in table ivartab.
+* Move discussion of prologues to sec. workflow2.
+* Discuss difference between
+    label(btex ... etex, ...)
+    draw btex ... etex
+
+Advanced Graphics:
+* Describe turningnumber (mention differences in sec. 'MetaPost
+  Versus METAFONT').
+* Make fig56 black and white.
+
+Notes on the MetaPost Workflow:
+* Describe variables jobname, charcode.
+
+Reference Manual:
+* Describe environment variables and configuration files.
+
+Legacy Information:
+* Cite original Hobby papers.
+
+Debugging:
+* turningnumber and tracingchoices > 2
+
+
+
+*****************************
+***   Mid Term Issues     ***
+*****************************
+
+Introduction:
+* Revise introduction.
+
+Integrating Text and Graphics:
+* Completely revise this section and consolidate information
+    scattered around mpman.
+* More information and examples on alternatives for calling TeX
+    or LaTeX from within MetaPost.
+* Revise (and add more) flow charts for MetaPost workflow.
+* Describe whitespace handling of verbatimtex/btex/etex.
+* Why is verbatimtex\end{document}etex "safer", cf. sec. 13.1?
+* Discuss difference between "draw <pic> withpen" and
+    "label(<pic>, ...) withpen" (when label bug is fixed).
+
+Advanced Graphics:
+* Add a sub-section discussing colours.
+* Colour cars and change code example in section piccomp.
+
+Reference Manual:
+* Describe missing variables, constants, and operators.
+* Add description of interaction mode.
+
+Legacy Information:
+* Describe mpware (currently scattered around in mpman).
+
+
+
+
+*****************************
+***   Long Term Issues    ***
+*****************************
+
+Title page:
+* Add decent title graphics.
+
+Reference Manual:
+* Review presentation of primitives and plain macros in appendix A.
+* Build reference manual automatically from mp.web (as a separate manual?).
+
+General:
+* Make mpman self-contained (no need to look-up sth. in 'The MetaFontbook').
+* Make manual sources compatible with preview mode (Emacs).
+* Make manual sources LaTeX2e conform.
+* Make manual sources look nice in Emacs (AUCTeX font-locking).
+* Review overall layout of the manuals (type area, float placement,
+  listing presentation etc.)
+

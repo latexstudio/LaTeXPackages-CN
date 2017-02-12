@@ -1,0 +1,572 @@
+\listfiles
+\RequirePackage{ifpdf}
+\ifpdf
+\ifnum\pdftexversion<140
+\else
+\pdfminorversion=5
+\pdfobjcompresslevel=1% Use compressed object streams.
+\fi
+\RequirePackage{cmap}
+\fi
+\documentclass{article} % article is NOT the original style
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{mflogo}
+\usepackage{makeidx}
+\usepackage{fancyvrb}
+\usepackage{ctabbing}
+\RecustomVerbatimEnvironment{verbatim}{BVerbatim}{baseline=c}
+\usepackage{graphics}
+\usepackage[textwidth=6in,textheight=8.65in]{geometry}
+\usepackage{multicol}
+\usepackage{ltxtable}
+
+\newcommand\descr[1]{{\langle\hbox{\rm#1}\rangle}}
+\newcommand\invisgap{\nobreak\hskip0pt\relax}
+\newcommand\tdescr[1]{$\langle$\invisgap{\rm#1}\invisgap$\rangle$}
+\newcommand\Ignore[1]{} % For fooling delatex so spell will work
+
+\newcommand\mathcenter[1]{\vcenter{\hbox{#1}}}
+
+\makeindex
+
+\author{John D. Hobby}
+\title{Drawing Boxes with {MetaPost}}
+\date{}
+
+\newcommand\myabstract{%
+  This paper describes a package for drawing boxes of different shapes.
+  The \texttt{boxes} package has been implemented as an extension to the
+  MetaPost graphics language and is a mandatory part of every MetaPost
+  installation.}
+
+\newcommand\mykeywords{%
+    typesetting; graphs; MetaPost}
+
+\usepackage[rgb,x11names]{xcolor}% Optimize for screen reading.
+\usepackage{hyperxmp}
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle={Drawing Boxes with MetaPost},
+  pdfauthor={John D. Hobby and the MetaPost development team},
+  pdfkeywords={typesetting, boxes, MetaPost, TeX}
+}
+\hypersetup{
+  pdfstartview={XYZ null null null},% Zoom factor is determined by viewer.
+  colorlinks,
+  linkcolor=RoyalBlue3,
+  urlcolor=Chocolate4,
+  citecolor=SpringGreen3
+}
+\usepackage[all]{hypcap}
+\ifpdf
+\pdfmapfile{=cm2lm.map}% replace CM by LM in figures
+\else
+\DeclareGraphicsExtensions{.mps}
+\DeclareGraphicsRule{mps}{eps}{*}{}
+\usepackage{breakurl}
+\fi
+
+
+\begin{document}
+  \maketitle
+  \begin{abstract} \myabstract \end{abstract}
+  \ifx\keywords\undefined \else
+    \begin{keywords} \mykeywords \end{keywords}
+  \fi
+
+\setlength{\columnsep}{2.5em}
+\begin{multicols}{2}
+\tableofcontents
+\end{multicols}
+
+
+\section{Introduction}
+\label{intro}
+
+This document describes auxiliary macros not included in Plain MetaPost
+that make it convenient to do things that {\it pic} is good at
+\cite{ke:pic}.  What follows is a description of how to use the macros
+contained in the file {\tt boxes.mp}\index{boxes.mp?\texttt{boxes.mp}}.
+This file is included in a special directory reserved for MetaPost
+macros and support software\footnote{The name of this directory is
+  likely to be something like \texttt{/usr/lib/mp/lib}, but this is
+  system dependent.}  and can be accessed by giving the MetaPost command
+{\tt input boxes} before any figures that use the box making macros.
+The syntax for the {\tt input} command is \index{input?\texttt{input}}
+$$ {\tt input}\, \descr{file name} $$
+where a final ``{\tt .mp}'' can be omitted from the file name.  The {\tt
+  input} command looks first in the current directory and then in the
+special macro directory.  Users interested in writing macros may want to
+look at the {\tt boxes.mp} file in this directory.
+
+Since the advent of the \texttt{boxes} package several alternative
+packages for drawing boxes of all kinds have been developed by the
+MetaPost community.  The most widely known ones are
+\texttt{MetaObj}\index{MetaObj?\texttt{MetaObj}},
+\texttt{MetaUML}\index{MetaUML?\texttt{MetaUML}},
+\texttt{expressg}\index{expressg?\texttt{expressg}}, and
+\texttt{blockdraw\_mp}\index{blockdraw\_mp?\texttt{blockdraw\_mp}}.  If
+you intend to create lots of structural drawings, flow charts,
+\emph{etc.}, those packages might be an interesting ressource, too.
+
+
+\section{Rectangular Boxes}
+\label{rectbox}
+
+\mbox{}% Start paragraph.
+\index{variables!box|(}%
+\index{box variables|see{variables, box}}%
+%
+The main idea of the box-making macros is that one should
+say\index{boxit?\texttt{boxit}}\label{Dboxit}
+$$ {\tt boxit.} \descr{suffix}
+   \hbox{\tt(} \descr{picture expression} \hbox{\tt)}
+$$
+where the \tdescr{suffix} does not start with a subscript.\footnote{Some early
+versions of the box making macros did not allow any subscripts in the
+{\tt boxit} suffix.}
+This creates pair variables \tdescr{suffix}{\tt.c},
+\tdescr{suffix}{\tt.n}, \tdescr{suffix}{\tt.e}, \ldots\ that can then be
+used for positioning the picture before drawing it with a separate command such
+as\index{drawboxed?\texttt{drawboxed}}\label{Ddrbxed}
+$$ \hbox{\tt drawboxed(} \descr{suffix list} \hbox{\tt )} $$
+The argument to {\tt drawboxed} should be a comma-separated list of box names,
+where a box name\index{box name} is a \tdescr{suffix} with which {\tt boxit}
+has been called.
+
+For the command {\tt boxit.bb(pic)}, the box name is {\tt bb} and the
+contents of the box is the picture {\tt pic}.  In this case, {\tt bb.c}
+the position where the center of picture {\tt pic} is to be placed, and
+{\tt bb.sw}, {\tt bb.se}, {\tt bb.ne}, and {\tt bb.nw} are the corners
+of a rectangular path that will surround the resulting picture.
+Variables {\tt bb.dx} and {\tt bb.dy} give the spacing between the
+shifted version of {\tt pic} and the surrounding rectangle, and {\tt
+bb.off} is the amount by which {\tt pic} has to be shifted to achieve
+all this.
+
+When the {\tt boxit} macro is called with box name~$b$, it gives linear
+equations that force $b${\tt.sw}, $b${\tt.se}, $b${\tt.ne}, and
+$b${\tt.nw} to be the corners of a rectangle aligned on the $x$ and $y$
+axes with the box contents centered inside as indicated by the gray
+rectangle in Figure~\ref{fig48}.  The values of $b${\tt.dx},
+$b${\tt.dy}, and $b${\tt.c} are left unspecified so that the user can
+give equations for positioning the boxes.  If no such equations are
+given, macros such as {\tt drawboxed} can detect this and give default
+values.  The default values for {\tt dx} and {\tt dy} variables are
+controlled by the internal variables\index{internal
+variables|see{variables, internal}}\index{variables!internal} {\tt
+defaultdx}\index{defaultdx?\texttt{defaultdx}}\label{Ddefaultdx} and
+{\tt defaultdy}\index{defaultdy?\texttt{defaultdy}}\label{Ddefaultdy}.%
+%
+\index{variables!box|)}
+
+\begin{figure}[htp]
+$$ \includegraphics{mpboxes-48.mps} $$
+\caption[How a {\tt boxit} picture relates to the associated variables]
+        {The relationship between the picture given to {\tt boxit} and the
+        associated variables.  The picture is indicated by a gray rectangle.}
+\label{fig48}
+\end{figure}
+
+If $b$ represents a box name, {\tt drawboxed($b$)} draws the rectangular
+boundary of box~$b$ and then the contents of the box.  This bounding
+rectangle can be accessed separately as {\tt bpath~$b$}, or in
+general\index{bpath?\texttt{bpath}}\label{Dbpath}
+$$ {\tt bpath}\, \descr{box name} $$
+It is useful in combination with operators like
+{\tt cutbefore}\index{cutbefore?\texttt{cutbefore}} and {\tt cutafter}\index{cutafter?\texttt{cutafter}}
+in order to control paths that enter the box.
+For example, if $a$ and $b$ are box names and $p$ is a path from $a${\tt.c}
+to $b${\tt.c},\index{drawarrow?\texttt{drawarrow}}
+$$ \hbox{\tt drawarrow $p$ cutbefore bpath $a$ cutafter bpath $b$} $$
+draws an arrow from the edge of box $a$ to the edge of box $b$.
+
+Figure~\ref{fig49} shows a practical example including some arrows drawn
+with {\tt cutafter bpath} \tdescr{box name}.  It is instructive to
+compare Figure~\ref{fig49} to the similar figure in the pic manual
+\cite{ke:pic}.  The figure uses a
+macro\index{boxjoin?\texttt{boxjoin}}\label{Dbxjoin}
+$$ \hbox{\tt boxjoin(} \descr{equation text} \hbox{\tt )} $$
+to control the relationship between consecutive boxes.  Within the
+\tdescr{equation text}, {\tt a} and {\tt b} represent the box names given in
+consecutive calls to {\tt boxit} and the \tdescr{equation text} gives equations
+to control the relative sizes and positions of the boxes.
+
+\begin{figure}[htp]
+$$\hbox{$\begin{verbatim}
+input boxes
+beginfig(49);
+boxjoin(a.se=b.sw; a.ne=b.nw);
+boxit.a(btex\strut$\cdots$ etex);    boxit.ni(btex\strut$n_i$ etex);
+boxit.di(btex\strut$d_i$ etex);      boxit.ni1(btex\strut$n_{i+1}$ etex);
+boxit.di1(btex\strut$d_{i+1}$ etex); boxit.aa(btex\strut$\cdots$ etex);
+boxit.nk(btex\strut$n_k$ etex);      boxit.dk(btex\strut$d_k$ etex);
+drawboxed(di,a,ni,ni1,di1,aa,nk,dk); label.lft("ndtable:", a.w);
+interim defaultdy:=7bp;
+boxjoin(a.sw=b.nw; a.se=b.ne);
+boxit.ba(); boxit.bb(); boxit.bc();
+boxit.bd(btex $\vdots$ etex); boxit.be(); boxit.bf();
+bd.dx=8bp; ba.ne=a.sw-(15bp,10bp);
+drawboxed(ba,bb,bc,bd,be,bf); label.lft("hashtab:",ba.w);
+vardef ndblock suffix $ =
+  boxjoin(a.sw=b.nw; a.se=b.ne);
+  forsuffixes $$=$1,$2,$3: boxit$$(); ($$dx,$$dy)=(5.5bp,4bp);
+  endfor; enddef;
+ndblock nda;  ndblock ndb;  ndblock ndc;
+nda1.c-bb.c = ndb1.c-nda3.c = (whatever,0);
+xpart ndb3.se = xpart ndc1.ne = xpart di.c;
+ndc1.c - be.c = (whatever,0);
+drawboxed(nda1,nda2,nda3, ndb1,ndb2,ndb3, ndc1,ndc2,ndc3);
+drawarrow bb.c -- nda1.w;
+drawarrow be.c -- ndc1.w;
+drawarrow nda3.c -- ndb1.w;
+drawarrow nda1.c{right}..{curl0}ni.c cutafter bpath ni;
+drawarrow nda2.c{right}..{curl0}di.c cutafter bpath di;
+drawarrow ndc1.c{right}..{curl0}ni1.c cutafter bpath ni1;
+drawarrow ndc2.c{right}..{curl0}di1.c cutafter bpath di1;
+drawarrow ndb1.c{right}..nk.c cutafter bpath nk;
+drawarrow ndb2.c{right}..dk.c cutafter bpath dk;
+x.ptr=xpart aa.c;   y.ptr=ypart ndc1.ne;
+drawarrow subpath (0,.7) of (z.ptr..{left}ndc3.c) dashed evenly;
+label.rt(btex \strut ndblock etex, z.ptr); endfig;
+\end{verbatim}
+$}
+\atop \vcenter{\vskip8pt\hbox{\includegraphics{mpboxes-49.mps}}}
+$$
+\caption{MetaPost code and the corresponding figure}
+\label{fig49}
+\end{figure}
+
+For example, the second line of input for the above figure contains
+$$ \hbox{\tt boxjoin(a.se=b.sw; a.ne=b.nw)} $$
+This causes boxes to line up horizontally by giving additional equations that
+are invoked each time some box {\tt a} is followed by some other box~{\tt b}.
+These equations are first invoked on the next line when box~{\tt a} is followed
+by box~{\tt ni}.  This yields
+$$ \hbox{\tt a.se=ni.sw; a.ne=ni.nw} $$
+The next pair of boxes is box~{\tt ni} and box~{\tt di}. This time the
+implicitly generated equations are
+$$ \hbox{\tt ni.se=di.sw; ni.ne=di.nw} $$
+This process continues until a new {\tt
+boxjoin}\index{boxjoin?\texttt{boxjoin}} is given.  In this case the new
+declaration is
+$$ \hbox{\tt boxjoin(a.sw=b.nw; a.se=b.ne)} $$
+which causes boxes to be stacked below each other.
+
+After calling {\tt boxit} for the first eight boxes {\tt a} through {\tt
+dk}, the box heights are constrained to match but the widths are still
+unknown.  Thus the {\tt drawboxed}\index{drawboxed?\texttt{drawboxed}}
+macro needs to assign default values to the \tdescr{box name}{\tt.dx}
+and \tdescr{box name}{\tt.dy} variables.  First, {\tt di.dx} and {\tt
+di.dy} get default values so that all the boxes are forced to be large
+enough to contain the contents of box~{\tt di}.
+
+The macro that actually assigns default values to {\tt dx} and {\tt dy}
+variables is called {\tt
+fixsize}\index{fixsize?\texttt{fixsize}}\label{Dfixsiz}.  It takes a
+list of box names and considers them one at a time, making sure that
+each box has a fixed size and shape.  A macro called {\tt
+fixpos}\index{fixpos?\texttt{fixpos}}\label{Dfixpos} then takes this
+same list of box names and assigns default values to the \tdescr{box
+name}{\tt.off} variables as needed to fix the position of each box.  By
+using {\tt fixsize} to fix the dimensions of each box before assigning
+default positions to any of them, the number of needing default
+positions can usually be cut to at most one.
+
+Since the bounding path for a box cannot be computed until the size,
+shape, and position of the box is determined, the {\tt
+bpath}\index{bpath?\texttt{bpath}} macro applies {\tt fixsize} and {\tt
+fixpos} to its argument.  Other macros that do this
+include\index{pic?\texttt{pic}}\label{Dpic}
+$$ {\tt pic}\, \descr{box name} $$
+where the \tdescr{box name} is a suffix, possibly in parentheses.  This returns
+the contents of the named box as a picture positioned so that
+$$ {\tt draw\ pic} \descr{box name} $$
+draws the box contents without the bounding rectangle.  This operation
+can also be accomplished by the {\tt
+drawunboxed}\index{drawunboxed?\texttt{drawunboxed}}\label{Ddrunbx}
+macro that takes a comma-separated list of box names.  There is also a
+{\tt drawboxes}\index{drawboxes?\texttt{drawboxes}}\label{Ddrbxes} macro
+that draws just the bounding rectangles.
+
+Another way to draw empty rectangles is by just saying\label{Deboxit}
+$$ {\tt boxit} \descr{box name} \hbox{\tt ()} $$
+with no picture argument as is done several times in Figure~\ref{fig49}.
+This is like calling {\tt boxit} with an empty picture.
+Alternatively the argument can be a string\label{Dsboxit} expression
+instead of a picture
+expression in which case the string is typeset in the default font.
+
+
+\section{Circular and Oval Boxes}
+\label{circbox}
+
+Circular and oval boxes are a lot like rectangular boxes except for the shape
+of the bounding path.  Such boxes are set up by the
+{\tt circleit}\index{circleit?\texttt{circleit}}\label{Dcircit} macro:
+$$ {\tt circleit} \descr{box name}
+   \hbox{\tt(} \descr{box contents} \hbox{\tt)}
+$$
+where \tdescr{box name} is a suffix and \tdescr{box contents} is either a
+picture expression, a string expression, or \tdescr{empty}.
+
+\mbox{}% Start paragraph.
+\index{variables!box|(}%
+%
+The {\tt circleit} macro defines pair variables just as {\tt boxit}
+does, except that there are no corner points \tdescr{box name}{\tt.ne},
+\tdescr{box name}{\tt.sw}, etc.  A call to
+$$ \hbox{\tt circleit.a(}\ldots \hbox{\tt )} $$
+gives relationships among points {\tt a.c}, {\tt a.s}, {\tt a.e}, {\tt
+a.n}, {\tt a.w} and distances {\tt a.dx} and {\tt a.dy}.  Together with
+{\tt a.c} and {\tt a.off}, these variables describe how the picture is
+centered in an oval as can be seen from the Figure~\ref{fig50}.%
+%
+\index{variables!box|)}
+
+\begin{figure}[htp]
+$$ \includegraphics{mpboxes-50.mps} $$
+\caption[How a {\tt circleit} picture relates to the associated variables]
+        {The relationship between the picture given to {\tt circleit} and the
+        associated variables.  The picture is indicated by a gray rectangle.}
+\label{fig50}
+\end{figure}
+
+The {\tt drawboxed}\index{drawboxed?\texttt{drawboxed}}, {\tt
+drawunboxed}\index{drawunboxed?\texttt{drawunboxed}}, {\tt
+drawboxes}\index{drawboxes?\texttt{drawboxes}}, {\tt
+pic}\index{pic?\texttt{pic}}, and {\tt
+bpath}\index{bpath?\texttt{bpath}} macros work for {\tt circleit} boxes
+just as they do for {\tt boxit} boxes.  By default, the boundary path
+for a {\tt circleit} box is a circle large enough to surround the box
+contents with a small safety margin controlled by the internal
+variable\index{variables!internal} {\tt
+circmargin}\label{Dcmargin}.  Figure~\ref{fig51} gives a basic example
+of the use of {\tt bpath} with {\tt circleit} boxes.
+
+\begin{figure}[htbp]
+$$\begin{verbatim}
+vardef drawshadowed(text t) =
+  fixsize(t);
+  forsuffixes s=t:
+    fill bpath.s shifted (1pt,-1pt);
+    unfill bpath.s;
+    drawboxed(s);
+  endfor
+enddef;
+
+beginfig(51)
+circleit.a(btex Box 1 etex);
+circleit.b(btex Box 2 etex);
+b.n = a.s - (0,20pt);
+drawshadowed(a,b);
+drawarrow a.s -- b.n;
+endfig;
+\end{verbatim}
+\qquad \mathcenter{\includegraphics{mpboxes-51.mps}} $$
+\caption[MetaPost code and the resulting figure.]  {MetaPost code and
+        the resulting figure.  Note that the {\tt drawshadowed} macro
+        used here is not part of the {\tt boxes.mp} macro package.}
+\label{fig51}
+\index{drawshadowed?\texttt{drawshadowed}}
+\end{figure}
+
+\mbox{}% Start paragraph.
+\index{variables!box|(}%
+%
+A full example of {\tt circleit} boxes appears in Figure~\ref{fig52}.
+The oval boundary paths around ``Start'' and ``Stop'' are due to the equations
+$$ \hbox{\tt aa.dx=aa.dy;} \quad {\rm and}\quad \hbox{\tt ee.dx=ee.dy} $$
+after
+$$ \hbox{\verb|circleit.ee(btex\strut Stop etex)|}
+    \quad{\rm and}\quad
+   \hbox{\verb|circleit.ee(btex\strut Stop etex)|}.
+$$
+The general rule is that {\tt bpath.}$c$ comes out circular if
+$c${\tt.dx}, $c${\tt.dy}, and $c\hbox{\tt.dx}-c\hbox{\tt.dy}$ are all
+unknown.  Otherwise, the macros select an oval big enough to contain the
+given picture with the safety margin {\tt
+circmargin}\index{circmargin?\texttt{circmargin}}.%
+%
+\index{variables!box|)}
+
+\begin{figure}[htp]
+$$\hbox{$\begin{verbatim}
+vardef cuta(suffix a,b) expr p =
+  drawarrow p cutbefore bpath.a cutafter bpath.b;
+  point .5*length p of p
+enddef;
+
+vardef self@# expr p =
+  cuta(@#,@#) @#.c{curl0}..@#.c+p..{curl0}@#.c  enddef;
+
+beginfig(52);
+verbatimtex \def\stk#1#2{$\displaystyle{\matrix{#1\cr#2\cr}}$} etex
+circleit.aa(btex\strut Start etex); aa.dx=aa.dy;
+circleit.bb(btex \stk B{(a|b)^*a} etex);
+circleit.cc(btex \stk C{b^*} etex);
+circleit.dd(btex \stk D{(a|b)^*ab} etex);
+circleit.ee(btex\strut Stop etex); ee.dx=ee.dy;
+numeric hsep;
+bb.c-aa.c = dd.c-bb.c = ee.c-dd.c = (hsep,0);
+cc.c-bb.c = (0,.8hsep);
+xpart(ee.e - aa.w) = 3.8in;
+drawboxed(aa,bb,cc,dd,ee);
+label.ulft(btex$b$etex, cuta(aa,cc) aa.c{dir50}..cc.c);
+label.top(btex$b$etex, self.cc(0,30pt));
+label.rt(btex$a$etex, cuta(cc,bb) cc.c..bb.c);
+label.top(btex$a$etex, cuta(aa,bb) aa.c..bb.c);
+label.llft(btex$a$etex, self.bb(-20pt,-35pt));
+label.top(btex$b$etex, cuta(bb,dd) bb.c..dd.c);
+label.top(btex$b$etex, cuta(dd,ee) dd.c..ee.c);
+label.lrt(btex$a$etex, cuta(dd,bb) dd.c..{dir140}bb.c);
+label.bot(btex$a$etex, cuta(ee,bb) ee.c..tension1.3 ..{dir115}bb.c);
+label.urt(btex$b$etex, cuta(ee,cc) ee.c{(cc.c-ee.c)rotated-15}..cc.c);
+endfig;
+\end{verbatim}
+$}
+\atop \vcenter{\vskip8pt\hbox{\includegraphics{mpboxes-52.mps}}}
+$$
+\caption{MetaPost code and the corresponding figure}
+\label{fig52}
+\end{figure}
+
+
+
+\appendix
+\section{Reference manual}
+\label{refman}
+
+Tables~\ref{pseudotab} to~\ref{ivartab} summarize macros, box variables
+and internal variables provided by the \texttt{boxes} package.
+
+\begin{table}[hp]
+\centering
+\caption{\strut Function-Like Macros}
+\label{pseudotab}
+\begin{tabular}[t]{|>{\ttfamily}l|l|l|r|>{\arraybackslash}p{2.5in}|}
+\hline
+\multicolumn1{|c}{Name}&  \multicolumn1{|c}{Arguments}&
+        \multicolumn1{|c}{Result}&  \multicolumn1{|c}{Page}&
+        \multicolumn1{|c|}{Explanation}\\
+\hline
+\hline
+boxit\index{boxit?\texttt{boxit}}&           suffix, picture&      --&  \pageref{Dboxit}&
+        Define a box containing the picture\\\hline
+boxit\index{boxit?\texttt{boxit}}&            suffix, string&      --&  \pageref{Dsboxit}&
+        Define a box containing text\\\hline
+boxit\index{boxit?\texttt{boxit}}&    suffix, \tdescr{empty}&      --&  \pageref{Deboxit}&
+        Define an empty box\\\hline
+boxjoin\index{boxjoin?\texttt{boxjoin}}&           equations&      --&  \pageref{Dbxjoin}&
+        Give equations for connecting boxes\\\hline
+bpath\index{bpath?\texttt{bpath}}&                    suffix&    path&  \pageref{Dbpath}&
+        A box's bounding circle or rectangle\\\hline
+circleit\index{circleit?\texttt{circleit}}&  suffix, picture&      --&  \pageref{Dcircit}&
+        Put picture in a circular box\\\hline
+circleit\index{circleit?\texttt{circleit}}&  suffix, picture&      --&  \pageref{Dcircit}&
+        Put a string in a circular box\\\hline
+circleit\index{circleit?\texttt{circleit}}& suffix, \tdescr{empty}& --& \pageref{Dcircit}&
+        Define an empty circular box\\\hline
+drawboxed\index{drawboxed?\texttt{drawboxed}}& list of suffixes&   --&  \pageref{Ddrbxed}&
+        Draw the named boxes and their contents\\\hline
+drawboxes\index{drawboxes?\texttt{drawboxes}}& list of suffixes&   --&  \pageref{Ddrbxes}&
+        Draw the named boxes\\\hline
+drawunboxed\index{drawunboxed?\texttt{drawunboxed}}& list of suffixes& --& \pageref{Ddrunbx}&
+        Draw contents of named boxes\\\hline
+fixpos\index{fixpos?\texttt{fixpos}}&       list of suffixes&      --&  \pageref{Dfixpos}&
+        Solve for the size and position of the named boxes\\\hline
+fixsize\index{fixsize?\texttt{fixsize}}&    list of suffixes&      --&  \pageref{Dfixsiz}&
+        Solve for size of named boxes\\\hline
+pic\index{pic?\texttt{pic}}&                          suffix& picture&  \pageref{Dpic}&
+        Box contents shifted into position\\\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[hp]
+\centering
+\caption{\strut Box variables}
+\label{boxvartab}
+\index{variables!box}
+\begin{tabular}[t]{|>{\ttfamily $\descr{box name}$.}l|>{\arraybackslash}p{2in}|c|}
+\hline
+\multicolumn1{|c|}{Variable}&  \multicolumn1{c|}{Explanation}&  Validity\\
+\hline
+\hline
+c      &center point                       &\\
+n      &top center point                   &\\
+s      &bottom center point                &\\
+w      &center left point                  &\\
+e      &center right point                 &\\
+nw     &top left corner                    &\texttt{boxit} only\\
+ne     &top right corner                   &\texttt{boxit} only\\
+sw     &bottom left corner                 &\texttt{boxit} only\\
+se     &bottom right corner                &\texttt{boxit} only\\
+dx     &horizontal clearance               &\\
+dy     &vertical clearance                 &\\
+off    &actual location of box contents    &\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[hp]
+\centering
+\caption{\strut Internal variables with numeric values}
+\label{ivartab}
+\index{variables!internal}
+\begin{tabular}[t]{|>{\ttfamily}l|r|>{\arraybackslash}p{3.5in}|}
+\hline
+\multicolumn1{|c}{Name}&  \multicolumn1{|c}{Page}&  \multicolumn1{|c|}{Explanation}\\
+\hline
+\hline
+circmargin\index{circmargin?\texttt{circmargin}}&   \pageref{Dcmargin}&
+        clearance around contents of a circular or oval box\\\hline
+defaultdx\index{defaultdx?\texttt{defaultdx}}&      \pageref{Ddefaultdx}&
+        usual horizontal space around box contents (default 3{\tt bp})\\\hline
+defaultdy\index{defaultdy?\texttt{defaultdy}}&      \pageref{Ddefaultdy}&
+        usual vertical space around box contents (default 3{\tt bp})\\\hline
+\end{tabular}
+\end{table}
+
+
+\bibliographystyle{plain}
+\bibliography{mpboxes}
+
+\printindex
+
+\end{document}
+
+
+
+% Copyright 1990 - 1995 by AT&T Bell Laboratories.
+
+% Permission to use, copy, modify, and distribute this software
+% and its documentation for any purpose and without fee is hereby
+% granted, provided that the above copyright notice appear in all
+% copies and that both that the copyright notice and this
+% permission notice and warranty disclaimer appear in supporting
+% documentation, and that the names of AT&T Bell Laboratories or
+% any of its entities not be used in advertising or publicity
+% pertaining to distribution of the software without specific,
+% written prior permission.
+
+% AT&T disclaims all warranties with regard to this software,
+% including all implied warranties of merchantability and fitness.
+% In no event shall AT&T be liable for any special, indirect or
+% consequential damages or any damages whatsoever resulting from
+% loss of use, data or profits, whether in an action of contract,
+% negligence or other tortious action, arising out of or in
+% connection with the use or performance of this software.
+
+% In addition, John Hobby, the original author of MetaPost and this
+% manual, makes the following requests:
+% - I request that it remain clear that I am the author of
+%   "A User's Manual for MetaPost" and "Drawing Graphs with MetaPost".
+% - I request to be consulted before significant changes are made.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-PDF-mode: t
+%%% TeX-master: t
+%%% End: 

@@ -1,0 +1,156 @@
+\svnInfo $Id: mpman-app-optab.tex 1438 2010-10-26 20:08:17Z stephanhennig $
+%%% Two notes on column specification:
+%%% (i)  Column widths are manually chosen as small as possible to allow
+%%%      for a wider last X column.
+%%% (ii)  In the first column \linepenalty=100 prefers shorter paragraphs
+%%%       (less lines), where plain \raggedright were indifferent and
+%%%       sometimes caused a dangling line, e.g., for 'directionpoint of'
+%%%       or 'directiontime of'.
+\begin{longtable}{|>{\raggedright\linepenalty=100\ttfamily}p{.793in}*{3}{|>{\raggedright}p{.715in}}|>{\raggedleft}p{1.5em}|>{\raggedright\arraybackslash}X|}
+\caption{\strut Operators}\label{optab}\\
+\hline
+Name&  \multicolumn3{c|}{Argument/result types}&  \makebox[.2in][c]{Page}&  Explanation\\\cline{2-4}
+&  \multicolumn1{c|}{Left}&  \multicolumn1{c|}{Right}&  \multicolumn1{c|}{Result}&  &  \\
+\hline
+\hline
+\endfirsthead
+\caption[]{\strut Operators \emph{(continued)}}\\
+\hline
+Name&  \multicolumn3{c|}{Argument/result types}&  \makebox[.2in][c]{Page}&  Explanation\\\cline{2-4}
+&  \multicolumn1{c|}{Left}&  \multicolumn1{c|}{Right}&  \multicolumn1{c|}{Result}&  &  \\
+\hline
+\hline
+\endhead
+\&\index{&?\texttt{\&}}&  string\par path&  string\par path &  string\par path&  \pageref{Damp}&  Concatenation---works for paths $l\hbox{\tt\&}r$ if $r$ starts exactly where the $l$ ends\\\hline
+*\index{*?\texttt{*}}&  numeric&  (cmyk)color\par numeric\par pair&  (cmyk)color\par numeric\par pair&  \pageref{Dmldiv}&  Multiplication\\\hline
+*\index{*?\texttt{*}}&  (cmyk)color\par numeric\par pair&  numeric&  (cmyk)color\par numeric\par pair&  \pageref{Dmldiv}&  Multiplication\\\hline
+**\index{**?\texttt{**}}&  numeric&  numeric&  numeric&  \pageref{Dpow}&  Exponentiation\\\hline
++\index{+?\texttt{+}}&  (cmyk)color\par numeric\par pair&  (cmyk)color\par numeric\par pair&  (cmyk)color\par numeric\par pair&  \pageref{Dadd}&  Addition\\\hline
+++\index{++?\texttt{++}}&  numeric&  numeric&  numeric&  \pageref{Dpyadd}&  Pythagorean addition $\sqrt{l^2+r^2}$\\\hline
++-+\index{+-+?\texttt{+-+}}&  numeric&  numeric&  numeric&  \pageref{Dpysub}&  Pythagorean subtraction $\sqrt{l^2-r^2}$\\\hline
+-\index{-?\texttt{-}}&  (cmyk)color\par numeric\par pair&  (cmyk)color\par numeric\par pair&  (cmyk)color\par numeric\par pair&  \pageref{Dadd}&  Subtraction\\\hline
+-\index{-?\texttt{-}}&  --&  (cmyk)color\par numeric\par pair&  (cmyk)color\par numeric\par pair&  \pageref{Dneg}&  Negation\\\hline
+/\index{/?\texttt{/}}&  (cmyk)color\par numeric\par pair&  numeric&  (cmyk)color\par numeric\par pair&  \pageref{Dmldiv}&  Division\\\hline
+<\index{<?\texttt{<}} =\index{=?\texttt{=}} >\index{>?\texttt{>}}\par <=\index{<=?\texttt{<=}} >=\index{>=?\texttt{>=}}\par <>\index{<>?\texttt{<>}}&  string\par numeric\par pair\par (cmyk)color\par transform&  string\par numeric\par pair\par (cmyk)color\par transform&  boolean&  \pageref{Dcmpar}&  Comparison operators\\\hline
+\pl abs\index{abs?\texttt{abs}}&  --&  numeric\par pair&  numeric&  \pageref{Dabs}&  Absolute value\par Euclidean length $\sqrt{(\mbox{\ttfamily xpart\ } r)^2+(\mbox{\ttfamily ypart\ } r)^2}$\\\hline
+and\index{and?\texttt{and}}&  boolean&  boolean&  boolean&  \pageref{Dand}&  Logical and\\\hline
+angle\index{angle?\texttt{angle}}&  --&  pair&  numeric&  \pageref{Dangle}&  2$-$argument arctangent (in degrees)\\\hline
+arclength\index{arclength?\texttt{arclength}}&  --&  path&  numeric&  \pageref{Darclng}&  Arc length of a path\\\hline
+arctime of\index{arctime of?\texttt{arctime of}}&  numeric&  path&  numeric&  \pageref{Darctim}&  Time on a path where arc length from the start reaches a given value\\\hline
+ASCII\index{ASCII?\texttt{ASCII}}&  --&  string&  numeric&  --&  ASCII value of first character in string\\\hline
+\pl bbox\index{bbox?\texttt{bbox}}&  --&  picture\par path\par pen&  path&  \pageref{Dbbox}&  A rectangular path for the bounding box\\\hline
+blackpart\index{blackpart?\texttt{blackpart}}&  --&  cmykcolor&  numeric&  \pageref{Dcmykprt}&  Extract the fourth component\\\hline
+bluepart\index{bluepart?\texttt{bluepart}}&  --&  color&  numeric&  \pageref{Drgbprt}&  Extract the third component\\\hline
+boolean\index{boolean?\texttt{boolean}}&  --&  any&  boolean&  \pageref{Dboolop}&  Is the expression of type boolean?\\\hline
+\pl bot\index{bot?\texttt{bot}}&  --&  numeric\par pair&  numeric\par pair&  \pageref{Dbot}&  Bottom of current pen when centered at the given coordinate(s)\\\hline
+bounded\index{bounded?\texttt{bounded}}&  --&  any&  boolean&  \pageref{Dbounded}&  Is argument a picture with a bounding box?\\\hline
+\pl ceiling\index{ceiling?\texttt{ceiling}}&  --&  numeric&  numeric&  \pageref{Dceil}&  Least integer greater than or equal to\\\hline
+\pl center\index{center?\texttt{center}}&  --&  picture\par path\par pen&  pair&  \pageref{Dcenter}&  Center of the bounding box\\\hline
+char\index{char?\texttt{char}}&  --&  numeric&  string&  \pageref{Dchar}&  Character with a given ASCII code\\\hline
+clipped\index{clipped?\texttt{clipped}}&  --&  any&  boolean&  \pageref{Dclipped}&  Is argument a clipped picture?\\\hline
+cmykcolor\index{cmykcolor?\texttt{cmykcolor}}&  --&  any&  boolean&  \pageref{Dccolrop}&  Is the expression of type cmykcolor?\\\hline
+color\index{color?\texttt{color}}&  --&  any&  boolean&  \pageref{Dcolrop}&  Is the expression of type color?\\\hline
+colormodel\index{colormodel?\texttt{colormodel}}&  --&  image object&  numeric&  \pageref{Dcolormodel}&  What is the color model of the image object?\\\hline
+\pl colorpart\index{colorpart?\texttt{colorpart}}&  --&  image object&
+(cmyk)color\par numeric\par boolean&  \pageref{Dcolorpart}&  What is the
+color of the image object?\\\hline
+cosd\index{cosd?\texttt{cosd}}&  --&  numeric&  numeric&  \pageref{Dcosd}&  Cosine of angle in degrees\\\hline
+\pl cutafter\index{cutafter?\texttt{cutafter}}&  path&  path&  path&  \pageref{Dcuta}&  Left argument with part after the intersection dropped\\\hline
+\pl cutbefore\index{cutbefore?\texttt{cutbefore}}&  path&  path&  path&  \pageref{Dcutb}&  Left argument with part before the intersection dropped\\\hline
+cyanpart\index{cyanpart?\texttt{cyanpart}}&  --&  cmykcolor&  numeric&  \pageref{Dcmykprt}&  Extract the first component\\\hline
+cycle\index{cycle?\texttt{cycle}}&  --&  path&  boolean&  \pageref{Dcycop}&  Determines whether a path is cyclic\\\hline
+dashpart\index{dashpart?\texttt{dashpart}}&  --&  picture&  picture&  \pageref{Ddashpart}&  Dash pattern of a path in a stroked picture\\\hline
+decimal\index{decimal?\texttt{decimal}}&  --&  numeric&  string&  \pageref{Ddecop}&  The decimal representation\\\hline
+\pl dir\index{dir?\texttt{dir}}&  --&  numeric&  pair&  \pageref{Ddirop}&  $(\cos\theta,\sin\theta)$ given $\theta$ in degrees\\\hline
+\pl direction of\index{direction of?\texttt{direction of}}&  numeric&  path&  pair&  \pageref{Ddirof}&  The direction of a path at a given `time'\\\hline
+\pl direction\-point of\index{directionpoint of?\texttt{directionpoint of}}&  pair&  path&  numeric&  \pageref{Ddpntof}&  Point where a path has a given direction\\\hline
+direction\-time of\index{directiontime of?\texttt{directiontime of}}&  pair&  path&  numeric&  \pageref{Ddtimof}&  `Time' when a path has a given direction\\\hline
+\pl div\index{div?\texttt{div}}&  numeric&  numeric&  numeric&  --&  Integer division $\lfloor l/r\rfloor$\\\hline
+\pl dotprod\index{dotprod?\texttt{dotprod}}&  pair&  pair&  numeric&  \pageref{Ddprod}&  Vector dot product\\\hline
+filled\index{filled?\texttt{filled}}&  --&  any&  boolean&  \pageref{Dfilled}&  Is argument a filled outline?\\\hline
+floor\index{floor?\texttt{floor}}&  --&  numeric&  numeric&  \pageref{Dfloor}&  Greatest integer less than or equal to\\\hline
+fontpart\index{fontpart?\texttt{fontpart}}&  --&  picture&  string&  \pageref{Dfontpart}&  Font of a textual picture component\\\hline
+fontsize\index{fontsize?\texttt{fontsize}}&  --&  string&  numeric&  \pageref{Dfntsiz}&  The point size of a font\\\hline
+glyph of\index{glyph?\texttt{glyph}}&  numeric\par string&  string&  picture&
+\pageref{Dglyph}&  Convert a glyph of a font to contours\\\hline
+greenpart\index{greenpart?\texttt{greenpart}}&  --&  color&  numeric&  \pageref{Drgbprt}&  Extract the second component\\\hline
+greypart\index{greypart?\texttt{greypart}}&  --&  numeric&  numeric&  \pageref{Dgreyprt}&  Extract the first (only) component\\\hline
+hex\index{hex?\texttt{hex}}&  --&  string&  numeric&  --&  Interpret as a hexadecimal number\\\hline
+infont\index{infont?\texttt{infont}}&  string&  string&  picture&  \pageref{Sinfont}&  Typeset string in given font\\\hline
+\pl intersec\-tionpoint\index{intersectionpoint?\texttt{intersectionpoint}}&  path&  path&  pair&  \pageref{Disecpt}&  An intersection point\\\hline
+intersec\-tiontimes\index{intersectiontimes?\texttt{intersectiontimes}}&  path&  path&  pair&  \pageref{Disectt}&  Times ($t_l,t_r)$ on paths $l$ and $r$ when the paths intersect\\\hline
+\pl inverse\index{inverse?\texttt{inverse}}&  --&  transform&  transform&  \pageref{Dinv}&  Invert a transformation\\\hline
+known\index{known?\texttt{known}}&  --&  any&  boolean&  \pageref{Dknown}&  Does argument have a known value?\\\hline
+length\index{length?\texttt{length}}&  --&  path\par string\par picture&  numeric&  \pageref{Dlength}\par \pageref{DlengthString}\par \pageref{DlengthPicture}&  Number of components (arcs, characters, strokes, \ldots) in the argument\\\hline
+\pl lft\index{lft?\texttt{lft}}&  --&  numeric\par pair&  numeric\par pair&  \pageref{Dlft}&  Left side of current pen when its center is at the given coordinate(s)\\\hline
+llcorner\index{llcorner?\texttt{llcorner}}&  --&  picture\par path\par pen&  pair&  \pageref{Dcornop}&  Lower-left corner of bounding box\\\hline
+lrcorner\index{lrcorner?\texttt{lrcorner}}&  --&  picture\par path\par pen&  pair&  \pageref{Dcornop}&  Lower-right corner of bounding box\\\hline
+magentapart\index{magentapart?\texttt{magentapart}}&  --&  cmykcolor&  numeric&  \pageref{Dcmykprt}&  Extract the second component\\\hline
+makepath\index{makepath?\texttt{makepath}}&  --&  pen&  path&  \pageref{Dmkpath}&  Cyclic path bounding the pen shape\\\hline
+makepen\index{makepen?\texttt{makepen}}&  --&  path&  pen&  \pageref{Dmkpen}&  A polygonal pen made from the convex hull of the path knots\\\hline
+mexp\index{mexp?\texttt{mexp}}&  --&  numeric&  numeric&  --&  The function $\exp(x/256)$\\\hline
+mlog\index{mlog?\texttt{mlog}}&  --&  numeric&  numeric&  --&  The function $256\ln(x)$\\\hline
+\pl mod\index{mod?\texttt{mod}}&  --&  numeric&  numeric&  --&  The remainder function $l-r\lfloor l/r\rfloor$\\\hline
+normal\-deviate\index{normaldeviate?\texttt{normaldeviate}}&  --&  --&  numeric&  --&  Choose a random number with mean~0 and standard deviation~1\\\hline
+not\index{not?\texttt{not}}&  --&  boolean&  boolean&  \pageref{Dnot}&  Logical negation\\\hline
+numeric\index{numeric?\texttt{numeric}}&  --&  any&  boolean&  \pageref{Dnumop}&  Is the expression of type numeric?\\\hline
+oct\index{oct?\texttt{oct}}&  --&  string&  numeric&  --&  Interpret string as octal number\\\hline
+odd\index{odd?\texttt{odd}}&  --&  numeric&  boolean&  --&  Is the closest integer odd or even?\\\hline
+or\index{or?\texttt{or}}&  boolean&  boolean&  boolean&  \pageref{Dor}&  Logical inclusive or\\\hline
+pair\index{pair?\texttt{pair}}&  --&  any&  boolean&  \pageref{Dpairop}&  Is the expression of type pair?\\\hline
+path\index{path?\texttt{path}}&  --&  any&  boolean&  \pageref{Dpathop}&  Is the expression of type path?\\\hline
+pathpart\index{pathpart?\texttt{pathpart}}&  --&  picture&  path&  \pageref{Dpathpart}&  Path of a stroked picture component\\\hline
+pen\index{pen?\texttt{pen}}&  --&  any&  boolean&  \pageref{Dpenop}&  Is the expression of type pen?\\\hline
+penoffset of\index{penoffset of?\texttt{penoffset of}}&  pair&  pen&  pair&  --&  Point on the pen furthest to the right of the given direction\\\hline
+penpart\index{penpart?\texttt{penpart}}&  --&  picture&  pen&  \pageref{Dpenpart}&  Pen of a stroked picture component\\\hline
+picture\index{picture?\texttt{picture}}&  --&  any&  boolean&  \pageref{Dpictop}&  Is the expression of type picture?\\\hline
+point of\index{point of?\texttt{point of}}&  numeric&  path&  pair&  \pageref{Dpntof}&  Point on a path given a time value\\\hline
+postcontrol of\index{postcontrol of?\texttt{postcontrol of}}&  numeric&  path&  pair&  \pageref{Dprepostctrl}&  First B\'ezier control point on path segment starting at the given time\\\hline
+precontrol of\index{precontrol of?\texttt{precontrol of}}&  numeric&  path&  pair&  \pageref{Dprepostctrl}&  Last B\'ezier control point on path segment ending at the given time\\\hline
+readfrom\index{readfrom?\texttt{readfrom}}&  --&  string&  string&  \pageref{Dreadfrom}&  Read a line from file\\\hline
+redpart\index{redpart?\texttt{redpart}}&  --&  color&  numeric&  \pageref{Drgbprt}&  Extract the first component\\\hline
+reverse\index{reverse?\texttt{reverse}}&  --&  path&  path&  \pageref{Drevrse}&  `time'-reversed path, beginning swapped with ending\\\hline
+rgbcolor\index{rgbcolor?\texttt{rgbcolor}}&  --&  any&  boolean&  \pageref{Drcolrop}&  Is the expression of type color?\\\hline
+rotated\index{rotated?\texttt{rotated}}&  picture\par path\par pair\par pen\par transform&  numeric&  picture\par path\par pair\par pen\par transform&  \pageref{Dtranop}&  Rotate counterclockwise a given number of degrees\\\hline
+\pl round\index{round?\texttt{round}}&  --&  numeric\par pair&  numeric\par pair&  \pageref{Dround}&  Round each component to the nearest integer\\\hline
+\pl rt\index{rt?\texttt{rt}}&  --&  numeric\par pair&  numeric\par pair&  \pageref{Drt}&  Right side of current pen when centered at given coordinate(s)\\\hline
+scaled\index{scaled?\texttt{scaled}}&  picture\par path\par pair\par pen\par transform&  numeric&  picture\par path\par pair\par pen\par transform&  \pageref{Dtranop}&  Scale all coordinates by the given amount\\\hline
+scantokens\index{scantokens?\texttt{scantokens}}&  --&  string&  token sequence&  \pageref{Dscantokens}&  Converts a string to a token or token sequence. Provides string to numeric conversion, etc.\\\hline
+shifted\index{shifted?\texttt{shifted}}&  picture\par path\par pair\par pen\par transform&  pair&  picture\par path\par pair\par pen\par transform&  \pageref{Dtranop}&  Add the given shift amount to each pair of coordinates\\\hline
+sind\index{sind?\texttt{sind}}&  --&  numeric&  numeric&  \pageref{Dsind}&  Sine of an angle in degrees\\\hline
+slanted\index{slanted?\texttt{slanted}}&  picture\par path\par pair\par pen\par transform&  numeric&  picture\par path\par pair\par pen\par transform&  \pageref{Dtranop}&  Apply the slanting transformation that maps $(x,y)$ into $(x+sy,y)$, where~$s$ is the numeric argument\\\hline
+sqrt\index{sqrt?\texttt{sqrt}}&  --&  numeric&  numeric&  \pageref{Dsqrt}&  Square root\\\hline
+str\index{str?\texttt{str}}&  --&  suffix&  string&  \pageref{Dstr}&  String representation for a suffix\\\hline
+string\index{string?\texttt{string}}&  --&  any&  boolean&  \pageref{Dstrgop}&  Is the expression of type string?\\\hline
+stroked\index{stroked?\texttt{stroked}}&  --&  any&  boolean&  \pageref{Dstroked}&  Is argument a stroked line?\\\hline
+subpath of\index{subpath?\texttt{subpath}}&  pair&  path&  path&  \pageref{Dsubpth}&  Portion of a path for given range of time values\\\hline
+substring of\index{substring
+of?\texttt{substring of}}&  pair&  string&  string&  \pageref{Dsubstr}&  Substring bounded by given indices\\\hline
+textpart\index{textpart?\texttt{textpart}}&  --&  picture&  string&  \pageref{Dtextpart}&  Text of a textual picture component\\\hline
+textual\index{textual?\texttt{textual}}&  --&  any&  boolean&  \pageref{Dtextual}&  Is argument typeset text?\\\hline
+\pl top\index{top?\texttt{top}}&  --&  numeric\par pair&  numeric\par pair&  \pageref{Dtop}&  Top of current pen when centered at the given coordinate(s)\\\hline
+transform\index{transform?\texttt{transform}}&  --&  any&  boolean&  \pageref{Dtrnfop}&  Is the argument of type transform?\\\hline
+transformed\index{transformed?\texttt{transformed}}&  picture\par path\par pair\par pen\par transform&  transform&  picture\par path\par pair\par pen\par transform&  \pageref{Dtrfrmd}&  Apply the given transform to all coordinates\\\hline
+ulcorner\index{ulcorner?\texttt{ulcorner}}&  --&  picture\par path\par pen&  pair&  \pageref{Dcornop}&  Upper-left corner of bounding box\\\hline
+uniform\-deviate\index{uniformdeviate?\texttt{uniformdeviate}}&  --&  numeric&  numeric&  --&  Random number between zero and the value of the argument\\\hline
+\pl unitvector\index{unitvector?\texttt{unitvector}}&  --&  pair&  pair&  \pageref{Duvec}&  Rescale a vector so its length is~1\\\hline
+unknown\index{unknown?\texttt{unknown}}&  --&  any&  boolean&  \pageref{Dunknwn}&  Is the value unknown?\\\hline
+urcorner\index{urcorner?\texttt{urcorner}}&  --&  picture\par path\par pen&  pair&  \pageref{Dcornop}&  Upper-right corner of bounding box\\\hline
+\pl whatever\index{whatever?\texttt{whatever}}&  --&  --&  numeric&  \pageref{Dwhatev}&  Create a new anonymous unknown\\\hline
+xpart\index{xpart?\texttt{xpart}}&  --&  pair\par transform&  number&  \pageref{Dxprt}&  $x$ or $t_x$ component\\\hline
+xscaled\index{xscaled?\texttt{xscaled}}&  picture\par path\par pair\par pen\par transform&  numeric&  picture\par path\par pair\par pen\par transform&  \pageref{Dtranop}&  Scale all $x$ coordinates by the given amount\\\hline
+xxpart\index{xxpart?\texttt{xxpart}}&  --&  transform&  number&  \pageref{Dtrprt}&  $t_{xx}$ entry in transformation matrix\\\hline
+xypart\index{xypart?\texttt{xypart}}&  --&  transform&  number&  \pageref{Dtrprt}&  $t_{xy}$ entry in transformation matrix\\\hline
+yellowpart\index{yellowpart?\texttt{yellowpart}}&  --&  cmykcolor&  numeric&  \pageref{Dcmykprt}&  Extract the third component\\\hline
+ypart\index{ypart?\texttt{ypart}}&  --&  pair\par transform&  number&  \pageref{Dyprt}&  $y$ or $t_y$ component\\\hline
+yscaled\index{yscaled?\texttt{yscaled}}&  picture\par path\par pair\par pen\par transform&  numeric&  picture\par path\par pair\par pen\par transform&  \pageref{Dtranop}&  Scale all $y$ coordinates by the given amount\\\hline
+yxpart\index{yxpart?\texttt{yxpart}}&  --&  transform&  number&  \pageref{Dtrprt}&  $t_{yx}$ entry in transformation matrix\\\hline
+yypart\index{yypart?\texttt{yypart}}&  --&  transform&  number&  \pageref{Dtrprt}&  $t_{yy}$ entry in transformation matrix\\\hline
+zscaled\index{zscaled?\texttt{zscaled}}&  picture\par path\par pair\par pen\par transform&  pair&  picture\par path\par pair\par pen\par transform&  \pageref{Dtranop}&  Rotate and scale all coordinates so that $(1,0)$ is mapped into the given pair; i.e., do complex multiplication.\\\hline
+\end{longtable}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-PDF-mode: t
+%%% TeX-master: "mpman"
+%%% End: 

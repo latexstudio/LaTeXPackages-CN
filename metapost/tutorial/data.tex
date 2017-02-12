@@ -1,0 +1,159 @@
+\section{Data types}
+\label{sec:datatypes}
+
+\subsection{Standard data types}
+There are ten data types in \MP{}: \textit{numeric}, \textit{pair},
+\textit{path}, \textit{transform}, \textit{rgbcolor},
+\textit{cmykcolor}, \textit{string}, \textit{boolean}, \textit{picture},
+and \textit{pen}.  These data types allow users to store fragments of
+the graphics for later use.  We will briefly discuss each of these data
+types and elaborate on how they are used in a typical \MP{} program.
+
+\renewcommand{\labelitemi}{$\diamond$}
+\begin{itemize}
+\item \textit{numeric}\Dash numbers
+\item \textit{pair}\Dash ordered pairs of numerics
+\item \textit{path}\Dash B\'{e}zier curves (and lines)
+\item \textit{picture}\Dash pictures
+\item \textit{transform}\Dash transformations such as shifts, rotations,
+  and slants
+\item \textit{rgbcolor} or \textit{color}\Dash triplets with each
+  component between $0$ and $1$ (red, green, and blue)
+\item \textit{cmykcolor}\Dash quadruplets with each component between
+  $0$ and $1$ (cyan, magenta, yellow, and black)
+\item \textit{string}\Dash strings of characters
+\item \textit{boolean}\Dash ``true'' or ``false'' values
+\item \textit{pen}\Dash stroke properties
+\end{itemize}
+
+Virtually all programming languages provide a way of storing and
+retrieving numerical values.  This is precisely the purpose of the
+\textit{numeric} data type in \MP.  Since graphics drawn with \MP{} are
+simply two dimensional pictures, it is clear that an ordered pair is
+needed to identify each point in the picture.  The \textit{pair} data
+type provides this functionality.  Each point in the plane consists of
+an $x$ (i.e., abscissa) part and a $y$ (i.e., ordinate) part.  \MP{}
+uses the standard syntax for defining points in the plane, e.g., $(x,y)$
+where both $x$ and~$y$ are numeric data typed variables.
+
+In order to store paths between points, the \textit{path} data type is
+used.  All paths in \MP{} are represented as cubic B\'{e}zier curves.
+Cubic B\'{e}zier curves are simply parametric splines of the form
+$(x(t),y(t))$ where both $x(t)$ and $y(t)$ are piecewise cubic
+polynomials of a common parameter $t$.  Since B\'{e}zier curves are
+splines, they pairwise interpolate the points.  Furthermore, cubic
+B\'{e}zier curves are diverse enough to provide a ``smooth'' path
+between all of the points for which it interpolates.  \MP{} provides
+several methods for affecting the B\'{e}zier curve between a list of
+points.  For example, piecewise linear paths (i.e., linear splines) can
+be drawn between a list of points since all linear polynomials are also
+cubic polynomials.  Furthermore, if a specific direction for the path is
+desired at a given point, this constraint can be forced on the
+B\'{e}zier curve.
+
+The \textit{picture} data type is used to store an entire picture for
+later use.  For example, in order to create animations, usually there
+are objects that remain the same throughout each frame of the animation.
+So that these objects do not have to be manually drawn for each frame, a
+convenient method for redrawing them is to store them into a picture
+variable for later use.
+
+When constructing pairs, paths, or pictures in \MP{}, it is often
+convenient to apply affine transformations to these objects.  As
+mentioned above, \autoref{fig:circles} can be constructed by rotating
+the same circle several times before drawing it.  \MP{} provides
+built-in affine transformations as ``building blocks'' from which other
+transformations can be constructed.  These include shifts, rotations,
+horizontal and vertical scalings, and slantings.
+
+For creating colored graphics, \MP{} provides two data types:
+\textit{rgbcolor} and \textit{cmykcolor}.  These data types correspond
+to the two supported color models \RGB{} and \CMYK.  While using the
+\RGB{} color model, fractions of the primary colors
+\textit{red}~\showcol{red}, \textit{green}~\showcol{green}, and
+\textit{blue}~\showcol{blue} are ``additively mixed''.  Similarly, in
+the \CMYK{} color model, the primary colors
+\textit{cyan}~\showcol{cyan}, \textit{magenta}~\showcol{magenta},
+\textit{yellow}~\showcol{yellow}, and \textit{black}~\showcol{black} are
+``subtractively mixed.''  The former model is suitable for on-screen
+viewing whereas the latter model is preferred in high-quality print.
+Both color types are ordered tuples, $(c_1,c_2,c_3)$ and
+$(c_1,c_2,c_3,c_4)$, with components~$c_i$ being \textit{numeric}s
+between $0$ and $1$.  For example, in the \RGB{} color model, a light
+orange tone can be referred to as |(1,.6,0)|~\showcol[rgb]{1,.6,0},
+whereas in the \CMYK{} color model |(0,.6,1,0)|~\showcol[cmyk]{0,.6,1,0}
+corresponds to a clearly different orange tone.  If a particular color
+is to be used several times throughout a figure, it is natural to store
+this color into a variable of type \textit{rgbcolor} or
+\textit{cmykcolor}.
+
+The data type \textit{color} is a convenient synonym for
+\textit{rgbcolor}.  Additionally, there are five built-in \RGB{} colors
+in \MP{}: |black|, |white|, |red|, |green|, and |blue|.  So, the
+expression |.4(red+blue)| refers to a dark violet~\showcol[rgb]{.4,0,.4}
+in the \RGB{} color model and in the example above |(1,.6,0)| could be
+replaced by |red+.6green|.
+
+The most common application of \textit{string} data types is reusing a
+particular string that is typeset (or labeled).  The \textit{boolean}
+data type is the same as in other programming languages and is primarily
+used in conditional statements for testing.  Finally, the \textit{pen}
+data type is used to affect the actual stroke paths.  The default unit
+of measurement in \MP{} is $1\,\mathrm{bp}=1/72\mathrm{\ in}$, and the
+default thickness of all stroked paths is $0.5\,\mathrm{bp}$.  An
+example for using the \textit{pen} data type may include changing the
+thickness of several stroked paths.  This new pen can be stored and then
+referenced for drawing each of the paths.
+
+The following code declares a variable of type \textit{numeric}, one of
+type \textit{pair}, and two \textit{string} variables:
+
+\begin{lstlisting}[style=MP]
+numeric idx;
+pair v;
+string s, name;
+\end{lstlisting}
+
+Note, variables of type \textit{numeric} need not necessarily be
+declared.  A formerly undeclared variable is automatically assumed to be
+\textit{numeric} at first use.
+
+
+\subsection{Arrays}
+Just like many other programming languages MetaPost provides a way to
+access variables by index.  After the following variable declaration
+
+\begin{lstlisting}[style=MP]
+pair a[];
+\end{lstlisting}
+it is possible to store points in the ``array''~|a| with numeric values
+as index.  The console output of
+
+\begin{lstlisting}[style=MP]
+a[1] := (0,1);
+a[2] := (0,5);
+a[3] := (10,20);
+show a[1];
+show a1;
+j := 2;
+show a[j] + a[j+1];
+\end{lstlisting}
+is
+
+\begin{lstlisting}[style=text]
+>> (0,1)
+>> (0,1)
+>> (10,25)
+\end{lstlisting}
+
+Notice, the point stored at array index~1 can be referred to as~|a[1]|
+as well as just~|a1|, omitting the brackets.  The latter
+convenient---and often practised---notation works as long as the index
+is a plain numeric value.  If the index is a numeric \emph{variable} or
+an expression, however, the brackets have to be present, since, e.g.,
+|aj| would clearly refer to an unrelated variable of that name instead
+of index~|j| of variable~|a|.
+
+Aside, MetaPost, as a macro language, doesn't really provide true arrays.
+However, from a user's perspective, the MetaPost way of indexing
+variables perfectly looks like an array.

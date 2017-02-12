@@ -1,0 +1,1564 @@
+
+\def\MPLIB{MPlib}
+\def\MP{MetaPost}
+\def\POSTSCRIPT{PostScript}
+\def\PS{PostScript}
+\def\SVG{SVG}
+\def\PNG{PNG}
+\def\MNG{MNG}
+\def\TFM{{\sc tfm}}
+\def\LUA{Lua}
+
+\def\luatex#1{#1}
+
+\setupinteraction[state=start] % don't forget this line!
+\placebookmarks[section,subsection,subsubsection][section]
+% \setupinteractionscreen[option=bookmark]
+
+\definefontsynonym[TitleFont][Sans]
+\definefontsynonym[SubTitleFont][Sans]
+
+\def\StartTitlePage%
+  {\bgroup%\startstandardmakeup
+   \setupalign[middle]
+   \hbox{}\vfil
+   \let\\=\crlf}
+
+\def\StopTitlePage%
+  {\vfil
+   \page\egroup%\stopstandardmakeup
+   }
+
+\usetypescript[palatino]
+\switchtobodyfont[palatino,10pt]
+
+\nonknuthmode
+
+\defineselector[title][max=2,n=2]
+
+\def\ctypedef#1#2#3{\subsubsection[#2]{\select{title}{\type{#2}}{\type{#1#2#3}}}\bookmark{#2}}
+\def\cenumeration#1{\subsubsection{\type{#1}}\bookmark{#1}}
+\def\cfunction#1#2#3{\subsubsection[#2]{\select{title}{\type{#2}}{\type{#1 #2#3}}}\bookmark{#2}}
+
+
+\starttext
+
+\StartTitlePage
+\centerline{\definedfont[TitleFont at 50pt]{\MPLIB}}
+\blank[3*line]
+\centerline{\definedfont[SubTitleFont at 24pt]{API documentation, version 1.800}}
+\blank[3*line]
+\centerline{Taco Hoekwater, September 2012}
+\StopTitlePage
+
+\section{Table of contents}
+
+\setupselector[title][n=1]
+
+\placecontent[criterium=all,level=subsection]
+
+\setupselector[title][n=2]
+
+\page
+
+\section{Introduction}
+
+This document describes the API to \MPLIB, allowing you to use
+\MPLIB\ in your own applications. One such application is writing
+bindings to interface with other programming languages. The
+bindings to the \LUA\ scripting language is part of the \MPLIB\
+distribution and also covered by this manual.
+
+This is a first draft of both this document as well as the API, so
+there may be errors or omissions in this document or strangenesses in
+the API. If you believe something can be improved, please do not
+hesitate to let us know. The contact email address is {\tt
+metapost@tug.org}.
+
+The C paragraphs in this document assume you understand C code, the
+Lua paragraphs assume you understand Lua code, and familiarity with
+\MP\ is assumed throughout.
+
+\subsection{Simple \MPLIB\ use}
+
+There are two different approaches possible when running \MPLIB. The first
+method is most suitable for programs that function as a command-line
+frontend. It uses \quote{normal} \MP\ interface with I/O to and from files,
+and needs very little setup to run. On the other hand, it also gives
+almost no chance to control the \MPLIB\ behaviour.
+
+Here is a C language example of how to do this:
+
+
+\starttyping
+#include "mplib.h"
+int main (int argc, char **argv) {
+  MP mp;
+  MP_options *opt = mp_options();
+  opt->command_line = argv[1];
+  mp = mp_initialize(opt);
+  if (mp) {
+    int history = mp_run(mp);
+    mp_finish(mp);
+    exit (history);
+  } else {
+    exit (EXIT_FAILURE);
+  }
+}
+\stoptyping
+
+This example will run in \quote{inimpost} mode. See below for how to
+preload a macro package.
+
+\subsection{Embedded \MPLIB\ use}
+
+The second method does not run a file, but instead repeatedly executes
+chunks of \MP\ language input that are passed to the library as
+strings, with the output redirected to internal buffers instead of
+directly to files.
+
+Here is an example of how this second approach works, now using the
+\LUA\ bindings:
+
+\starttyping
+local mplib = require('mplib')
+local mp = mplib.new ({ ini_version = false, 
+                        mem_name    = 'plain' })
+if mp then
+  local l = mp:execute([[beginfig(1);
+                         fill fullcircle scaled 20;
+                         endfig;
+                       ]])
+  if l and l.fig and l.fig[1] then
+    print (l.fig[1]:postscript())
+  end
+  mp:finish();
+end
+\stoptyping
+
+This example preloads the \quote{plain} macro file.
+
+
+\section{C API for core \MPLIB}
+
+All of the types, structures, enumerations and functions that are
+described in this section are defined in the header file \type{mplib.h}.
+
+\subsection{Structures}
+
+\ctypedef{}{MP_options}{}
+
+This is a structure that contains the configurable parameters for a new \MPLIB\ instance. Because \MP\ differentiates
+between \type{-ini} and \type{non-ini} modes, there are three types of settings: Those that apply in both cases, and
+those that apply in only one of those cases.
+
+
+\starttabulate[|l|l|l|p|]
+\NC int            \NC ini_version      \NC 1     \NC set this to zero if you want to load a mem file.\NC \NR  
+\NC int            \NC error_line       \NC 79    \NC maximal length of error message lines\NC \NR
+\NC int            \NC half_error_line  \NC 50    \NC halfway break point for error contexts\NC\NR
+\NC int            \NC max_print_line   \NC 100   \NC maximal length of file output\NC \NR
+\NC void *         \NC userdata         \NC NULL  \NC for your personal use only, not used by the library\NC \NR
+\NC char *         \NC banner           \NC NULL  \NC string to use instead of default banner\NC \NR
+\NC int            \NC print_found_names\NC 0     \NC controls whether the asked name or the actual found 
+                                                      name of the file is used in messages\NC \NR
+\NC int        \NC file_line_error_style\NC 0     \NC when this option is nonzero, the library will use \type{file:line:error}
+                                                      style formatting for error messages that occur while reading
+                                                      from input files\NC \NR
+\NC char *         \NC command_line     \NC NULL  \NC input file name and rest of command line;
+                                                      only used by \type{mp_run} interface\NC \NR
+\NC int            \NC interaction      \NC 0     \NC explicit \type{mp_interaction_mode} (see below)\NC \NR
+\NC int            \NC noninteractive   \NC 0     \NC set this nonzero to suppress user interaction,
+                                                      only sensible if you want to use \type{mp_execute}\NC \NR
+\NC int            \NC random_seed      \NC 0     \NC set this nonzero to force a specific random seed\NC \NR
+\NC int            \NC troff_mode       \NC 0     \NC set this nonzero to initialize \quote{troffmode} \NC \NR
+\NC char *         \NC mem_name         \NC NULL  \NC explicit mem name to use instead of \type{plain.mem}.
+                                                      ignored in \type{-ini} mode.\NC \NR
+\NC char *         \NC job_name         \NC NULL  \NC explicit job name to use instead of first input file\NC \NR
+\NC mp_file_finder \NC find_file        \NC NULL  \NC function called for finding files \NC \NR
+\NC mp_editor_cmd  \NC run_editor       \NC NULL  \NC function called after \quote{E} error response\NC \NR
+\NC mp_makempx_cmd \NC run_make_mpx     \NC NULL  \NC function called for the creation of mpx files\NC \NR
+\NC int            \NC math_mode       \NC 0     \NC set this to \type{mp_math_double_mode} to use doubles
+                                                     instead of scaled (\type{mp_math_scaled_mode}) values\NC \NR
+\stoptabulate
+
+To create an \type{MP_options} structure, you have to use the \type{mp_options()} function.
+
+\ctypedef{}{MP}{}
+
+This type is an opaque pointer to a \MPLIB\ instance, it is what you
+have pass along as the first argument to (almost) all the \MPLIB\ 
+functions. The actual C structure it points to has hundreds of fields,
+but you should not use any of those directly. All configuration is done
+via the \type{MP_options} structure, and there are accessor functions
+for the fields that can be read out.
+
+\ctypedef{}{mp_run_data}{}
+
+When the \MPLIB\ instance is not interactive, any output is redirected
+to this structure.  There are a few string output streams, and a
+linked list of output images. 
+
+\starttabulate[|l|l|p|]
+\NC mp_stream \NC term_out    \NC holds the terminal output            \NC \NR
+\NC mp_stream \NC error_out   \NC holds error messages                 \NC \NR
+\NC mp_stream \NC log_out     \NC holds the log output                 \NC \NR
+\NC mp_stream \NC ship_out    \NC holds the exported EPS, SVG or PNG string \NC \NR
+\NC mp_edge_object *\NC edges \NC linked list of generated pictures    \NC \NR 
+\stoptabulate
+
+\type{term_out} is equivalent to \type{stdout} in interactive use, and
+\type{error_out} is equivalent to \type{stderr}. The \type{error_out}
+is currently only used for memory allocation errors, the \MP\ error
+messages are written to \type{term_out} (and are often duplicated to
+\type{log_out} as well).
+
+You need to include at least \type{mplibps.h} to be able to actually
+make use of this list of images, see the next section for the details
+on \type{mp_edge_object} lists.
+
+See next paragraph for \type{mp_stream}.
+
+\ctypedef{}{mp_stream}{}
+
+This contains the data for a stream as well as some internal
+bookkeeping variables. The fields that are of interest to you are:
+
+\starttabulate[|l|l|p|]
+\NC size_t \NC size \NC the internal buffer size\NC \NR
+\NC char * \NC data \NC the actual data. \NC \NR
+\stoptabulate
+
+There is nothing in the stream unless the \type{size} field is
+nonzero. There will not be embedded null characters (\type{\0}) 
+in \type{data} except when \type{ship_out} is used for PNG output.
+
+If \type{size} is nonzero, \type{strlen(data)} is guaranteed to be
+less than that, and may be as low as zero (if \MPLIB\ has written an
+empty string).
+
+\subsection{Function prototype typedefs}
+
+The following three function prototypes define functions that you can
+pass to \MPLIB\ inside the \type{MP_options} structure.
+
+\ctypedef{char * }{(*mp_file_finder)}{ (MP, const char*, const char*, int)}
+
+\MPLIB\ calls this function whenever it needs to find a file. If you
+do not set up the matching option field (\type{MP_options.find_file}),
+\MPLIB\ will only be able to find files in the current directory.
+
+The three function arguments are the requested file name, the file
+mode (either \type{"r"} or \type{"w"}), and the file type (an
+\type{mp_filetype}, see below).  
+
+The return value is a new string indicating the disk file name to be
+used, or NULL if the named file can not be found.  If the mode is
+\type{"w"}, it is usually best to simply return a copy of the first
+argument.
+
+ 
+\ctypedef{void }{(*mp_editor_cmd)}{(MP, char*, int)}
+
+This function is executed when a user has pressed \quote{E} as reply to an
+\MP\ error, so it will only ever be called when \MPLIB\ in interactive mode.
+The function arguments are the file name and the line number. When
+this function is called, any open files are already closed. 
+
+\ctypedef{int }{(*mp_makempx_cmd)}{(MP, char*, char *)}
+
+This function is executed when there is a need to start generating an
+\type{mpx} file because (the first time a \type{btex} command was
+encountered in the current input file).
+
+The first argument is the input file name. This is the name that was given
+in the \MP\ language, so it may not be the same as the name of the actual
+file that is being used, depending on how your
+\type{mp_file_finder} function behaves.  The second argument is the 
+requested output name for mpx commands.
+
+A zero return value indicates success, everything else indicates
+failure to create a proper \type{mpx} file and will result in an \MP\ error.
+
+\subsection{Enumerations}
+
+\cenumeration{mp_filetype}
+
+The \type{mp_file_finder} receives an \type{int} argument that is one of the following types:
+
+\starttabulate[|l|p|]
+\NC mp_filetype_program    \NC Metapost language code (r)\NC \NR
+\NC mp_filetype_log        \NC Log output (w)\NC \NR
+\NC mp_filetype_postscript \NC PostScript or SVG output (w)\NC \NR
+\NC mp_filetype_bitmap     \NC PNG output (w)\NC \NR
+\NC mp_filetype_metrics    \NC \TeX\ font metric file (r+w)\NC \NR
+\NC mp_filetype_fontmap    \NC Font map file (r)\NC \NR
+\NC mp_filetype_font       \NC Font PFB file (r)\NC \NR
+\NC mp_filetype_encoding   \NC Font encoding file (r)\NC \NR
+\NC mp_filetype_text       \NC \type{readfrom} and \type{write} files (r+w)\NC \NR
+\stoptabulate
+
+\cenumeration{mp_interaction_mode}
+
+When \type{noninteractive} is zero, \MPLIB\ normally starts in a mode where it reports every error, 
+stops and asks the user for input. This initial mode can be overruled by using one of the following:
+
+\starttabulate[|l|p|]
+\NC mp_batch_mode       \NC as with \type{batchmode}     \NC \NR 
+\NC mp_nonstop_mode     \NC as with \type{nonstopmode}   \NC \NR 
+\NC mp_scroll_mode      \NC as with \type{scrollmode}    \NC \NR 
+\NC mp_error_stop_mode  \NC as with \type{errorstopmode} \NC \NR 
+\stoptabulate
+
+\cenumeration{mp_math_mode}
+
+\starttabulate[|l|p|]
+\NC mp_math_scaled_mode      \NC uses scaled point data for numerical values   \NC \NR 
+\NC mp_math_double_mode      \NC uses IEEE double floating point data for numerical values \NC \NR 
+\NC mp_math_binary_mode      \NC not used yet.                                 \NC \NR 
+\NC mp_math_decimal_mode     \NC not used yet.                                 \NC \NR 
+\stoptabulate
+
+\cenumeration{mp_history_state}
+
+These are set depending on the current state of the interpreter.
+
+\starttabulate[|l|p|]
+\NC mp_spotless             \NC still clean as a whistle                              \NC \NR 
+\NC mp_warning_issued       \NC a warning was issued or something was \type{show}-ed  \NC \NR 
+\NC mp_error_message_issued \NC an error has been reported                            \NC \NR 
+\NC mp_fatal_eror_stop      \NC termination was premature due to error(s)             \NC \NR 
+\NC mp_system_error_stop    \NC termination was premature due to disaster 
+                                (out of system memory)                                \NC \NR 
+\stoptabulate
+
+
+\cenumeration{mp_color_model}
+
+Graphical objects always have a color model attached to them. 
+
+\starttabulate[|l|p|]
+\NC mp_no_model             \NC as with \type{withoutcolor}  \NC \NR
+\NC mp_grey_model           \NC as with \type{withgreycolor} \NC \NR
+\NC mp_rgb_model            \NC as with \type{withrgbcolor}  \NC \NR
+\NC mp_cmyk_model           \NC as with \type{withcmykcolor} \NC \NR
+\stoptabulate
+
+
+\cenumeration{mp_graphical_object_code}
+
+There are eight different graphical object types.
+
+\starttabulate[|l|p|]
+\NC mp_fill_code          \NC \type{addto contour}    \NC \NR
+\NC mp_stroked_code       \NC \type{addto doublepath} \NC \NR 
+\NC mp_text_code          \NC \type{addto also} (via \type{infont})\NC \NR 
+\NC mp_start_clip_code    \NC \type{clip}             \NC \NR 
+\NC mp_start_bounds_code  \NC                         \NC \NR                   
+\NC mp_stop_clip_code     \NC \type{setbounds}        \NC \NR 
+\NC mp_stop_bounds_code   \NC                         \NC \NR 
+\NC mp_special_code       \NC \type{special}          \NC \NR 
+\stoptabulate
+
+
+\subsection{Functions}
+
+\cfunction{char *}{mp_metapost_version}{(void)}
+
+Returns a copy of the \MPLIB\ version string.
+
+\cfunction{MP_options *}{mp_options}{(void)}
+
+Returns a properly initialized option structure, or \type{NULL} in case of allocation errors.
+
+\cfunction{MP }{mp_initialize}{(MP_options *opt)}
+
+Returns a pointer to a new \MPLIB\ instance, or \type{NULL} if initialisation failed.  
+
+String options are copied, so you can free any of those (and the \type{opt} structure) 
+immediately after the call to this function.
+
+\cfunction{int }{mp_status}{(MP mp)}
+
+Returns the current value of the interpreter error state, as a \type{mp_history_state}.
+This function is useful after \type{mp_initialize}.
+
+\cfunction{int }{mp_run}{(MP mp)}
+
+Runs the \MPLIB\ instance using the \type{command_line} and other items from the 
+\type{MP_options}. After the call to \type{mp_run}, the \MPLIB\ instance should be 
+closed off by calling \type{mp_finish}.
+
+The return value is the current \type{mp_history_state}
+
+\cfunction{void *}{mp_userdata}{(MP mp)}
+
+Simply returns the pointer that was passed along as \type{userdata} in
+the \type{MP_options} struct.
+
+\cfunction{int }{mp_troff_mode}{(MP mp)}
+
+Returns the value of \type{troff_mode} as copied from the
+\type{MP_options} struct.
+
+\cfunction{mp_run_data *}{mp_rundata}{(MP mp)}
+
+Returns the information collected during the previous call to \type{mp_execute}.
+
+\cfunction{int }{mp_execute}{(MP mp, char *s, size_t l)}
+
+Executes string \type{s} with length \type{l} in the \MPLIB\
+instance. This call can be repeated as often as is needed.  The return
+value is the current \type{mp_history_state}. To get at the produced
+results, call \type {mp_rundata}.
+
+\cfunction{void }{mp_finish}{(MP mp)}
+
+This finishes off the use of the \MPLIB\ instance: it closes all files
+and frees all the memory allocated by this instance.
+
+\cfunction{double }{mp_get_char_dimension}{(MP mp,char*fname,int n,int t)}
+
+This is a helper function that returns one of the dimensions of glyph
+\type{n} in font \type{fname} as a double in PostScript (AFM)
+units. The requested item \type{t} can be \type{'w'} (width),
+\type{'h'} (height), or \type{'d'} (depth).
+
+\cfunction{int }{mp_memory_usage}{(MP mp)}
+
+Returns the current memory usage of this instance.
+
+\cfunction{int }{mp_hash_usage}{(MP mp)}
+
+Returns the current hash usage of this instance.
+
+\cfunction{int }{mp_param_usage}{(MP mp)}
+
+Returns the current simultaneous macro parameter usage of this instance.
+
+\cfunction{int }{mp_open_usage}{(MP mp)}
+
+Returns the current \type{input} levels of this instance.
+
+\section{C API for path and knot manipulation}
+
+\subsection{Enumerations}
+
+\cenumeration{mp_knot_type}
+
+Knots can have left and right types depending on their current
+status. By the time you see them in the output, they are usually
+either \type{mp_explicit} or \type{mp_endpoint}, but here is the full
+list:
+
+\starttabulate[|l|p|]
+\NC mp_endpoint  \NC \NC \NR
+\NC mp_explicit  \NC \NC \NR
+\NC mp_given     \NC \NC \NR
+\NC mp_curl      \NC \NC \NR
+\NC mp_open      \NC \NC \NR
+\NC mp_end_cycle \NC \NC \NR
+\stoptabulate
+
+\cenumeration{mp_knot_originator}
+
+Knots can originate from two sources: they can be explicitly given by
+the user, or they can be created by the \MPLIB\ program code (for
+example as result of the \type{makepath} operator).
+
+\starttabulate[|l|p|]
+\NC mp_program_code  \NC \NC \NR
+\NC mp_metapost_user \NC \NC \NR
+\stoptabulate
+
+
+\subsection{Structures}
+
+\ctypedef {}{mp_number}{}
+
+Numerical values are represented by opaque structure pointers named \type{mp_number}. 
+
+\ctypedef {}{mp_knot}{}
+
+Each \MPLIB\ path (a sequence of \MP\ points) is represented as a linked list
+of structure pointers of the type \type{mp_knot}.
+
+\starttabulate[|l|l|p|]
+\NC mp_knot            \NC next       \NC the next knot, or NULL\NC \NR
+\NC mp_knot_type       \NC data.types.left_type  \NC the \type{mp_knot_type} for the left side \NC \NR
+\NC mp_knot_type       \NC data.types.right_type \NC the \type{mp_knot_type} for the right side \NC \NR
+\NC mp_number          \NC x_coord    \NC $x$\NC \NR
+\NC mp_number          \NC y_coord    \NC $y$\NC \NR
+\NC mp_number          \NC left_x     \NC $x$ of the left (incoming) control point\NC \NR
+\NC mp_number          \NC left_y     \NC $y$ of the left (incoming) control point\NC \NR
+\NC mp_number          \NC right_x    \NC $x$ of the right (outgoing) control point\NC \NR
+\NC mp_number          \NC right_y    \NC $y$ of the right (outgoing) control point\NC \NR
+\NC mp_knot_originator \NC originator \NC the \type{mp_knot_originator} \NC \NR
+\stoptabulate
+
+Paths are always represented as a circular list. The difference between cyclic and
+non-cyclic paths is indicated by their \type{mp_knot_type}.
+
+While the fields of the knot structure are in fact accessible, it is better to use
+the access functions below as the internal structure tends to change.
+
+\subsection{Functions for accessing knot data}
+
+\cfunction{mp_number}{mp_knot_x_coord}{(MP mp,mp_knot p)}
+Access the $x$ coordinate of the knot.
+\cfunction{mp_number}{mp_knot_y_coord}{(MP mp,mp_knot p)}
+Access the $y$ coordinate of the knot.
+\cfunction{mp_number}{mp_knot_left_x}{(MP mp,mp_knot p)}
+Access the $x$ coordinate of the left control point of the knot.
+\cfunction{mp_number}{mp_knot_left_y}{(MP mp,mp_knot p)}
+Access the $y$ coordinate of the left control point of the knot.
+\cfunction{mp_number}{mp_knot_right_x}{(MP mp,mp_knot p)}
+Access the $x$ coordinate of the right control point of the knot.
+\cfunction{mp_number}{mp_knot_right_y}{(MP mp,mp_knot p)}
+Access the $y$ coordinate of the right control point of the knot.
+\cfunction{int}{mp_knot_left_type}{(MP mp,mp_knot p)}
+Access the type of the knot on the left side.
+\cfunction{int}{mp_knot_right_type}{(MP mp,mp_knot p)}
+Access the type of the knot on the right side.
+\cfunction{mp_knot}{mp_knot_next}{(MP mp,mp_knot p)}
+Access the pointer to the next knot.
+\cfunction{mp_number}{mp_knot_left_curl}{(MP mp,mp_knot p)}
+Access the left curl of the knot (applies to unresolved knots, see below).
+\cfunction{mp_number}{mp_knot_left_given}{(MP mp,mp_knot p)}
+Access the left given value of the knot  (applies to unresolved knots, see below).
+\cfunction{mp_number}{mp_knot_left_tension}{(MP mp,mp_knot p)}
+Access the left tension of the knot  (applies to unresolved knots, see below).
+\cfunction{mp_number}{mp_knot_right_curl}{(MP mp,mp_knot p)}
+Access the right curl value of the knot  (applies to unresolved knots, see below).
+\cfunction{mp_number}{mp_knot_right_given}{(MP mp,mp_knot p)}
+Access the right given value of the knot  (applies to unresolved knots, see below).
+\cfunction{mp_number}{mp_knot_right_tension}{(MP mp,mp_knot p)}
+Access the right tension value of the knot  (applies to unresolved knots, see below).
+
+\cfunction{double}{mp_number_as_double}{(MP mp,mp_number n)}
+
+Converts an \type{mp_number} to \type{double}.
+
+\subsection{Functions for creating and modifying knot data}
+
+\cfunction{mp_knot}{mp_create_knot}{(MP mp)}
+
+Allocates and returns a new knot.  Returns \type{NULL} on (malloc) failure. 
+
+\cfunction{int}{mp_set_knot}{(MP mp,mp_knot p,double x,double y)}
+
+Fills in the coordinate of knot \type{p}. \type{x1} and \type{y1} values should be
+within the proper range for the current numerical mode.
+Return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_close_path}{(MP mp,mp_knot p,mp_knot q)}
+
+Connects \type{p} and \type{q} using an \quote{endpoint join}, where \type{p} is the last knot
+of the path, and \type{q} is the first knot. The right tension of \type{p} and the
+left tension of \type{q} are (re)set to the default of 1.0.
+
+Because all knot list data structures are always circular, this is needed to end the path 
+properly even if the path is not intended cyclic (or use \type{mp_close_path_cycle()}, 
+if it is indeed a cycle).
+Return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_close_path_cycle}{(MP mp,mp_knot p,mp_knot q)}
+
+Connects \type{p} and \type{q} using an \quote{open join}, where \type{p} is the last knot
+of the path, and \type{q} is the first knot. The right tension of \type{p} and the
+left tension of \type{q} are (re)set to the default of 1.0.
+
+This is needed to mimic metapost's \type{cycle}.
+return 1 on success, 0 on failure.
+
+\cfunction{mp_knot}{mp_append_knot}{(MP mp,mp_knot p,double x,double y)}
+
+Appends a knot to previous knot \type{q}, and returns the new knot. 
+This is a convenience method combining \type{mp_create_knot()}, \type{mp_set_knot()}, and
+(if \type{q} is not NULL) \type{mp_close_path_cycle()}. 
+Returns NULL on failure. 
+
+\cfunction{int}{mp_set_knot_left_curl}{(MP mp,mp_knot q,double value)}
+
+Sets the left curl value for a knot. 
+\type{fabs(value)} should be less than 4096.0
+return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_set_knot_right_curl}{(MP mp,mp_knot q,double value)}
+
+Sets the right curl value for a knot. 
+\type{fabs(value)} should be less than 4096.0
+return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_set_knot_curl}{(MP mp,mp_knot q,double value)}
+
+Sets the curl value for a knot. 
+\type{fabs(value)} should be less than 4096.0
+return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_set_knotpair_curls}{(MP mp,mp_knot p,mp_knot q,double t1,double t2)}
+
+A convenience method that calls \type{mp_set_knot_curl(mp,p,t1)} and \type{mp_set_knot_curl(mp,q,t2)}
+return 1 if both succeed, 0 otherwise.
+
+\cfunction{int}{mp_set_knot_direction}{(MP mp,mp_knot q,double x,double y)}
+
+Sets the direction \type{{x,y}} value for a knot. 
+\type{fabs(x)} and \type{fabs(y)} should be less than 4096.0
+return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_set_knotpair_directions}{(MP mp,mp_knot p,mp_knot q,double x1,double y1,double x2,double y2)}
+
+A convenience method that calls 
+\type{mp_set_knot_direction(mp,p,x1,y1)} and \type{mp_set_knot_direction(mp,p,x2,y2)}
+return 1 if both succeed, 0 otherwise.
+
+\cfunction{int}{mp_set_knotpair_tensions}{(MP mp,mp_knot p,mp_knot q,double t1,double t2)}
+
+Sets the tension specifiers for a pair of connected knots.
+\type{fabs(t1)} and \type{fabs(t2)} should be more than 0.75 and less than 4096.0
+return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_set_knot_left_tension}{(MP mp, mp_knot p, double t1)}
+
+Set the left tension of a knot. \type{fabs(t1)} should be more than 0.75 and less than 4096.0
+return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_set_knot_right_tension}{(MP mp, mp_knot p, double t1)}
+
+Set the right tension of a knot. \type{fabs(t1)} should be more than 0.75 and less than 4096.0
+return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_set_knot_left_control}{(MP mp, mp_knot p, double x1, double y1)}
+\cfunction{int}{mp_set_knot_right_control}{(MP mp, mp_knot p, double x1, double y1)}
+
+Sets explicit left or right control for a knot. \type{x1} and \type{y1} values should be
+within the proper range for the current numerical mode.
+return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_set_knotpair_controls}{(MP mp,mp_knot p,mp_knot q,double x1,double y1,double x2,double y2)}
+
+Sets explicit controls for a knot pair. All four \type{x} and \type{y} values should be
+within the proper range for the current numerical mode.
+return 1 on success, 0 on failure.
+
+\cfunction{int}{mp_solve_path}{(MP mp,mp_knot first)}
+
+Finds explicit controls for the knot list at \type{first}, which
+is changed in-situ. Returns 0 if there was any kind of error, in which
+case \type{first} is unmodified. There can be quite a set of potential errors,
+mostly harmless processing errors.
+However, be aware that it is also possible that there are internal mplib 
+memory allocation errors. A distinction between those can not be made 
+at the moment.
+Return 1 on success, 0 on failure.
+
+\cfunction{void}{mp_free_path}{(MP mp,mp_knot p)}
+
+Frees the memory of a path.
+
+\subsection{Example usage}
+
+Since the above function list is quite dry and not that easy to grasp,
+here are two examples of how to use it. First a simple example
+(\type{mp_dump_path()} code is given below).
+
+
+\starttyping
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "mplib.h"
+
+int main (int argc, char ** argv)  {
+        MP mp ;
+        mp_knot p, first, q; 
+        MP_options * opt = mp_options () ;
+        opt -> command_line = NULL;
+        opt -> noninteractive = 1 ; 
+        mp = mp_initialize ( opt ) ;
+        if ( ! mp ) exit ( EXIT_FAILURE ) ;
+
+        /* Equivalent Metapost code: 
+
+           path p;
+           p := (0,0)..(10,10)..(10,-5)..cycle;
+
+         */
+        first = p = mp_append_knot(mp,NULL,0,0); 
+        if ( ! p ) exit ( EXIT_FAILURE ) ;
+        q = mp_append_knot(mp,p,10,10); 
+        if ( ! q ) exit ( EXIT_FAILURE ) ;
+        p = mp_append_knot(mp,q,10,-5); 
+        if ( ! p ) exit ( EXIT_FAILURE ) ;
+        mp_close_path_cycle(mp, p, first);
+        /* mp_dump_path(mp, first); */
+        if (mp_solve_path(mp, first)) {
+            /* mp_dump_path(mp, first); */
+        }
+        mp_free_path(mp, first);
+        mp_finish ( mp ) ;
+        free(opt);
+        return 0;
+}
+\stoptyping
+
+For some more challenging path input, here is a more elaborate
+example of the path processing code:
+
+\starttyping
+        /* Equivalent Metapost code:
+
+           path p;
+           p := (0,0)..
+                (2,20)--
+                (10, 5)..controls (2,2) and (9,4.5)..
+                (3,10)..tension 3 and atleast 4 .. 
+                (1,14){2,0} .. {0,1}(5,-4);
+         */
+        first = p = mp_append_knot(mp,NULL,0,0); 
+        q = mp_append_knot(mp,p,2,20);  
+        p = mp_append_knot(mp,q,10,5);
+        if (!mp_set_knotpair_curls(mp, q,p, 1.0, 1.0)) 
+          exit ( EXIT_FAILURE ) ; 
+        q = mp_append_knot(mp,p,3,10);
+        if (!mp_set_knotpair_controls(mp, p,q, 2.0, 2.0, 9.0, 4.5)) 
+          exit ( EXIT_FAILURE ) ; 
+        p = mp_append_knot(mp,q,1,14);
+        if (!mp_set_knotpair_tensions(mp,q,p, 3.0, -4.0)) 
+          exit ( EXIT_FAILURE ) ;
+        q = mp_append_knot(mp,p,5,-4);
+        if (!mp_set_knotpair_directions(mp, p,q, 2.0, 0.0, 0.0, 1.0)) 
+          exit ( EXIT_FAILURE ) ;
+        
+        mp_close_path(mp, q, first);
+
+        /* mp_dump_path(mp, first); */
+        if (mp_solve_path(mp, first)) {
+            /* mp_dump_path(mp, first); */
+        }
+        mp_free_path(mp, first);
+\stoptyping
+
+And here is the source code for the \type{mp_dump_path} function,
+which produces path output that is similar to Metapost's 
+\type{tracingchoices} report. 
+
+\starttyping
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "mplib.h"
+
+#define ROUNDED_ZERO(v) (fabs((v))<0.00001 ? 0 : (v))
+#define PI 3.1415926535897932384626433832795028841971 
+#define RADIANS(a) (mp_number_as_double(mp,(a)) / 16.0) * PI/180.0
+
+void mp_dump_path (MP mp, mp_knot h) {
+  mp_knot p, q;
+  if (h == NULL) return;
+  p = h;
+  do {  
+    q=mp_knot_next(mp,p);
+    if ( (p==NULL)||(q==NULL) ) { 
+      printf("\n???"); 
+      return; /* this won't happen */
+    }
+    printf ("(%g,%g)", mp_number_as_double(mp,mp_knot_x_coord(mp,p)), 
+                       mp_number_as_double(mp,mp_knot_y_coord(mp,p)));
+    switch (mp_knot_right_type(mp,p)) {
+    case mp_endpoint: 
+      if ( mp_knot_left_type(mp,p)==mp_open ) printf("{open?}"); 
+      if ( (mp_knot_left_type(mp,q)!=mp_endpoint)||(q!=h) ) 
+        q=NULL; /* force an error */
+      goto DONE;
+      break;
+    case mp_explicit: 
+      printf ("..controls (%g,%g)", 
+              mp_number_as_double(mp,mp_knot_right_x(mp,p)), 
+              mp_number_as_double(mp,mp_knot_right_y(mp,p)));
+      printf(" and ");
+      if ( mp_knot_left_type(mp,q)!=mp_explicit ) { 
+        printf("??");
+      } else {
+        printf ("(%g,%g)",mp_number_as_double(mp,mp_knot_left_x(mp,q)), 
+                          mp_number_as_double(mp,mp_knot_left_y(mp,q)));
+      }
+      goto DONE;
+      break;
+    case mp_open: 
+      if ( (mp_knot_left_type(mp,p)!=mp_explicit)
+           &&
+           (mp_knot_left_type(mp,p)!=mp_open) ) {
+        printf("{open?}");
+      }
+      break;
+    case mp_curl:
+    case mp_given: 
+      if ( mp_knot_left_type(mp,p)==mp_open )  
+        printf("??");
+      if ( mp_knot_right_type(mp,p)==mp_curl ) { 
+        printf("{curl %g}", mp_number_as_double(mp,mp_knot_right_curl(mp,p)));
+      } else { 
+        double rad = RADIANS(mp_knot_right_curl(mp,p));
+        double n_cos = ROUNDED_ZERO(cos(rad)*4096);
+        double n_sin = ROUNDED_ZERO(sin(rad)*4096);
+        printf("{%g,%g}", n_cos, n_sin);
+      }
+      break;
+    }
+    if ( mp_knot_left_type(mp,q)<=mp_explicit ) {
+      printf("..control?"); /* can't happen */
+    } else if ((mp_number_as_double(mp,mp_knot_right_tension(mp,p))!=(1.0))||
+               (mp_number_as_double(mp,mp_knot_left_tension(mp,q)) !=(1.0))) {
+      printf("..tension ");
+      if ( mp_number_as_double(mp,mp_knot_right_tension(mp,p))<0.0 ) 
+        printf("atleast ");
+      printf("%g", fabs(mp_number_as_double(mp,mp_knot_right_tension(mp,p))));
+      if (mp_number_as_double(mp,mp_knot_right_tension(mp,p)) != 
+          mp_number_as_double(mp,mp_knot_left_tension(mp,q))) { 
+        printf(" and ");
+        if (mp_number_as_double(mp,mp_knot_left_tension(mp,q))< 0.0) 
+          printf("atleast ");
+        printf("%g", fabs(mp_number_as_double(mp,mp_knot_left_tension(mp,q))));
+      }
+    }
+   DONE:
+    p=q;
+    if ( p!=h || mp_knot_left_type(mp,h)!=mp_endpoint) {
+      printf ("\n ..");
+      if ( mp_knot_left_type(mp,p) == mp_given ) { 
+        double rad = RADIANS(mp_knot_left_curl(mp,p));
+        double n_cos = ROUNDED_ZERO(cos(rad)*4096);
+        double n_sin = ROUNDED_ZERO(sin(rad)*4096);
+        printf("{%g,%g}", n_cos, n_sin);
+      } else if ( mp_knot_left_type(mp,p) ==mp_curl ){ 
+        printf("{curl %g}", mp_number_as_double(mp,mp_knot_left_curl(mp,p))); 
+      }
+    }
+  } while (p!=h);
+  if ( mp_knot_left_type(mp,h)!=mp_endpoint ) 
+    printf("cycle");
+  printf (";\n");
+}
+\stoptyping
+
+The above function is much complicated because of all the knot type
+cases that can only happen {\it before} \type{mp_solve_path()} is
+called. A version that only prints processed paths and is less
+scared of using direct field access would be much shorter:
+
+\starttyping
+void mp_dump_solved_path (MP mp, mp_knot h) {
+    mp_knot p, q;
+    if (h == NULL) return;
+    p = h;
+    do {  
+        q=mp_knot_next(mp,p);
+        printf ("(%g,%g)..controls (%g,%g) and (%g,%g)", 
+                mp_number_as_double(mp,p->x_coord), 
+                mp_number_as_double(mp,p->y_coord),
+                mp_number_as_double(mp,p->right_x), 
+                mp_number_as_double(mp,p->right_y),
+                mp_number_as_double(mp,q->left_x), 
+                mp_number_as_double(mp,q->left_y));
+        p=q;
+        if ( p!=h || h->data.types.left_type!=mp_endpoint) {
+            printf ("\n ..");
+        }
+    } while (p!=h);
+    if (  h->data.types.left_type!=mp_endpoint ) 
+        printf("cycle");
+    printf (";\n");
+}
+\stoptyping
+
+\page
+\section{C API for graphical backend functions}
+\bookmark{C API for graphical backend functions}
+
+These are all defined in \type{mplibps.h}
+
+\subsection{Structures}
+
+The structures in this section are used by the items in the body of
+the \type{edges} field of an \type{mp_rundata} structure. They are
+presented here in a bottom-up manner.
+
+\ctypedef {}{mp_gr_knot}{}
+
+These are like \type{mp_knot}, except that all \type{mp_number} values 
+have been simplified to \type{double}.
+
+\ctypedef {}{mp_color}{}
+
+The graphical object that can be colored, have two fields to define
+the color: one for the color model and one for the color values. The
+structure for the color values is defined as follows:
+
+\starttabulate[|l|l|p|]
+\NC double \NC a_val \NC see below\NC \NR
+\NC double \NC b_val \NC --\NC \NR
+\NC double \NC c_val \NC --\NC \NR
+\NC double \NC d_val \NC --\NC \NR 
+\stoptabulate
+
+All graphical objects that have \type{mp_color} fields also have
+\type{mp_color_model} fields.  The color model decides the meaning of
+the four data fields:
+
+\starttabulate[|l|c|c|c|c|]
+\NC color model value   \NC a_val \NC b_val   \NC c_val \NC d_val \NC \FR
+\NC mp_no_model         \NC  --   \NC  --     \NC  --   \NC  --   \NC \NR
+\NC mp_grey_model       \NC  grey \NC  --     \NC  --   \NC  --   \NC \NR
+\NC mp_rgb_model        \NC  red  \NC green   \NC blue  \NC       \NC \NR
+\NC mp_cmyk_model       \NC  cyan \NC magenta \NC yellow\NC black \NC \NR
+\stoptabulate
+
+\ctypedef {}{mp_dash_object}{}
+
+Dash lists are represented like this:
+
+\starttabulate[|l|l|p|]
+\NC double * \NC array \NC an array of dash lengths, terminated by $-1$.\NC \NR
+\NC double   \NC offset\NC the dash array offset (as in PostScript) \NC \NR
+\stoptabulate
+
+\ctypedef {}{mp_graphic_object}{}
+
+Now follow the structure definitions of the objects that can appear
+inside a figure (this is called an \quote{edge structure} in the
+internal WEB documentation). 
+
+There are eight different graphical object types, but there are seven
+different C structures. Type \type{mp_graphic_object} represents the
+base line of graphical object types. It has only two fields:
+
+\starttabulate[|l|l|p|]
+\NC mp_graphical_object_code   \NC type \NC \NC \NR
+\NC struct mp_graphic_object * \NC next \NC next object or NULL \NC \NR
+\stoptabulate
+
+Because every graphical object has at least these two fields, the body
+of a picture is represented as  a linked list of
+\type{mp_graphic_object} items. Each object in turn can then be
+typecast to the proper type depending on its \type{type}.
+
+The two \quote{missing} objects in the explanations below are the ones
+that match \type{mp_stop_clip_code} and \type{mp_stop_bounds_code}:
+these have no extra fields besides \type{type} and \type{next}.
+
+\ctypedef {}{mp_fill_object}{}
+
+Contains the following fields on top of the ones defined by \type{mp_graphic_object}:
+
+\starttabulate[|l|l|p|]
+\NC char *           \NC pre_script  \NC this is the result of \type{withprescript} \NC \NR
+\NC char *           \NC post_script \NC this is the result of \type{withpostscript}\NC \NR
+\NC mp_color         \NC color       \NC the color value of this object\NC \NR
+\NC mp_color_model   \NC color_model \NC the color model\NC \NR
+\NC unsigned char    \NC ljoin       \NC the line join style; values have the same meaning 
+               as in \PS: 0 for mitered, 1 for round, 2 for beveled.\NC \NR
+\NC mp_gr_knot        \NC path_p      \NC the (always cyclic) path\NC \NR
+\NC mp_gr_knot        \NC htap_p      \NC a possible reversed path (see below)\NC \NR
+\NC mp_gr_knot        \NC pen_p       \NC a possible pen (see below)\NC \NR
+\NC double              \NC miterlim    \NC the miter limit\NC \NR
+\stoptabulate
+
+Even though this object is called an \type{mp_fill_object}, it can be the result of both
+\type{fill} and \type{filldraw} in the \MP\ input. This means that there can be a pen
+involved as well. The final output should behave as follows:
+
+\startitemize
+\item If there is no \type{pen_p}; simply fill \type{path_p}.
+\item If there is a one-knot pen (\type{pen_p->next} = \type{pen_p}) then  fill \type{path_p}
+and also draw \type{path_p} with the \type{pen_p}. Do not forget to take \type{ljoin} and
+\type{miterlim} into account when drawing with the pen.
+\item If there is a more complex pen (\type{pen_p->next} != \type{pen_p}) then its path 
+has already been preprocessed for you: \type{path_p} and \type{htap_p} already incorporate
+its shape.
+\stopitemize
+
+\ctypedef {}{mp_stroked_object}{}
+
+Contains the following fields on top of the ones defined by \type{mp_graphic_object}:
+
+\starttabulate[|l|l|p|]
+\NC char *           \NC pre_script  \NC this is the result of \type{withprescript}  \NC \NR
+\NC char *           \NC post_script \NC this is the result of \type{withpostscript} \NC \NR
+\NC mp_color         \NC color       \NC color value \NC \NR
+\NC mp_color_model   \NC color_model \NC color model \NC \NR
+\NC unsigned char    \NC ljoin       \NC the line join style \NC \NR
+\NC unsigned char    \NC lcap        \NC the line cap style; values have the same meaning 
+               as in \PS: 0 for butt ends, 1 for round ends, 2 for projecting ends.\NC \NR
+\NC mp_gr_knot       \NC path_p      \NC the path \NC \NR
+\NC mp_gr_knot       \NC pen_p       \NC the pen \NC \NR
+\NC double           \NC miterlim    \NC miter limit \NC \NR
+\NC mp_dash_object * \NC dash_p      \NC a possible dash list\NC \NR
+\stoptabulate
+
+\ctypedef {}{mp_text_object}{}
+
+Contains the following fields on top of the ones defined by \type{mp_graphic_object}:
+
+\starttabulate[|l|l|p|]
+\NC char *         \NC pre_script \NC this is the result of \type{withprescript}\NC \NR
+\NC char *         \NC post_script\NC this is the result of \type{withpostscript}\NC \NR
+\NC mp_color       \NC color      \NC color value \NC \NR
+\NC mp_color_model \NC color_model\NC color model \NC \NR
+\NC char *         \NC text_p     \NC string to be placed \NC \NR
+\NC char *         \NC font_name  \NC the \MP\ font name\NC \NR
+\NC double         \NC font_dsize \NC size of the font\NC \NR
+\NC double         \NC width      \NC width of the picture resulting from the string\NC \NR
+\NC double         \NC height     \NC height\NC \NR
+\NC double         \NC depth      \NC depth\NC \NR
+\NC double         \NC tx         \NC transformation component\NC \NR
+\NC double         \NC ty         \NC transformation component\NC \NR
+\NC double         \NC txx        \NC transformation component\NC \NR
+\NC double         \NC tyx        \NC transformation component\NC \NR
+\NC double         \NC txy        \NC transformation component\NC \NR
+\NC double         \NC tyy        \NC transformation component\NC \NR
+\stoptabulate
+
+All fonts are loaded by \MPLIB\ at the design size (but not all fonts have the same design
+size). If text is to be scaled, this happens via the transformation components.
+
+\ctypedef {}{mp_clip_object}{}
+
+Contains the following field on top of the ones defined by \type{mp_graphic_object}:
+
+\starttabulate[|l|l|p|]
+\NC  mp_gr_knot   \NC  path_p \NC defines the clipping path that is in effect until 
+         the object with the matching \type{mp_stop_clip_code} is encountered\NC \NR
+\stoptabulate
+
+\ctypedef {}{mp_bounds_object}{}
+
+Contains the following field on top of the ones defined by \type{mp_graphic_object}:
+
+\starttabulate[|l|l|p|]
+\NC  mp_gr_knot   \NC  path_p \NC the path that was used for boundary calculation \NC \NR
+\stoptabulate
+
+This object can be ignored when output is generated, it only has effect on the boudingbox
+of the following objects and that has been taken into account already.
+
+\ctypedef {}{mp_special_object}{}
+
+This represents the output generated by a \MP\ \type{special} command. It
+contains the following field on top of the ones defined by \type{mp_graphic_object}:
+
+\starttabulate[|l|l|p|]
+\NC char *\NC pre_script \NC the special string\NC \NR
+\stoptabulate
+
+Each \type{special} command generates one object. All of the relevant
+\type{mp_special_object}s for a figure are linked together at the start
+of that figure.
+
+\ctypedef {}{mp_edge_object}{}
+
+\starttabulate[|l|l|p|]
+\NC mp_edge_object *          \NC next      \NC points to the next figure (or NULL)\NC \NR
+\NC mp_graphic_object *       \NC body      \NC a linked list of objects in this figure \NC \NR
+\NC char *                    \NC filename  \NC this would have been the used filename if a \PS\ file
+                                                would have been generated\NC \NR
+\NC MP                        \NC parent    \NC a pointer to the instance that created 
+                                                this figure\NC \NR
+\NC double                       \NC minx      \NC lower-left $x$ of the bounding box\NC \NR
+\NC double                       \NC miny      \NC lower-left $y$ of the bounding box\NC \NR
+\NC double                       \NC maxx      \NC upper right $x$ of the bounding box\NC \NR
+\NC double                       \NC maxy      \NC upper right $y$ of the bounding box\NC \NR
+\NC double                       \NC width     \NC value of \type{charwd};
+this would become the \TFM\ width (but without the potential rounding correction for \TFM\ file format)\NC \NR
+\NC double                       \NC height    \NC similar for height (\type{charht})\NC \NR
+\NC double                       \NC depth     \NC similar for depth (\type{chardp})\NC \NR
+\NC double                       \NC ital_corr \NC similar for italic correction (\type{charic})\NC \NR
+\NC int                       \NC charcode  \NC Value of \type{charcode} (rounded, but not
+                                                modulated for \TFM's 256 values yet)\NC \NR
+\stoptabulate
+
+\subsection{Functions}
+
+\cfunction{int }{mp_ps_ship_out}{(mp_edge_object*hh,int prologues,int procset)}
+
+If you have an \type{mp_edge_object},  you can call this function. It will 
+generate the \PS\ output for the figure and save it internally. A subsequent call to
+\type{mp_rundata} will find the generated text in the \type{ship_out} field.
+
+Returns zero for success. 
+
+\cfunction{int }{mp_svg_ship_out}{(mp_edge_object*hh,int prologues)}
+
+If you have an \type{mp_edge_object},  you can call this function. It will 
+generate the \SVG\ output for the figure and save it internally. A subsequent call to
+\type{mp_rundata} will find the generated text in the \type{ship_out} field.
+
+Returns zero for success. 
+
+
+\cfunction{int }{mp_png_ship_out}{(mp_edge_object*hh, char *options)}
+
+If you have an \type{mp_edge_object},  you can call this function. It will 
+generate the \PNG\ bitmap for the figure and save it internally. A subsequent call to
+\type{mp_rundata} will find the generated data in the \type{ship_out} field.
+
+Note: the \type{options} structure follows the same syntax as in the Metapost language,
+and can be NULL.
+
+Returns zero for success. 
+
+
+\cfunction{void }{mp_gr_toss_objects}{(mp_edge_object*hh)}
+
+This frees a single \type{mp_edge_object} and its \type{mp_graphic_object} contents.
+
+\cfunction{void }{mp_gr_toss_object}{(mp_graphic_object*p)}
+
+This frees a single \type{mp_graphic_object} object.
+
+\cfunction{mp_graphic_object *}{mp_gr_copy_object}{(MP mp,mp_graphic_object*p)}
+
+This creates a deep copy of a \type{mp_graphic_object} object.
+
+\section{C API for label generation (a.k.a. makempx)}
+
+The following are all defined in \type{mpxout.h}.
+
+\subsection {Structures}
+
+\ctypedef {}{MPX}{}
+
+An opaque pointer that is passed on to the file_finder.
+
+\ctypedef {}{mpx_options}{}
+
+This structure holds the option fields for \type{mpx} generation. 
+You have to fill in all fields except \type{mptexpre}, that 
+one defaults to \type{mptexpre.tex}
+
+
+\starttabulate[|l|l|p|]
+\NC mpx_modes       \NC mode      \NC \NC \NR
+\NC char *          \NC cmd       \NC the command (or sequence of commands) to run\NC \NR
+\NC char *          \NC mptexpre  \NC prepended to the generated \TeX\ file\NC \NR
+\NC char *          \NC mpname    \NC input file name \NC \NR
+\NC char *          \NC mpxname   \NC output file name\NC \NR
+\NC char *          \NC banner    \NC string to be printed to the generated to-be-typeset file\NC \NR
+\NC int             \NC debug     \NC When nonzero, \type{mp_makempx}  outputs some debug information and do not delete temp files\NC \NR
+\NC mpx_file_finder \NC find_file \NC \NC \NR
+\stoptabulate
+
+\subsection{Function prototype typedefs}
+
+\ctypedef{char * }{(*mpx_file_finder)}{ (MPX, const char*, const char*, int)}
+
+The return value is a new string indicating the disk file to be used.  
+The arguments are the file name, the file mode (either \type{"r"} or \type{"w"}), 
+and the file type (an \type{mpx_filetype}, see below).  If the mode is \type{"w"}, 
+it is usually best to simply return a copy of the first argument.
+
+\subsection{Enumerations}
+
+\cenumeration{mpx_modes}
+
+\starttabulate[|l|p|]
+\NC mpx_tex_mode   \NC \NC \NR
+\NC mpx_troff_mode \NC \NC \NR
+\stoptabulate
+
+\cenumeration{mpx_filetype}
+
+\starttabulate[|l|p|]
+\NC mpx_tfm_format         \NC \TeX\ or Troff ffont metric file  \NC \NR
+\NC mpx_vf_format          \NC \TeX\ virtual font file           \NC \NR
+\NC mpx_trfontmap_format   \NC Troff font map                    \NC \NR
+\NC mpx_trcharadj_format   \NC Troff character shift information \NC \NR
+\NC mpx_desc_format        \NC Troff DESC file                   \NC \NR
+\NC mpx_fontdesc_format    \NC Troff FONTDESC file               \NC \NR
+\NC mpx_specchar_format    \NC Troff special character definition\NC \NR
+\stoptabulate
+
+\subsection{Functions}
+
+\cfunction{int }{mpx_makempx}{(mpx_options *mpxopt)}
+
+A return value of zero is success, non-zero values indicate errors.
+
+\page
+
+\section{Lua API}
+
+The \MP\ library interface registers itself in the table \type{mplib}. 
+
+\subsection{\luatex{mplib.version}}
+
+Returns the \MPLIB\ version. 
+
+\starttyping
+<string> s = mplib.version()
+\stoptyping
+
+\subsection{\luatex{mplib.new}}
+
+To create a new metapost instance, call
+
+\starttyping
+<mpinstance> mp = mplib.new({...})
+\stoptyping
+
+This creates the \type{mp} instance object. The \type{mp} instance object
+always starts out in so|-|called \quote{inimp} mode, there is no
+support for preload files.
+
+The argument hash can have a number of different fields,  as follows:
+
+\starttabulate[|lT|l|p|p|]
+\NC \ssbf name  \NC \bf type   \NC \bf description                \NC \bf default \NC\NR
+\NC error_line \NC         number \NC error line width            \NC 79 \NC\NR
+\NC print_line \NC         number \NC line length in ps output    \NC 100\NC\NR
+\NC random_seed \NC        number \NC the initial random seed     \NC variable\NC\NR
+\NC interaction \NC        string \NC the interaction mode, one of \type {batch}, \type {nonstop}, 
+                                     \type {scroll}, \type {errorstop} \NC \type {errorstop}\NC\NR
+\NC job_name \NC           string \NC \type {--jobname}           \NC \type {mpout} \NC\NR
+\NC math_mode \NC          string \NC the number system mode, one of \type{scaled} or 
+                                     \type{double} \NC \type {scaled} \NC\NR
+\NC find_file \NC          function \NC a function to find files  \NC only local files\NC\NR
+\stoptabulate
+
+The \type{find_file} function should be of this form:
+
+\starttyping
+<string> found = finder (<string> name, <string> mode, <string> type)
+\stoptyping
+
+with:
+
+\starttabulate[|lT|l|p|]
+\NC name \NC the requested file \NC   \NR
+\NC mode \NC the file mode: \type {r} or \type {w} \NC \NR
+\NC type \NC the kind of file, one of: \type {mp}, \type {tfm}, \type {map}, \type {pfb}, \type {enc} \NC \NR
+\stoptabulate
+
+Return either the full pathname of the found file, or \type{nil} if
+the file cannot be found.
+
+\subsection{\luatex{mp:statistics}}
+
+You can request statistics with:
+
+\starttyping
+<table> stats = mp:statistics()
+\stoptyping
+
+This function returns the allocation statistics for an \MPLIB\
+instance. There are four fields, giving the maximum number of used
+items in each of four object classes:
+
+\starttabulate[|lT|l|p|]
+\NC memory  \NC number \NC allocated memory (in bytes)\NC\NR
+\NC hash    \NC number \NC hash size (in entries)\NC\NR
+\NC params  \NC number \NC simultaneous macro parameters\NC\NR
+\NC open    \NC number \NC input file nesting levels\NC\NR
+\stoptabulate
+
+\subsection{\luatex{mp:execute}}
+
+You can ask the \METAPOST\ interpreter to run a chunk of code by calling
+
+\starttyping
+local rettable = mp:execute('metapost language chunk')
+\stoptyping
+
+for various bits of Metapost language input. Be sure to check the
+\type{rettable.status} (see below) because when a fatal \METAPOST\
+error occurs the \MPLIB\ instance will become unusable thereafter.
+
+Generally speaking, it is best to keep your chunks small, but beware
+that all chunks have to obey proper syntax, like each of them is a
+small file. For instance, you cannot split a single statement over
+multiple chunks.
+
+In contrast with the normal standalone \type{mpost} command, there is
+{\em no\/} implied \quote{input} at the start of the first chunk.
+
+\subsection{\luatex{mp:finish}}
+
+\starttyping
+local rettable = mp:finish()
+\stoptyping
+
+If for some reason you want to stop using an \MPLIB\ instance while
+processing is not yet actually done, you can call \type{mp:finish}.
+Eventually, used memory will be freed and open files will be closed by
+the \LUA\ garbage collector, but an explicit \type{mp:finish} is the
+only way to capture the final part of the output streams.
+
+\subsection{Result table}
+
+The return value of \type{mp:execute} and \type{mp:finish} is a table
+with a few possible keys (only \type {status} is always guaranteed to be present).
+
+\starttabulate[|l|l|p|]
+\NC log    \NC string \NC output to the \quote {log} stream \NC \NR
+\NC term   \NC string \NC output to the \quote {term} stream \NC \NR
+\NC error  \NC string \NC output to the \quote {error} stream (only used for \quote {out of memory})\NC \NR
+\NC status \NC number \NC the return value: 0=good, 1=warning, 2=errors, 3=fatal error \NC \NR
+\NC fig    \NC table \NC an array of generated figures (if any)\NC \NR
+\stoptabulate
+
+When \type{status} equals~3, you should stop using this \MPLIB\ instance
+immediately, it is no longer capable of processing input.
+
+If it is present, each of the entries in the \type{fig} array is a
+userdata representing a figure object, and each of those has a number of
+object methods you can call:
+
+\starttabulate[|l|l|p|]
+\NC boundingbox  \NC function \NC returns the bounding box, as an array of 4 values\NC \NR
+\NC postscript   \NC function \NC return a string that is the ps output of the \type{fig} \NC \NR
+\NC svg          \NC function \NC return a string that is the svg output of the \type{fig} \NC \NR
+\NC png          \NC function \NC return a string that is the png output of the \type{fig} \NC \NR
+\NC objects      \NC function \NC returns the actual array of graphic objects in this \type{fig} \NC \NR
+\NC copy_objects \NC function \NC returns a deep copy of the array of graphic objects in this \type{fig} \NC \NR
+\NC filename     \NC function \NC the filename this \type{fig}'s \POSTSCRIPT\ output
+                                  would have written to in standalone mode\NC \NR
+\NC width        \NC function \NC the \type{charwd} value \NC \NR
+\NC height       \NC function \NC the \type{charht} value \NC \NR
+\NC depth        \NC function \NC the \type{chardp} value \NC \NR
+\NC italcorr     \NC function \NC the \type{charic} value \NC \NR
+\NC charcode     \NC function \NC the (rounded) \type{charcode} value \NC \NR
+\stoptabulate
+
+{\bf NOTE:} you can call \type{fig:objects()} only once for any one \type{fig} object!
+
+When the boundingbox represents a \quote {negated rectangle}, i.e.\ when the first set
+of coordinates is larger than the second set, the picture is empty.
+
+Graphical objects come in various types that each have a different list of
+accessible values. The types are: \type{fill}, \type{outline}, \type{text},
+\type{start_clip}, \type{stop_clip}, \type{start_bounds}, \type{stop_bounds}, \type{special}.
+
+There is helper function (\type{mplib.fields(obj)}) to get the list of
+accessible values for a particular object, but you can just as easily
+use the tables given below).
+
+All graphical objects have a field \type{type} that gives the object
+type as a string value, that not explicit mentioned in the tables.  In
+the following, \type{number}s are \POSTSCRIPT\ points represented as
+a floating point number, unless stated otherwise. Field values that
+are of \type{table} are explained in the next section.
+
+\subsubsection{fill}
+
+\starttabulate[|l|l|p|]
+\NC path       \NC table \NC the list of knots \NC \NR
+\NC htap       \NC table \NC the list of knots for the reversed trajectory \NC \NR
+\NC pen        \NC table \NC knots of the pen \NC \NR
+\NC color      \NC table \NC the object's color \NC \NR
+\NC linejoin   \NC number \NC line join style (bare number)\NC \NR
+\NC miterlimit \NC number \NC miter limit\NC \NR
+\NC prescript  \NC string \NC the prescript text \NC \NR
+\NC postscript \NC string \NC the postscript text \NC \NR
+\stoptabulate
+
+The entries \type{htap} and \type{pen} are optional.
+
+There is helper function (\type{mplib.pen_info(obj)}) that returns
+a table containing a bunch of vital characteristics of the used pen
+(all values are floats):
+
+\starttabulate[|l|l|p|]
+\NC width       \NC number \NC width of the pen\NC \NR
+\NC rx          \NC number \NC $x$ scale       \NC \NR
+\NC sx          \NC number \NC $xy$ multiplier \NC \NR
+\NC sy          \NC number \NC $yx$ multiplier \NC \NR
+\NC ry          \NC number \NC $y$ scale       \NC \NR
+\NC tx          \NC number \NC $x$ offset      \NC \NR
+\NC ty          \NC number \NC $y$ offset      \NC \NR
+\stoptabulate
+
+\subsubsection{outline}
+
+\starttabulate[|l|l|p|]
+\NC path \NC table \NC the list of knots \NC \NR
+\NC pen \NC table \NC knots of the pen \NC \NR
+\NC color \NC table \NC the object's color \NC \NR
+\NC linejoin \NC number \NC line join style (bare number)\NC \NR
+\NC miterlimit \NC number \NC miter limit \NC \NR
+\NC linecap \NC number \NC line cap style (bare number)\NC \NR
+\NC dash \NC table \NC representation of a dash list\NC \NR
+\NC prescript \NC string \NC the prescript text \NC \NR
+\NC postscript \NC string \NC the postscript text \NC \NR
+\stoptabulate
+
+The entry \type{dash} is optional.
+ 
+\subsubsection{text}
+
+\starttabulate[|l|l|p|]
+\NC text \NC string \NC the text \NC \NR
+\NC font \NC string \NC font tfm name \NC \NR
+\NC dsize \NC number \NC font size\NC \NR
+\NC color \NC table \NC the object's color \NC \NR
+\NC width \NC number \NC  \NC \NR
+\NC height \NC number \NC  \NC \NR
+\NC depth \NC number \NC  \NC \NR
+\NC transform \NC table \NC a text transformation \NC \NR
+\NC prescript \NC string \NC the prescript text \NC \NR
+\NC postscript \NC string \NC the postscript text \NC \NR
+\stoptabulate
+
+\subsubsection{special}
+
+\starttabulate[|l|l|p|]
+\NC prescript \NC string \NC special text \NC \NR
+\stoptabulate
+
+\subsubsection{start_bounds, start_clip}
+
+\starttabulate[|l|l|p|]
+\NC path \NC table \NC the list of knots \NC \NR
+\stoptabulate
+
+\subsubsection{stop_bounds, stop_clip}
+
+Here are no fields available.
+
+\subsection{Subsidiary table formats}
+
+\subsubsection{Paths and pens}
+
+Paths and pens (that are really just a special type of paths as far as
+\MPLIB\ is concerned) are represented by an array where each entry
+is a table that represents a knot. 
+
+\starttabulate[|lT|l|p|]
+\NC left_type	\NC string \NC when present: 'endpoint', but ususally absent \NC \NR
+\NC right_type	\NC string \NC like \type{left_type}\NC \NR
+\NC x_coord		\NC number \NC $x$ coordinate of this knot\NC \NR
+\NC y_coord		\NC number \NC $y$ coordinate of this knot\NC \NR
+\NC left_x		\NC number \NC $x$ coordinate of the precontrol point of this knot\NC \NR
+\NC left_y		\NC number \NC $y$ coordinate of the precontrol point of this knot\NC \NR
+\NC right_x		\NC number \NC $x$ coordinate of the postcontrol point of this knot\NC \NR
+\NC right_y		\NC number \NC $y$ coordinate of the postcontrol point of this knot\NC \NR
+\stoptabulate
+
+There is one special case: pens that are (possibly transformed)
+ellipses have an extra string-valued key \type{type} with value
+\type{elliptical} besides the array part containing the knot list.
+
+\subsubsection{Colors}
+
+A color is an integer array with 0, 1, 3 or 4 values:
+
+\starttabulate[|l|l|p|]
+\NC 0  \NC marking only \NC no values \NC\NR
+\NC 1  \NC greyscale    \NC one value in the range (0,1), \quote {black} is 0 \NC\NR
+\NC 3  \NC RGB         \NC three values in the range (0,1), \quote {black} is 0,0,0  \NC\NR
+\NC 4  \NC CMYK        \NC four values in the range (0,1), \quote {black} is 0,0,0,1  \NC\NR
+\stoptabulate
+
+If the color model of the internal object was \type{unitialized}, then
+it was initialized to the values representing \quote {black} in the colorspace
+\type{defaultcolormodel} that was in effect at the time of the \type{shipout}.
+
+\subsubsection{Transforms}
+
+Each transform is a six-item array.
+
+\starttabulate[|l|l|p|]
+\NC 1 \NC number \NC represents x \NC\NR
+\NC 2 \NC number \NC represents y \NC\NR
+\NC 3 \NC number \NC represents xx \NC\NR
+\NC 4 \NC number \NC represents yx \NC\NR
+\NC 5 \NC number \NC represents xy \NC\NR
+\NC 6 \NC number \NC represents yy \NC\NR
+\stoptabulate
+
+Note that the translation (index 1 and 2) comes first. This differs
+from the ordering in  \POSTSCRIPT, where the translation comes last.
+
+\subsubsection{Dashes}
+
+Each \type{dash} is two-item hash, using the same model as \POSTSCRIPT\
+for the representation of the dashlist. \type{dashes} is an array of
+\quote {on} and \quote {off}, values, and \type{offset} is the phase of the pattern.
+
+\starttabulate[|l|l|p|]
+\NC dashes \NC hash   \NC an array of on-off numbers \NC\NR
+\NC offset \NC number \NC the starting offset value \NC\NR
+\stoptabulate
+
+\subsection{Character size information}
+
+These functions find the size of a glyph in a defined font. The
+\type{fontname} is the same name as the argument to \type{infont};
+the \type{char} is a glyph id in the range 0 to 255; the returned
+\type{w} is in AFM units.
+
+\subsubsection{\luatex{mp.char_width}}
+
+\starttyping
+<number> w = mp.char_width(<string> fontname, <number> char)
+\stoptyping
+
+\subsubsection{\luatex{mp.char_height}}
+
+\starttyping
+<number> w = mp.char_height(<string> fontname, <number> char)
+\stoptyping
+
+\subsubsection{\luatex{mp.char_depth}}
+
+\starttyping
+<number> w = mp.char_depth(<string> fontname, <number> char)
+\stoptyping
+
+\subsection{Solving path control points}
+
+\starttyping
+<boolean> success = mp.solve_path(<table> knots, <boolean> cyclic)
+\stoptyping
+
+This modifies the \type{knots} table (which should contain an
+array of points in a path, with the substructure explained below) 
+by filling in the control points. The boolean \type{cyclic} is
+used to determine whether the path should be the equivalent of 
+\type{--cycle}. If the return value is \type{false}, there
+is an extra return argument containing the error string.
+
+On entry, the individual knot tables can contain the values
+mentioned above (but typically the \type{left_{x,y}} and 
+\type{right_{x,y}} will be missing). \type{{x,y}_coord} are 
+both required. Also, some extra values are allowed:
+\starttabulate[|lT|l|p|]
+\NC left_tension	\NC number \NC A tension specifier \NC \NR
+\NC right_tension	\NC number \NC like \type{left_tension}\NC \NR
+\NC left_curl	        \NC number \NC A curl specifier\NC \NR
+\NC right_curl	        \NC number \NC like \type{left_curl}\NC \NR
+\NC direction_x		\NC number \NC $x$ displacement of a direction specifier\NC \NR
+\NC direction_y		\NC number \NC $y$ displacement of a direction specifier\NC \NR
+\stoptabulate
+
+Note the following: 
+\startitemize
+\item A knot has either a direction specifier, or a curl specifier, or a tension specification, 
+      or explicit control points, with the note that tensions, curls and control points are split
+      in a left and a right side (directions apply to both sides equally).
+\item The absolute value of a tension specifier should be more than 0.75 and less than 4096.0,
+      with negative values indicating \quote{\type{atleast}}.
+\item The absolute value of a direction or curl should be less than 4096.0.
+\item If a tension, curl, or direction is specified, then existing control points will be
+      replaced by the newly computed value.
+\item Calling \type{solve_path} does not alter the used mplib instance.
+\stopitemize
+
+\stoptext
+
+
+
+
+
+

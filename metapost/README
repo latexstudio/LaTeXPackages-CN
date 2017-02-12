@@ -1,0 +1,26 @@
+# metapost 大坑
+文档基于
+> MetaPost 1.9991 (TeX Live 2016/W32TeX) (kpathsea version 6.2.2)
+
+## 需要翻译的内容
+tutorial：
+- mpintro.pdf - 13页 - [A Beginner’s Guide to METAPOST for Creating High-Quality Graphics](http://www.tug.org/docs/metapost/mpintro.pdf)
+
+
+manual：
+- mpman.pdf - 113页 -
+[METAPOST a user’s manual](https://www.tug.org/docs/metapost/mpman.pdf)
+- mpgraph.pdf - 17页 -
+[Drawing Graphs with MetaPost](https://www.tug.org/docs/metapost/mpgraph.pdf)
+- mpboxes.pdf - 9页 -
+[Drawing Boxes with MetaPost](https://www.tug.org/docs/metapost/mpboxes.pdf)
+- mplibapi.pdf - 30页 -
+[MPlib API documentation](https://www.tug.org/docs/metapost/mplibapi.pdf)
+
+
+
+## 编译
+- manual  <- 需要texexec <- 需要[ruby](https://rubyinstaller.org/downloads/)
+	然后根目录直接 `make pdf`
+- tutorial 在我的电脑上 直接 `make pdf` 报错  
+	把 Makefile 里面的 `pdflatex` 改为 `xelatex` 则可以正常编译

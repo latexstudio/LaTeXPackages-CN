@@ -1,0 +1,347 @@
+\svnInfo $Id: mpman-app-legacy.tex 2023 2014-05-21 08:47:19Z stephanhennig $
+\section{Legacy Information}
+\label{legacy}
+
+\subsection{MetaPost Versus \MF}
+\label{MPvsMF}
+
+Since the \MF\index{metafont?\MF} and MetaPost languages have so much in
+common, expert users of \MF\ will want to skip most of the explanations
+in this document and concentrate on concepts that are unique to
+MetaPost.  The comparisons in this appendix are intended to help experts
+that are familiar with {\sl The\ \MF book} as well as other users that
+want to benefit from Knuth's more detailed explanations \cite{kn:c}.
+
+Since \MF\ is intended for making \TeX\ fonts, it has a number of
+primitives for generating the {\tt tfm}\index{tfm file?{\tt tfm}
+file}\index{files!tfm?{\tt tfm}} files that \TeX\ needs for character
+dimensions, spacing information, ligatures\index{ligatures} and
+kerning\index{kerning}.  MetaPost can also be used for generating fonts,
+and it also has \MF's primitives for making {\tt tfm} files.  These are
+listed in Table~\ref{tfmprim}.  Explanations can be found in the \MF\
+documentation \cite{kn:c,kn:mf3}.
+
+\begin{table}[htp]
+$$\begin{tabular}{|l|l|}  \hline
+commands&               {\tt charlist}, {\tt extensible},
+                        {\tt fontdimen}, {\tt headerbyte}               \\
+        &               {\tt kern}, {\tt ligtable}                      \\ \hline
+ligtable operators&     \verb!::!, \verb!=:!, \verb!=:|!, \verb!=:|>!,
+                        \verb!|=:!, \verb!|=:>!,                        \\
+        &               \verb!|=:|!, \verb!|=:|>!, \verb!|=:|>>!,
+                        \verb!||:!                                      \\ \hline
+internal variables\index{internal variables}\index{variables!internal}&
+                        {\tt boundarychar}, {\tt chardp},
+                        {\tt charext}, {\tt charht},                    \\
+        &               {\tt charic}, {\tt charwd},
+                        {\tt designsize}, {\tt fontmaking}              \\ \hline
+other operators&        {\tt charexists}                                \\ \hline
+\end{tabular}
+$$
+\caption{MetaPost primitives for making {\tt tfm} files.}
+\label{tfmprim}
+\end{table}
+
+Even though MetaPost has the primitives for generating fonts, many of
+the font-making primitives and internal variables that are part of Plain
+\MF\index{metafont?\MF} are not defined in Plain MetaPost\index{Plain
+macros}.  Instead, there is a separate macro package called {\tt
+mfplain}\index{mfplain?\texttt{mfplain}} that defines the macros
+required to allow MetaPost to process Knuth's Computer Modern fonts as
+shown in Table~\ref{mfponly} \cite{kn:e}.  To load these macros, put
+``\verb|&mfplain|'' before the name of the input file.  This can be done
+at the {\tt **} prompt after invoking the MetaPost interpreter with no
+arguments, or on a command line that looks something like
+this:\footnote{Command line syntax is system dependent.  Quotes are
+needed on most Unix systems to protect special characters like
+{\tt\&}.}
+$$ \hbox{\verb|mpost '&mfplain' cmr10|} $$
+The analog of a \MF\ command line like
+$$ \hbox{\verb|mf '\mode=lowres; mag=1.2; input cmr10'|} $$
+is
+$$ \hbox{\verb|mpost '&mfplain \mode=lowres; mag=1.2; input cmr10'|} $$
+The result is a set of PostScript\index{PostScript} files, one for each
+character in the font.  Some editing would be required in order to
+merge them into a downloadable Type~3 PostScript font~\cite{ad:red2}.
+
+\begin{table}[htp]
+$$
+\renewcommand{\FancyVerbFormatLine}[1]{\hbox{#1}\strut}
+\begin{tabular}{|l|} \hline
+\multicolumn 1{|c|}
+{Defined in the {\tt mfplain} package}          \\ \hline
+\begin{verbatim}
+beginchar                              font_identifier
+blacker                                font_normal_shrink
+capsule_def                            font_normal_space
+change_width                           font_normal_stretch
+define_blacker_pixels                  font_quad
+define_corrected_pixels                font_size
+define_good_x_pixels                   font_slant
+define_good_y_pixels                   font_x_height
+define_horizontal_corrected_pixels     italcorr
+define_pixels                          labelfont
+define_whole_blacker_pixels            makebox
+define_whole_pixels                    makegrid
+define_whole_vertical_blacker_pixels   maketicks
+define_whole_vertical_pixels           mode_def
+endchar                                mode_setup
+extra_beginchar                        o_correction
+extra_endchar                          proofrule
+extra_setup                            proofrulethickness
+font_coding_scheme                     rulepen
+font_extra_space                       smode
+\end{verbatim}
+                                               \\ \hline
+\multicolumn 1{|c|}
+{Defined as no-ops in the {\tt mfplain} package}\\ \hline
+\begin{verbatim}
+cullit                                 proofoffset
+currenttransform                       screenchars
+gfcorners                              screenrule
+grayfont                               screenstrokes
+hround                                 showit
+imagerules                             slantfont
+lowres_fix                             titlefont
+nodisplays                             unitpixel
+notransforms                           vround
+openit
+\end{verbatim}
+                                       \\ \hline
+\end{tabular}
+\renewcommand{\FancyVerbFormatLine}[1]{#1}
+$$
+\caption{Macros and internal variables defined only in the {\tt mfplain}
+package.}
+\label{mfponly}
+\end{table}
+
+
+\begin{table}
+\centering
+\begin{tabular}{|c|}\hline
+MetaPost primitives not found in \MF\\\hline
+\begin{minipage}[b]{.75\linewidth}\ttfamily
+\begin{multicols}{3}
+blackpart\\
+bluepart\\
+bounded\\
+btex\\
+clip\\
+clipped\\
+closefrom\\
+cmykcolor\\
+color\\
+colormodel\\
+cyanpart\\
+dashed\\
+dashpart\\
+defaultcolormodel\\
+etex\\
+filenametemplate\\
+filled\\
+fontmapfile\\
+fontmapline\\
+fontpart\\
+fontsize\\
+for within\\
+glyph of\\
+greenpart\\
+greypart\\
+hour\\
+infont\\
+jobname\\
+linecap\\
+linejoin\\
+llcorner\\
+lrcorner\\
+magentapart\\
+minute\\
+miterlimit\\
+mpprocset\\
+mpxbreak\\
+numberprecision\\
+numbersystem\\
+outputfilename\\
+outputformat\\
+outputformatoptions\\
+outputtemplate\\
+pathpart\\
+penpart\\
+prologues\\
+readfrom\\
+redpart\\
+restoreclipcolor\\
+rgbcolor\\
+setbounds\\
+stroked\\
+textpart\\
+textual\\
+tracinglostchars\\
+troffmode\\
+truecorners\\
+ulcorner\\
+urcorner\\
+verbatimtex\\
+withcmykcolor\\
+withcolor\\
+withgreyscale\\
+withoutcolor\\
+withpostscript\\
+withprescript\\
+withrgbcolor\\
+write to\\
+yellowpart
+\end{multicols}
+\end{minipage}\\\hline
+
+Variables and Macros defined only in Plain MetaPost\\\hline
+\begin{minipage}[b]{.75\linewidth}\ttfamily
+\begin{multicols}{3}
+ahangle\\
+ahlength\\
+background\\
+bbox\\
+bboxmargin\\
+beginfig\\
+beveled\\
+black\\
+blue\\
+buildcycle\\
+butt\\
+center\\
+colorpart\\
+cutafter\\
+cutbefore\\
+cuttings\\
+dashpattern\\
+defaultfont\\
+defaultpen\\
+defaultscale\\
+dotlabel\\
+dotlabels\\
+drawarrow\\
+drawdblarrow\\
+drawoptions\\
+endfig\\
+EOF\\
+evenly\\
+extra\_beginfig\\
+extra\_endfig\\
+green\\
+image\\
+label\\
+labeloffset\\
+mitered\\
+red\\
+rounded\\
+squared\\
+thelabel\\
+white
+\end{multicols}
+\end{minipage}\\\hline
+\end{tabular}
+\caption{Macros and internal variables defined in MetaPost but not \MF.}
+\label{mponly}
+\end{table}
+
+Another limitation of the {\tt mfplain} package is that certain internal
+variables from Plain \MF\index{metafont?\MF} cannot be given reasonable
+MetaPost definitions.  These include {\tt displaying}, {\tt
+currentwindow}, \verb|screen_rows|, and \verb|screen_cols| which depend
+on \MF's ability to display images on the computer screen.  In addition,
+\verb|pixels_per_inch| is irrelevant since MetaPost uses fixed units of
+PostScript\index{PostScript!point}\index{point!PostScript} points.
+
+The reason why some macros and internal variables\index{internal
+variables}\index{variables!internal} are not meaningful in MetaPost is
+that \MF\ primitive commands {\tt cull}, {\tt display}, {\tt
+openwindow}, {\tt numspecial} and {\tt totalweight} are not implemented
+in MetaPost.  Also not implemented are a number of internal variables as
+well as the \tdescr{drawing option} {\tt withweight}.  Here is a
+complete listing of the internal variables whose primitive meanings in
+\MF\ do not make sense in MetaPost:
+$$\begin{verbatim}
+autorounding   fillin         smoothing      turningcheck
+chardx         granularity    tracingedges   xoffset
+chardy         proofing       tracingpens    yoffset
+\end{verbatim}
+$$
+
+There is also one \MF\ primitive that has a slightly different meaning in
+MetaPost.  Both languages allow statements of the
+form\index{special?\texttt{special}}\label{Dspecl}
+$$ {\tt special}\, \descr{string expression} \hbox{\tt;} $$
+but \MF\ copies the string into its ``generic font'' output file, while
+MetaPost interprets the string as a sequence of PostScript\index{PostScript}
+commands that are to be placed at the beginning of the next output file.
+
+In this regard, it is worth mentioning that rules in \TeX\ material
+included via {\tt btex..etex} in MetaPost are rounded to the correct
+number of pixels according to PostScript\index{PostScript!conversion rules}
+conversion rules~\cite{ad:red2}.  In \MF, rules are not generated
+directly, but simply included in specials and interpreted later by
+other programs, such as {\tt gftodvi}\index{gftodvi?\ttt{gftodvi}},
+so there is no special conversion.
+
+All the other differences between \MF\ and MetaPost are features found
+only in MetaPost.  These are listed in Table~\ref{mponly}.  The only
+commands listed in this table that the preceding sections do not discuss
+are
+\verb|extra_beginfig|\index{extra_beginfig?\texttt{extra\_beginfig}}\label{Dxbfig},
+\verb|extra_endfig|\index{extra_endfig?\texttt{extra\_endfig}}\label{Dxefig},
+and {\tt mpxbreak}.  The first two are strings that contain extra
+commands to be processed by {\tt
+beginfig}\index{beginfig?\texttt{beginfig}} and {\tt
+endfig}\index{endfig?\texttt{endfig}} just as \verb|extra_beginchar| and
+\verb|extra_endchar| are processed by {\tt beginchar} and {\tt endchar}.
+(The file {\tt boxes.mp}\index{boxes.mp?\texttt{boxes.mp}} uses these
+features).
+
+The other new feature listed in Table~\ref{mponly} not listed in the
+index is {\tt mpxbreak}\index{mpxbreak?\texttt{mpxbreak}}.  This is used
+to separate blocks of translated \TeX\index{TeX?\TeX} or
+troff\index{troff} commands in {\tt mpx}\index{mpx file?{\tt mpx}
+  file}\index{files!mpx?{\tt mpx}} files.  It should be of no concern to
+users since {\tt mpx} files are generated automatically.
+
+\subsection{File Name Templates}
+\label{Dfilenametemplate}
+
+The output file naming template mechanism introduced in MetaPost
+version~1.000 originally used a primitive called
+\ttindex{filenametemplate}, as opposed to the internal string variable
+\ttt{outputtemplate}\index{outputtemplate?\texttt{outputtemplate}}
+described in section~\ref{Doutputtemplate}.  This primitive took a
+string argument with the same syntax as \ttt{outputtemplate}, except
+that it didn't know about the \verb|%{...}| escape sequence for
+evaluating internal variables, e.g.,:
+
+$$\begin{verbatim}
+filenametemplate "%j-%c.mps";
+\end{verbatim}
+$$
+
+The \verb|filenametemplate| primitive has been deprecated since the
+introduction of \verb|outputtemplate| (version~1.200), but is still
+supported.  If you happen to need writing future-proof source files,
+that at the same time are backwards compatible to MetaPost versions
+between 1.000 and~1.200, this output filename template declaration might
+help:
+
+$$\begin{verbatim}
+if scantokens(mpversion) < 1.200:
+  filenametemplate
+else:
+  outputtemplate :=
+fi
+"%j-%c.mps";
+\end{verbatim}
+$$
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-PDF-mode: t
+%%% TeX-master: "mpman"
+%%% End: 
