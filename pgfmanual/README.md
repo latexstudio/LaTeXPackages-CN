@@ -52,6 +52,7 @@ Till Tantau为我们提供了非常便捷的编译方式——`Makefile`(在每�
 - 键入`make clean`即清除临时文件。
 - 完整编译整个手册非常耗时，可建立一个工作分支，在当前分支上注释掉`pgfmanual-en-main-body.tex`中的大部分非关注内容。待测试通过后再编译全部文档，并合并到主分支上。
 
+
 ## 联系人
 
 未尽事宜，请来信垂询：[yangdawei.hit@qq.com](yangdawei.hit@qq.com)
