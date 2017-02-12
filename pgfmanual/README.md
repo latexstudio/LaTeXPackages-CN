@@ -15,3 +15,23 @@ PGF是用于生成图的宏包。它独立于平台和格式，与最重要的Te
 # 进度
 
 - 2016.2.12 建立本项目文档。
+
+
+# 文档结构
+
+- 每种编译版本文档，在`version-for-XXX`之中。
+- 文档正文在`text-en`中，也正是我们翻译的目标内容。
+
+# 操作
+
+## 翻译
+ [] Introduction
+ [] Tutorials and Guidelines
+    [] Tutorial: A Picture for Karl’s Students
+
+## 编译
+Till Tantau为我们提供了非常便捷的编译方式——`Makefile`(在每个版本文件夹中，如`/doc-zh/version-for-xetex/en/`)：
+
+- 在终端键入命令`make`即实现编译。
+- 键入`make clean`即清除临时文件。
+
