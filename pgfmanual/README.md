@@ -26,7 +26,9 @@ PGF是用于生成图的宏包。它独立于平台和格式，与最重要的Te
 
 ## 翻译
  [X] Introduction
+
  [ ] Tutorials and Guidelines
+
     [ ] Tutorial: A Picture for Karl’s Students
 
 ## 编译
