@@ -1,0 +1,182 @@
+% This document is in the public domain.
+% Originally written 2007, 2008 Troy Henderson.
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[charter]{mathdesign}
+\renewcommand*{\ttdefault}{lmtt}
+\linespread{1.05}
+\usepackage{textcomp}
+\usepackage{mflogo}
+\usepackage{microtype}
+\usepackage{ifpdf}
+\ifpdf\microtypesetup{expansion=true}\fi
+\usepackage[margin=1.25in,letterpaper]{geometry}
+\usepackage[rgb,x11names]{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\lstloadlanguages{MetaPost, [LaTeX]TeX}
+\lstdefinelanguage[ext]{MetaPost}[]{MetaPost}{
+  morekeywords={verbatimtex},
+  morekeywords=[2]{blackpart, cmykcolor, colormodel, colorpart,
+    cyanpart, greypart, magentapart, rgbcolor, yellowpart},
+  morekeywords=[3]{filenametemplate, withcmykcolor, withgreyscale,
+    withoutcolor, withpostscript, withprescript, withrgbcolor},
+  morekeywords=[5]{defaultcolormodel, mpprocset, outputformat,
+    outputtemplate},
+  morekeywords=[6]{mpversion},
+  morecomment=[s][basicstyle]{\%}{&},
+  deletekeywords=[4]{z}
+}
+\lstset{
+  basicstyle=\normalfont\ttfamily,
+  columns=flexible, breaklines=true, breakatwhitespace=true,
+  escapechar=|,
+  aboveskip=8pt, belowskip=8pt,
+  frame=leftline, framerule=32pt, framesep=16pt, xleftmargin=48pt
+}
+\colorlet{mpcolor}{Chartreuse3!50!white!95!black}
+% \colorlet{testcolor}{mpcolor!90!black}
+% \extractcolorspec{testcolor}{\testcol}
+% \show\testcol
+\lstdefinestyle{MP}{
+  language=[ext]MetaPost,
+  keywordstyle=\bfseries\color{mpcolor!75!black},
+  commentstyle=\itshape, 
+  rulecolor=\color{mpcolor}
+}
+\lstdefinestyle{LaTeX}{
+  language=[LaTeX]TeX, keywordstyle={}, commentstyle=\itshape,
+  rulecolor=\color{PeachPuff2}
+}
+\lstdefinestyle{text}{
+  keywordstyle={}, commentstyle={},
+  rulecolor=\color{Snow2!95!black}
+}
+\lstMakeShortInline[style=MP, keywordstyle={}, commentstyle={}]|
+\newcommand*{\File}[1]{\texttt{#1}}
+\usepackage{float}
+\floatplacement{figure}{htp}
+\floatplacement{table}{tp}
+\usepackage{hyperxmp}
+\usepackage{hyperref}
+\hypersetup{
+  pdfencoding=unicode,
+  pdfstartview=FitH,
+  pdfpagemode=UseNone,
+  colorlinks=true,
+  linkcolor=RoyalBlue3,
+  urlcolor=Chocolate4,
+  citecolor=DeepPink2
+}
+\usepackage{attachfile2}
+\attachfilesetup{
+  mimetype={text/plain}
+}
+\newcommand*{\paperclip}[1][]{\includegraphics[#1]{paperclip.mps}}
+\newcommand*{\attach}[2][]{%
+  \textattachfile[description={#2},#1]{#2}{\paperclip}%
+}
+\newlength{\attachmentraise}
+\newenvironment{withattachment}[2][0pt]
+{%
+  \setlength{\attachmentraise}{#1}%
+  \addtolength{\attachmentraise}{6pt}%
+  \makebox[0pt][l]{%
+    \raisebox{\attachmentraise}[0pt][0pt]{%
+      \makebox[32pt][c]{%
+        \attach[subject={MetaPost source file}]{#2}%
+      }%
+    }%
+  }%
+  \begin{minipage}[b]{\linewidth}%
+  }{%
+  \end{minipage}%
+}
+
+%%% Definitions copied from ltugboat.cls.
+\makeatletter
+\DeclareRobustCommand\SMC{%
+  \ifx\@currsize\normalsize\small\else
+   \ifx\@currsize\small\footnotesize\else
+    \ifx\@currsize\footnotesize\scriptsize\else
+     \ifx\@currsize\large\normalsize\else
+      \ifx\@currsize\Large\large\else
+       \ifx\@currsize\LARGE\Large\else
+        \ifx\@currsize\scriptsize\tiny\else
+         \ifx\@currsize\tiny\tiny\else
+          \ifx\@currsize\huge\LARGE\else
+           \ifx\@currsize\Huge\huge\else
+            \small\SMC@unknown@warning
+ \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi
+}
+\newcommand\SMC@unknown@warning{\TBWarning{\string\SMC: nonstandard
+    text font size command -- using \string\small}}
+\newcommand\textSMC[1]{{\SMC #1}}
+\newcommand\acro[1]{\textSMC{#1}\@}
+\def\endash{--}
+\def\emdash{\endash-}
+\def\thinskip{\hskip 0.16667em\relax}
+\def\d@sh#1#2{\unskip#1\thinskip#2\thinskip\ignorespaces}
+\def\Dash{\d@sh\nobreak\emdash}
+\def\JPEG{\acro{JPEG}}
+\def\PiC{P\kern-.05em\lower.5ex\hbox{I}\kern-.07emC\@}
+\def\PNG{\acro{PNG}}
+\def\PS{\acro{PS}}
+\def\SVG{\acro{SVG}}
+\makeatother
+
+\def\EPS{\acro{EPS}}
+\def\PDF{\acro{PDF}}
+\def\SVG{\acro{SVG}}
+\def\Xy{\leavevmode
+	\hbox{\kern-.1em X\kern-.15em\lower.4ex\hbox{Y\kern-.05em}}}
+\def\textdegree{$^\circ$}% real \textdegree is too small
+\def\RGB{\acro{RGB}}
+\def\CMYK{\acro{CMYK}}
+
+\iffalse
+% workaround for acrobat 7+8 bugs in printing
+	\let\origtextattachfile=\textattachfile
+			\renewcommand{\textattachfile}[3][]{%
+				{\notextattachfile[#1]{#3}}%
+				\origtextattachfile[#1]{#2}{#3}%
+			}
+\fi
+	
+\newcommand*{\showcol}[2][named]{%
+  \begingroup%
+  \setlength{\fboxsep}{0pt}%
+  \setlength{\fboxrule}{0.2pt}%
+%  \raisebox{1pt}{%
+    \fcolorbox{gray}[#1]{#2}{%
+      \makebox[1.5em]{\rule{0pt}{1.25ex}}%
+    }%
+%  }%
+  \endgroup%
+}
+
+\begin{document}
+
+\hypersetup{
+  pdftitle={A Beginner's Guide to MetaPost for Creating High-Quality Graphics},
+  pdfauthor={Troy Henderson, Stephan Hennig},
+  pdfsubject={MetaPost},
+  pdfkeywords={graphics, MetaPost, TeX, LaTeX, PostScript},
+  pdfcopyright={Public Domain}
+}
+
+\title{A Beginner's Guide to \MP{}\\for Creating High-Quality Graphics}
+\author{Troy Henderson \and Stephan Hennig}
+\maketitle
+
+\input{abstract}
+\input{intro}
+\input{compilation}
+\input{data}
+\input{commands}
+\input{graph}
+\input{inclusion}
+\input{conclusion}
+\input{biblio}
+
+\end{document}

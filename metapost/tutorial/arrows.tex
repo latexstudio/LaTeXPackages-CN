@@ -1,0 +1,34 @@
+\subsection{Arrow commands}
+
+When drawing simple graphs and other illustrations, the use of arrows is
+often essential.  There are two arrow commands in \MP{} for
+accommodating this need\Dash |drawarrow| and |drawdblarrow|.  Both of
+these commands require a path argument.  For example,
+
+\begin{lstlisting}[style=MP]
+drawarrow (0,0)--(72,72);
+\end{lstlisting}
+draws an arrow beginning at |(0,0)| and ending at |(72,72)| along the
+line segment connecting these points.
+
+The path argument of both |drawarrow| and |drawdblarrow| need not be
+line segmented paths\Dash they may be any \MP{} path.  The only
+difference between |drawarrow| and |drawdblarrow| is that |drawarrow|
+places an arrow head at the end of the path and |drawdblarrow| places an
+arrow head at the beginning and the end of the path.  As an example, to
+draw the curved path in \autoref{fig:draw1} with an arrow head at the
+end of the path (i.e., at |z3|), the following command can be used
+
+\begin{lstlisting}[style=MP]
+drawarrow z1{right}..z2{dir 45}..{up}z3;
+\end{lstlisting}
+and is illustrated in \autoref{fig:draw2}.
+
+\begin{figure}
+  \begin{withattachment}{draw.mp}
+    \centering
+    \includegraphics{draw-2.mps}
+  \end{withattachment}
+  \caption{Using \texttt{drawarrow} along a path}
+  \label{fig:draw2}
+\end{figure}

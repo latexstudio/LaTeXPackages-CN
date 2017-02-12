@@ -1,0 +1,1044 @@
+% $Id: mpgraph.tex 870 2009-03-06 11:04:56Z stephanhennig $
+% MetaPost graph doc, by John Hobby.  License at end.
+\listfiles
+\RequirePackage{ifpdf}
+\ifpdf
+\ifnum\pdftexversion<140
+\else
+\pdfminorversion=5
+\pdfobjcompresslevel=1% Use compressed object streams.
+\fi
+\RequirePackage{cmap}
+\fi
+\documentclass{article} % article is NOT the original style
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{mflogo}
+\usepackage{makeidx}
+\usepackage{fancyvrb}
+\usepackage{ctabbing}
+\RecustomVerbatimEnvironment{verbatim}{BVerbatim}{baseline=c}
+\usepackage{graphics}
+\usepackage[textwidth=6in,textheight=8.65in]{geometry}
+\usepackage{multicol}
+
+\newcommand\descr[1]{{\langle\hbox{\rm#1}\rangle}}
+\newcommand\invisgap{\nobreak\hskip0pt\relax}
+\newcommand\tdescr[1]{$\langle$\invisgap{\rm#1}\invisgap$\rangle$}
+\newcommand\Ignore[1]{} % For fooling delatex so spell will work
+
+\newcommand\mathcenter[1]{\vcenter{\hbox{#1}}}
+
+\author{John D. Hobby}
+\title{Drawing Graphs with {MetaPost}}
+\date{}
+
+
+\newcommand\myabstract{%
+This paper describes a graph-drawing package that has been implemented
+as an extension to the MetaPost graphics language.  MetaPost has
+a powerful macro facility for implementing such extensions.  There are
+also some new language features that support the graph macros.
+Existing features for generating and manipulating pictures
+allow the user to do things that would be difficult to achieve
+in a stand-alone graph package.}
+
+\newcommand\mykeywords{%
+    typesetting; graphs; MetaPost}
+
+\usepackage[rgb,x11names]{xcolor}% Optimize for screen reading.
+\usepackage{hyperxmp}
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle={Drawing Graphs with MetaPost},
+  pdfauthor={John D. Hobby and the MetaPost development team},
+  pdfkeywords={typesetting, graphs, MetaPost, TeX}
+}
+\hypersetup{
+  pdfstartview={XYZ null null null},% Zoom factor is determined by viewer.
+  colorlinks,
+  linkcolor=RoyalBlue3,
+  urlcolor=Chocolate4,
+  citecolor=SpringGreen3
+}
+\usepackage[all]{hypcap}
+\ifpdf
+\pdfmapfile{=cm2lm.map}% replace CM by LM in figures
+\else
+\DeclareGraphicsExtensions{.mps}
+\DeclareGraphicsRule{mps}{eps}{*}{}
+\usepackage{breakurl}
+\fi
+
+
+\begin{document}
+  \maketitle
+  \begin{abstract} \myabstract \end{abstract}
+  \ifx\keywords\undefined \else
+    \begin{keywords} \mykeywords \end{keywords}
+  \fi
+
+\setlength{\columnsep}{2.5em}
+\begin{multicols}{2}
+\tableofcontents
+\end{multicols}
+
+\section{Introduction}
+\label{intro}
+
+MetaPost is a batch-oriented graphics language based on Knuth's \MF\footnote{\MF\
+is a trademark of Addison Wesley Publishing Company.}, but with
+PostScript\footnote{PostScript is a registered trademark of Adobe Systems Inc.}
+output and numerous features for integrating text and graphics.
+The author has tried to make this paper as independent as possible of the
+user's manual~\cite{ho:mp3}, but fully appreciating all the material requires
+some knowledge of the MetaPost language.
+
+We concentrate on the mechanics of producing particular kinds of graphs
+because the question of what type of graph is best in a given situation
+is covered elsewhere; e.g., Cleveland~\cite{Cleve85,Cleve93,Cleve93a} and
+Tufte~\cite{Tufte83}.
+The goal is to provide at least the power of UNIX\footnote{UNIX is a registered
+trademark of UNIX System Laboratories, Inc.} {\it
+grap\/}~\cite{BenKer90}, but within the MetaPost language.
+Hence the package is implemented using MetaPost's powerful macro facility.
+
+The graph macros provide the following functionality:
+\begin{enumerate}
+\item Automatic scaling
+\item Automatic generation and labeling of tick marks or grid lines
+\item Multiple coordinate systems
+\item Linear and logarithmic scales
+\item Separate data files
+\item Ability to handle numbers outside the usual range
+\item Arbitrary plotting symbols
+\item Drawing, filling, and labeling commands for graphs
+\end{enumerate}
+In addition to these items, the user also has access to all the features
+described in the MetaPost user's manual~\cite{ho:mp3}.
+These include access to almost all the features of PostScript,
+ability to use and manipulate typeset text,
+ability to solve linear equations,
+and data types for points, curves, pictures, and coordinate transformations.
+
+Section~\ref{grmac} describes the graph macros from a user's perspective
+and presents several examples.  Sections \ref{nummac} and~\ref{formsec} discuss
+auxiliary packages for manipulating and typesetting numbers and Section~\ref{concl}
+gives some concluding remarks.  Appendix~\ref{summsec} summarizes the graph-drawing
+macros.
+
+
+\section{Using the Graph Macros}
+\label{grmac}
+
+A MetaPost input file that uses the graph macros should begin with
+$$ \hbox{\tt input graph} $$
+This reads a macro file {\tt graph.mp} and defines the graph-drawing commands
+explained below.  The rest of the file should be one or more instances of
+$$ \vbox{\hbox{\tt beginfig($\descr{figure number}$);}
+        \hbox{\tt $\descr{graphics commands}$ endfig;}}
+$$
+followed by {\tt end}.
+
+The following \tdescr{graphics commands} suffice to generate the graph in
+Figure~\ref{fig1} from the data file {\tt agepop91.d}:
+$$\begin{verbatim}
+draw begingraph(3in,2in);
+  gdraw "agepop91.d";
+  endgraph;
+\end{verbatim}
+$$
+(Each line of {\tt agepop91.d} gives an age followed the estimated number of
+Americans of that age in 1991 \cite{Census92}.)
+
+\begin{figure}[htp]
+$$ \includegraphics{mpgraph-1.mps} $$
+\caption{A graph of the 1991 age distribution in the United States}
+\label{fig1}
+\end{figure}
+
+\subsection{Basic Graph-Drawing Commands}
+
+% begingraph, endgraph, gdraw
+
+All graphs should begin with
+$$ \hbox{\tt begingraph($\descr{width}$,$\descr{height}$);} $$
+and end with {\tt endgraph}.  This is syntactically a \tdescr{picture expression},
+so it should be preceded by {\tt draw} and followed by a semicolon as in the
+example.\footnote{See the User's Manual~\cite{ho:mp3} for explanations of {\tt draw}
+commands and syntactic elements like \tdescr{picture expression}.}
+The \tdescr{width} and \tdescr{height} give the dimensions of the
+graph itself without the axis labels.
+
+The command
+$$ {\tt gdraw}\ \descr{expression}\ \descr{option list} $$
+draws a graph line.  If the \tdescr{expression} is of type string, it names a data
+file; otherwise it is a path that gives the function to draw.  The
+\tdescr{option list} is zero or more drawing options
+$$ {\tt withpen} \descr{pen expression}
+   \mid {\tt withcolor} \descr{color expression}
+   \mid {\tt dashed} \descr{picture expression}
+$$
+that give the line width, color, or dash pattern as explained in the User's
+Manual~\cite{ho:mp3}.
+
+% plot <picture>
+
+In addition to the standard drawing options, the \tdescr{option list} in a
+{\tt gdraw} statement can contain
+$$ {\tt plot}\ \descr{picture expression} $$
+The \tdescr{picture expression} gives a plotting symbol to be drawn at each
+path knot.  The {\tt plot} option suppresses line drawing so that%
+\footnote{Troff users should replace {\tt btex \$\string\bullet\$ etex} with
+{\tt btex \string\(bu etex}.}
+\Ignore{\)}% Help delatex so spell will work
+$$ \hbox{\verb|gdraw "agepop91.d" plot btex $\bullet$ etex|} $$
+generates only bullets as shown in Figure~\ref{fig2}.
+(Following the {\tt plot} option with a {\tt withpen} option would
+cause the line to reappear superimposed on the plotting symbols.)
+
+\begin{figure}[htp]
+$$ \includegraphics{mpgraph-2.mps} $$
+\caption{The 1991 age distribution plotted with bullets}
+\label{fig2}
+\end{figure}
+
+Watch out for the following: the \tdescr{picture expression} is placed
+with the lower-left corner at the path knot, not its center. If you
+want it to be dead-center, you have to correct the placement
+yourself. For the example above, you need something like this instead:
+
+\medskip
+\begin{verbatim}
+def MPbullet = 
+   btex \lower\fontdimen22\cmsy \hbox to 0pt{\hss\cmsy\char15\hss} etex 
+enddef;
+\end{verbatim}
+
+\medskip\noindent
+followed by:
+$$ \hbox{\verb|gdraw "agepop91.d" plot MPbullet|} $$
+
+
+% glabel, gdotlabel, OUT
+
+The {\tt glabel} and {\tt gdotlabel} commands add labels to a graph.  The
+syntax for {\tt glabel} is
+$$ {\tt glabel.}\ \descr{label suffix}
+    \hbox{\tt ($\descr{string or picture expression}$, $\descr{location}$)}
+    \ \descr{option list}
+$$
+where \tdescr{location} identifies the location being labeled and
+\tdescr{label suffix} tells how the label is offset relative to that location.
+The {\tt gdotlabel} command is identical, except it marks the location with a
+dot.  A \tdescr{label suffix} is as in plain MetaPost:
+\tdescr{empty} centers the label on the location;
+{\tt lft}, {\tt rt}, {\tt top}, {\tt bot} offset the label horizontally or
+vertically; and {\tt ulft}, {\tt urt}, {\tt llft}, {\tt lrt} give diagonal
+offsets.  The \tdescr{location} can be a pair of graph coordinates, a knot
+number on the last {\tt gdraw} path, or the special location {\tt OUT}.
+Thus
+$$ \hbox{\verb|gdotlabel.top(btex $(50,0)$ etex, 50,0)|} $$
+would put a dot at graph coordinates {\tt(50,0)} and place the typeset text
+``$(50,0)$'' above it.  Alternatively,
+$$ \hbox{\verb|glabel.ulft("Knot3", 3)|} $$
+typesets the string {\tt "Knot3"} and places it above and to the left of
+Knot~3 of the last {\tt gdraw} path.  (The knot number 3 the path's ``time''
+parameter~\cite[Section 8.2]{ho:mp3}.)
+
+The \tdescr{location} {\tt OUT} places a label relative to the whole graph.
+For example, replacing ``{\tt gdraw "agepop91.d"}'' with
+$$\begin{verbatim}
+glabel.lft(btex \vbox{\hbox{Population} \hbox{in millions}} etex, OUT);
+glabel.bot(btex Age in years etex, OUT);
+gdraw "agepopm.d";
+\end{verbatim}
+$$
+in the input for Figure~\ref{fig1} generates Figure~\ref{fig3}.
+This improves the graph by adding axis labels and using a new data file
+{\tt agepopm.d} where the populations have been divided by one million to avoid
+large numbers.  We shall see later that simple transformations such as this can
+be achieved without generating new data files.
+
+\begin{figure}[htp]
+$$ \includegraphics{mpgraph-3.mps} $$
+\caption{An improved version of the 1991 age distribution graph}
+\label{fig3}
+\end{figure}
+
+All flavors of \TeX\ can handle multi-line labels via the \verb|\hbox| within
+\verb|\vbox| arrangement used above, but \LaTeX\ users will find it more natural
+to use the {\tt tabular} environment~\cite{LaTeXman}.
+Troff user's can use nofill mode:
+$$\begin{verbatim}
+btex .nf
+Population
+in millions etex
+\end{verbatim}
+$$
+
+
+\subsection{Coordinate Systems}
+\label{coords}
+
+The graph macros automatically shift and rescale coordinates from data files,
+{\tt gdraw} paths, and {\tt glabel} locations to fit the graph.  Whether the
+range of $y$~coordinates is 0.64 to 4.6 or 640,000 to 4,600,000, they
+get scaled to fill about 88\% of the height specified in the {\tt begingraph}
+statement.  Of course line widths, labels, and plotting symbols are not
+rescaled.
+
+% setrange
+
+The {\tt setrange} command controls the shifting and rescaling process by
+specifying the minimum and maximum graph coordinates:
+$$ \hbox{\tt setrange($\descr{coordinates}$,\,$\descr{coordinates}$)} $$
+where
+\begin{ctabbing}
+$\tt \descr{coordinates} \rightarrow \descr{pair expression}$\\
+$\tt \qquad \;|\; \descr{numeric or string expression}\hbox{\tt ,}
+        \descr{numeric or string expression}$
+\end{ctabbing}
+The first \tdescr{coordinates} give $(x_{\rm min},y_{\rm min})$ and the second give
+$(x_{\rm max},y_{\rm max})$.  The lines $x=x_{\rm min}$, $x=x_{\rm max}$,
+$y=y_{\rm min}$, and $y=y_{\rm max}$ define the rectangular frame around the graph
+in Figures \ref{fig1}--\ref{fig3}.  For example, an adding a statement
+$$ \hbox{\tt setrange(origin, whatever,\,whatever)} $$
+to the input for Figure~\ref{fig3} yields Figure~\ref{fig4}.
+The first \tdescr{coordinates} are given by the predefined pair constant
+{\tt origin}, and the other coordinates are left unspecified.  Any unknown
+value would work as well, but {\tt whatever} is the standard MetaPost
+representation for an anonymous unknown value.
+
+\begin{figure}[htp]
+$$ \begin{verbatim}
+draw begingraph(3in,2in);
+ glabel.lft(btex \vbox{\hbox{Population} \hbox{in millions}} etex, OUT);
+ glabel.bot(btex Age in years etex, OUT);
+ setrange(origin, whatever,whatever);
+ gdraw "agepopm.d";
+ endgraph;
+\end{verbatim}
+\atop
+\includegraphics{mpgraph-4.mps}
+$$
+\caption{The 1991 age distribution graph and the input that creates it.}
+\label{fig4}
+\end{figure}
+
+% strings for big coordinates
+
+Notice that the syntax for {\tt setrange} allows coordinate values to be given
+as strings.  Many commands in the graph package allow this option.  It is
+provided because the MetaPost language uses fixed point numbers that must be
+less than 32768.  This limitation is not as serious as it sounds because good
+graph design dictates that coordinate values should be ``of reasonable
+magnitude''~\cite{Cleve85,Tufte83}.  If you really want $x$ and $y$
+to range from 0 to 1,000,000,
+$$ \hbox{\tt setrange(origin, "1e6",\,"1e6")} $$
+does the job.  Any fixed or floating point representation is acceptable
+as long as the exponent is introduced by the letter ``{\tt e}''.
+
+% setcoords
+
+Coordinate systems need not be linear.  The {\tt setcoords} command allows
+either or both axes to have logarithmic spacing:
+\begin{ctabbing}
+$\tt \descr{coordinate setting} \rightarrow setcoords\hbox{\tt (}
+        \descr{coordinate type}\hbox{\tt ,}\,\descr{coordinate type}\hbox{\tt )}$\\
+$\tt \descr{coordinate type} \rightarrow
+        log \;|\; linear \;|\; \hbox{\tt -}log \;|\; \hbox{\tt -}linear$
+\end{ctabbing}
+A negative \tdescr{coordinate type} makes $x$ (or $y$) run backwards so it is
+largest on the left side (or bottom) of the graph.
+
+Figure~\ref{fig5} graphs execution times for two matrix multiplication algorithms
+using
+$$ \hbox{\tt setcoords(log,log)} $$
+to specify logarithmic spacing on both axes.  The data file {\tt matmul.d} gives
+timings for both algorithms:
+$$ \hbox to\hsize{\footnotesize\hfil$
+\begin{verbatim}
+20      .007861  standard MM: size, seconds
+30      .022051
+40      .050391
+60      .15922
+80      .4031
+120     1.53
+160     3.915
+240     18.55
+320     78.28
+480     279.24
+
+20      .006611  Strassen: size, seconds
+30      .020820
+40      .049219
+60      .163281
+80      .3975
+120     1.3125
+160     3.04
+240     9.95
+320     22.17
+480     72.60
+\end{verbatim}
+\hfil$}
+$$
+A blank line in a data file ends a data set.  Subsequent {\tt gdraw} commands
+access additional data sets by just naming the same data file again.
+Since each line gives one $x$~coordinate and one $y$~coordinate, commentary
+material after the second data field on a line is ignored.
+
+\begin{figure}[htp]
+$$ \mathcenter{\includegraphics{mpgraph-5.mps}}
+ \quad
+\begin{BVerbatim}[baseline=c]
+draw begingraph(2.3in,2in);
+ setcoords(log,log);
+ glabel.lft(btex Seconds etex,OUT);
+ glabel.bot(btex Matrix size etex,
+   OUT);
+ gdraw "matmul.d" dashed evenly;
+ glabel.ulft(btex Standard etex,8);
+ gdraw "matmul.d";
+ glabel.lrt(btex Strassen etex,7);
+ endgraph;
+\end{BVerbatim}
+$$
+\caption{Timings for two matrix multiplication algorithms with the corresponding
+        MetaPost input.}
+\label{fig5}
+\end{figure}
+
+Placing a {\tt setcoords} command between two {\tt gdraw} commands graphs two
+functions in different coordinate systems as shown in Figure~\ref{fig6}.
+Whenever you give a {\tt setcoords} command, the interpreter examines what has
+been drawn, selects appropriate $x$ and $y$ ranges, and scales everything to
+fit.  Everything drawn afterward is in  a new coordinate system that need not
+have anything in common with the old coordinates unless {\tt setrange} commands
+enforce similar coordinate ranges.  For instance, the two {\tt setrange}
+commands force both coordinate systems to have $x$ ranging from 80 to~90 and
+$y$~starting at 0.
+
+\begin{figure}[htp]
+$$ \begin{verbatim}
+draw begingraph(6.5cm,4.5cm);
+ setrange(80,0, 90,whatever);
+ glabel.bot(btex Year etex, OUT);
+ glabel.lft(btex \vbox{\hbox{Emissions in} \hbox{thousands of}
+   \hbox{metric tons} \hbox{(heavy line)}}etex, OUT);
+ gdraw "lead.d" withpen pencircle scaled 1.5pt;
+ autogrid(,otick.lft);
+ setcoords(linear,linear);
+ setrange(80,0, 90,whatever);
+ glabel.rt(btex \vbox{\hbox{Micrograms} \hbox{per cubic}
+   \hbox{meter of air} \hbox{(thin line)}}etex, OUT);
+ gdraw "lead.d";
+ autogrid(otick.bot,otick.rt);
+ endgraph;
+\end{verbatim}
+  \atop
+\mathcenter{\includegraphics{mpgraph-6.mps}}
+$$
+\caption{Annual lead emissions and average level at atmospheric monitoring
+        stations in the United States.  The MetaPost input is shown above
+        the graph.}
+\label{fig6}
+\end{figure}
+
+% autogrid
+
+When you use multiple coordinate systems, you have to specify where the axis
+labels go.  The default is to put tick marks on the bottom and the left side of
+the frame using the coordinate system in effect when the {\tt endgraph} command
+is interpreted.  Figure~\ref{fig6} uses the
+$$ \hbox{\tt autogrid(,otick.lft)} $$
+to label the left side of the graph with the $y$~coordinates in effect before
+the {\tt setcoords} command.  This suppresses the default axis labels, so another
+{\tt autogrid} command is needed to label the bottom and right sides of the
+graph using the new coordinate system.  The general syntax is
+$$ \hbox{$\tt autogrid\hbox{\tt (}\descr{axis label command}\hbox{\tt ,}\,
+        \descr{axis label command}\hbox{\tt )}\ \descr{option list}$}
+$$
+where
+\begin{ctabbing}
+$\tt \descr{axis label command} \rightarrow \descr{empty}
+        \;|\; \descr{grid or tick}\, \descr{label suffix}$\\
+$\tt \descr{grid or tick} \rightarrow grid \;|\; itick \;|\; otick$
+\end{ctabbing}
+The \tdescr{label suffix} should be {\tt lft}, {\tt rt}, {\tt top},
+or {\tt bot}.
+
+The first argument to {\tt autogrid} tells how to label the $x$~axis and the
+second argument does the same for~$y$.  An \tdescr{empty} argument suppresses
+labeling for that axis.  Otherwise, the \tdescr{label suffix} tells which side
+of the graph gets the numeric label.  Be careful to use {\tt bot} or {\tt top}
+for the $x$~axis and {\tt lft} or {\tt rt} for the $y$~axis.  Use {\tt otick}
+for outward tick marks, {\tt itick} for inward tick marks, and {\tt grid} for
+grid lines.  The \tdescr{option list} tells how to draw the tick marks or grid
+lines.  Grid lines tend to be a little overpowering, so it is a good idea to
+give a {\tt withcolor} option to make them light gray so they do not make the
+graph too busy.
+
+
+\subsection{Explicit Grids and Framing}
+
+% otick, itick, grid, (format)
+
+In case {\tt autogrid} is not flexible enough, axis label commands generate
+grid lines or tick marks one at a time.  The syntax is
+$$ \descr{grid or tick}\hbox{\tt .}\descr{label suffix}
+        \hbox{\tt ($\descr{label format}$,\,$\descr{numeric or string expression}$)}
+        \ \descr{option list}
+$$
+where \tdescr{grid or tick} and \tdescr{label suffix} are as in {\tt autogrid},
+and \tdescr{label format} is either a format string like \verb|"%g"| or a
+picture containing the typeset numeric label.
+
+The axis label commands use a macro
+$$ \hbox{\tt format($
+        \descr{format string}$,\,$\descr{numeric or string expression}$)}
+$$
+to typeset numeric labels.  Full details appear in Section~\ref{formsec},
+but when the \tdescr{format string} is \verb|"%g"|, it uses decimal notation
+unless the number is large enough or small enough to require scientific notation.
+
+The example in Figure~\ref{fig7} invokes
+$$ \hbox{\verb|format("%g",y)|} $$
+explicitly so that grid lines can be placed at transformed coordinates.
+It defines the transformation ${\tt newy}(y)=y/75+\ln y$ and shows that
+this function increases almost linearly.\footnote{The manual~\cite{ho:mp3}
+explains how {\tt vardef} defines functions and {\tt mlog} computes logarithms.}
+This is a little like using logarithmic $y$-coordinates, except that $y$ is
+mapped to $y/75+\ln y$ instead of just $\ln y$.
+
+\begin{figure}[htp]
+$$ \begin{verbatim}
+vardef newy(expr y) = (256/75)*y + mlog y enddef;
+draw begingraph(3in,2in);
+ glabel.lft(btex \vbox{\hbox{Population} \hbox{in millions}} etex, OUT);
+ path p;
+ gdata("timepop.d", $, augment.p($1, newy(Scvnum $2)); );
+ gdraw p withpen nullpen;
+ for y=5,10,20,50,100,150,200,250:
+   grid.lft(format("%g",y), newy(y)) withcolor .85white;
+ endfor
+ autogrid(grid.bot,) withcolor .85white;
+ gdraw p;
+ frame.llft;
+ endgraph;
+\end{verbatim}
+   \atop
+   \includegraphics{mpgraph-7.mps}
+$$
+\caption{Population of the United States in millions versus time with the
+        population re-expressed as $p/75+\ln p$.  The MetaPost input shown
+        above the graph assumes a data file {\tt ttimepop.d} that gives
+        (year, $p/75+\ln p$) pairs.}
+\label{fig7}
+\end{figure}
+
+% frame
+
+Figure~\ref{fig7} uses the command
+$$ \hbox{\tt frame.} \descr{label suffix}\ \descr{option list} $$
+to draw a special frame around the graph.  In this case the \tdescr{label suffix}
+is {\tt llft} to draw just the bottom and left sides of the frame.  Suffixes
+{\tt lrt}, {\tt ulft}, and {\tt urt} draw other combinations of two sides;
+suffixes {\tt lft}, {\tt rt}, {\tt top}, {\tt bot} draw one side, and \tdescr{empty}
+draws the whole frame.  For example
+$$ \hbox{\verb|frame dashed evenly|} $$
+draws all four sides with dashed lines.  The default four-sided frame is drawn
+only when there is no explicit {\tt frame} command.
+
+% auto, (sarith.mp)
+
+To label an axis as {\tt autogrid} does but with the labels transformed
+somehow, use
+$$ \hbox{{\tt auto.x}\quad or\quad {\tt auto.y}} $$
+for positioning tick marks or grid lines.  These macros produce comma-separated
+lists for use in {\tt for} loops.  Any $x$ or $y$ values in these lists that
+cannot be represented accurately within MetaPost's fixed-point number system
+are given as strings.  A standard macro package that is loaded via
+$$ \hbox{\tt input sarith}  $$
+defines arithmetic operators that work on numbers or strings.  Binary operators
+{\tt Sadd}, {\tt Ssub}, {\tt Smul}, and {\tt Sdiv} do addition, subtraction
+multiplication, and division.
+
+One possible application is rescaling data.
+Figure~\ref{fig4} used a special data file {\tt agepopm.d} that had $y$~values
+divided by one million.  This could be avoided by replacing
+``{\tt gdraw "agepopm.d"}'' by
+$$\begin{verbatim}
+gdraw "agepop91.d";
+for u=auto.y: otick.lft(format("%g",u Sdiv "1e6"), u); endfor
+autogrid(otick.bot,)
+\end{verbatim}
+$$
+
+
+\subsection{Processing Data Files}
+\label{dfilesec}
+
+% gdata
+
+The most general tool for processing data files is the {\tt gdata} command:
+$$ \hbox{\tt gdata(} \descr{string expression} \hbox{\tt,}\, \descr{variable}
+        \hbox{\tt,}\, \descr{commands} \hbox{\tt )}
+$$
+It takes a file name, a variable~$v$, and a list of commands to be executed for
+each line of the data file.  The commands are executed with {\tt i} set to the
+input line number and strings $v${\tt 1}, $v${\tt 2}, $v${\tt 3}, \ldots\ set
+to the input fields on the current line.  A null string marks the end of the
+$v$ array.
+
+Using a {\tt glabel} command inside of {\tt gdata} generates a scatter plot
+as shown in Figure~\ref{fig8}.  The data file {\tt countries.d} begins
+$$\begin{verbatim}
+20.910 75.7 US
+ 1.831 66.7 Alg
+\end{verbatim}
+$$
+where the last field in each line gives the label to be plotted.  Setting
+{\tt defaultfont} in the first line of input selects a small font for these
+labels.  Without these labels, no {\tt gdata} command would be needed.
+Replacing the {\tt gdata} command with
+$$ \hbox{\verb|gdraw "countries.d" plot btex$\circ$etex|} $$
+would change the abbreviated country names to open circles.
+
+\begin{figure}[htp]
+$$\begin{verbatim}
+defaultfont:="cmr7";
+draw begingraph(3in,2in);
+  glabel.lft(btex \vbox{\hbox{Life}\hbox{expectancy}} etex, OUT);
+  glabel.bot(btex Per capita G.N.P. (thousands of dollars) etex, OUT);
+  setcoords(log,linear);
+  gdata("countries.d", s,
+    glabel(s3, s1, s2);
+  )
+  endgraph;
+\end{verbatim}
+ \atop
+ \includegraphics{mpgraph-8.mps}
+$$
+\caption{A scatter plot and the commands that generated it}
+\label{fig8}
+\end{figure}
+
+Both {\tt gdraw} and {\tt gdata} ignore an optional initial `\%' on each input
+line, parse data fields separated by white space, and stop if they encounter an
+input line with no data fields.  Leading percent signs make graph data
+look like MetaPost comments so that numeric data can be placed at the beginning
+of a MetaPost input file.
+
+% augment
+
+It is often useful to construct one or more paths when reading a data file
+with {\tt gdata}.  The {\tt augment} command is designed for this:
+$$ \hbox{\tt augment.} \descr{path variable} \hbox{\tt(}\descr{coordinates}\hbox{\tt)}
+$$
+If the path variable does not have a known value, it becomes a path of length
+zero at the given coordinates; otherwise a line segment to the given coordinates
+is appended to the path.  The \tdescr{coordinates} may be a pair expression or
+any combination of strings and numerics as explained at the beginning of
+Section~\ref{coords}.
+
+If a file {\tt timepop.d} gives $t$,~$p$ pairs, {\tt augment} can be used like
+this to graph {\tt newy(}$p${\tt)} versus~$t$:
+$$\begin{verbatim}
+path p;
+gdata("timepop.d", s, augment.p(s1, newy(scantokens s2)); );
+gdraw p;
+\end{verbatim}
+$$
+(MetaPost's {\tt scantokens} primitive interprets a string as if it were the
+contents of an input file.  This finds the numeric value of data field
+{\tt s2}.)
+
+% gfill (energy.d)
+
+Figure~\ref{fig9} shows how to use {\tt augment} to read multiple column data
+and make multiple paths.  Paths {\tt p2}, {\tt p3}, {\tt p4}, {\tt p5} give
+cumulative totals for columns 2 through 5 and pictures {\tt lab2} through
+{\tt lab5} give corresponding labels.  The expression
+$$ \hbox{\verb|image(unfill bbox lab[j]; draw lab[j])|} $$
+executes the given drawing commands and returns the resulting picture:
+``{\tt unfill bbox lab[j]}'' puts down a white background and ``{\tt draw
+lab[j]}'' puts the label on the background.
+The {\tt gfill} command is just like {\tt gdraw}, except it takes a cyclic
+path and fills the interior with a solid color.  The color is black unless
+a {\tt withcolor} clause specifies another color.
+See the manual~\cite{ho:mp3} for
+explanations of {\tt for} loops, arrays, colors, and path construction
+operators like \verb|--|, {\tt cycle}, and {\tt reverse}.
+
+\begin{figure}[htp]
+$$\begin{verbatim}
+draw begingraph(3in,2in);
+  glabel.lft(btex \vbox{\hbox{Quadrillions}\hbox{of BTU}} etex, OUT);
+  path p[];
+  numeric t;
+  gdata("energy.d", $,
+    t:=0; augment.p1($1,0);
+    for j=2 upto 5:
+       t:=t+scantokens $[j]; augment.p[j]($1,t);
+    endfor)
+  picture lab[];
+  lab2=btex coal etex; lab3=btex crude oil etex;
+  lab4=btex natural gas etex; lab5=btex hydroelectric etex;
+  for j=5 downto 2:
+    gfill p[j]--reverse p[j-1]--cycle withcolor .16j*white;
+    glabel.lft(image(unfill bbox lab[j]; draw lab[j]), .7+length p[j]);
+  endfor
+  endgraph;
+\end{verbatim}
+ \atop
+ \includegraphics{mpgraph-9.mps}
+$$
+\caption{A graph of U.S. annual energy production
+        and the commands that generated it}
+\label{fig9}
+\end{figure}
+
+
+\section{Manipulating Big Numbers}
+\label{nummac}
+
+MetaPost inherits a fixed-point number system from Knuth's \MF~\cite{kn:d}.
+Numbers are expressed in multiples of $2^{-16}$ and they must have absolute
+value less than 32768.  Knuth chose this system because it is perfectly adequate
+for font design, and it guaranteed to give identical results on all types of
+computers.  Fixed-point numbers are seldom a problem in MetaPost because all
+computations are based on coordinates that are limited by the size the paper on
+which the output is to be printed.  This does not hold for the input data in a
+graph-drawing application.  Although graphs look best when coordinate axes are
+labeled with numbers of reasonable magnitude, the strict limits of fixed-point
+arithmetic would be inconvenient.
+
+% Sadd, Ssub, Smul, Sdiv
+
+A simple way to handle large numbers is to include the line
+$$ \hbox{\tt input sarith} $$
+and then use binary operators {\tt Sadd}, {\tt Ssub}, {\tt Smul}, and {\tt Sdiv}
+in place of \verb|+|, \verb|-|, \verb|*|, and \verb|/|.  These operators are
+inefficient but very flexible.  They accept numbers or strings and return
+strings in exponential notation with the exponent marked by ``{\tt e}'';
+e.g., \verb|"6.7e-11"| means $6.7\times10^{-11}$.
+
+% Sabs, Sleq, Sneq
+
+The unary operator\footnote{The argument to a unary operator need not be
+parenthesized unless it is an expression involving binary operators.}
+$$ {\tt Sabs}\ \descr{string} $$
+finds a string the represents the absolute value.  Binary operators {\tt Sleq}
+and {\tt Sneq} perform numeric comparisons on strings and return boolean
+results.
+
+% Scvnum
+
+The operation
+$$ {\tt Scvnum}\ \descr{string} $$
+finds the numeric value for a string if this can be done without overflowing
+MetaPost's fixed-point number system.  If the string does not contain
+``{\tt e}'', it is much more efficient to use the primitive operation
+$$ {\tt scantokens}\ \descr{string} $$
+
+% Mten
+
+The above operators are based on a low-level package that manipulates numbers
+in ``{\tt Mlog} form.''  A number $x$ in {\tt Mlog} form represents
+$$ \mu^{2^{16}x}, \quad {\rm where\ } \mu=-e^{2^{-24}}. $$
+Any value between $1.61\times10^{-28}$ and $3.88\times10^{55}$ can be
+represented this way.  (There is a constant {\tt Mten} such that $k*{\tt Mten}$
+represents $10^k$ for any integer~$k$ in the interval $[-29,55]$.)
+
+% Mreadpath, Gpaths
+
+The main reason for mentioning {\tt Mlog} form is that it allows graph data
+to be manipulated as a MetaPost path.  The function
+$$ \hbox{\tt Mreadpath($\descr{file name}$)} $$
+reads a data file and returns a path where all the coordinates are in
+{\tt Mlog} form.  An internal variable {\tt Gpaths} determines whether
+{\tt gdraw} and {\tt gfill} expect paths to be given in {\tt Mlog} form.
+For example, this graphs the data in {\tt agepop91.d} with $y$ coordinates
+divided by one million:
+$$\begin{verbatim}
+interim Gpaths:=log;
+gdraw Mreadpath("agepop91.d") shifted (0,-6*Mten);
+\end{verbatim}
+$$
+
+
+\section{Typesetting Numbers}
+\label{formsec}
+
+% format
+
+The graph package needs to compute axis labels and then typeset them.
+The macro
+$$ \hbox{\tt format($\descr{string expression}$,\,%
+        $\descr{numeric or string expression}$)} $$
+does this.  You must first {\tt input graph} or {\tt input format} to load the
+macro file.  The macro takes a format string and a number to typeset and returns
+a picture containing the typeset result.  Thus
+$$ \hbox{\verb|format("%g",2+2)|}\quad {\rm yields}\quad \includegraphics{mpgraph-10.mps} $$
+and
+$$ \hbox{\verb|format("%3g","6.022e23")|}
+        \quad {\rm yields}\quad \includegraphics{mpgraph-11.mps}
+$$
+
+A format string consists of
+\begin{itemize}
+\item an optional initial string not containing a percent sign,
+\item a percent sign,
+\item an optional numeric precision $p$,
+\item one of the conversion letters {\tt e}, {\tt f}, {\tt g}, {\tt G},
+\item an optional final string $\beta$.
+\end{itemize}
+The initial and final strings are typeset in the default font (usually
+{\tt cmr10}), and the typeset number is placed between them.  For the {\tt e}
+and {\tt g} formats, the precision~$p$ is the number of significant digits
+allowed after rounding; for {\tt f} and {\tt G}, the number is rounded to the
+nearest multiple of $10^{-p}$.  If the precision is not specified, the default
+is $p=3$.  The {\tt e} format always uses scientific
+notation and the {\tt f} format uses ordinary decimal notation but reverts to
+scientific notation if the number is at least 10000.  The {\tt g} and {\tt G}
+formats also revert to scientific notation for non-zero numbers of magnitude
+less than 0.001.
+
+% init_numbers
+
+The {\tt format} macro needs a set of templates to determine what font to use,
+how to position the exponent, etc.  The templates are normally initialized
+automatically, but it is possible to set them explicitly by passing five picture
+expressions to {\tt init\_numbers}.  For instance, the default definition for
+\TeX\ users is
+$$\begin{verbatim}
+init_numbers(btex$-$etex, btex$1$etex, btex${\times}10$etex,
+    btex${}^-$etex, btex${}^2$etex)
+\end{verbatim}
+$$
+The first argument tells how to typeset a leading minus sign;
+the second argument is an example of a 1-digit mantissa;
+third comes whatever to put after the mantissa in scientific notation;
+next come a leading minus sign for the exponent and a sample 1-digit exponent.
+
+% Fe_plus, Fe_base
+
+Picture variable \verb|Fe_plus| gives a leading plus sign for positive numbers,
+and \verb|Fe_base| gives whatever should precede the exponent when typesetting
+a power of ten.  Calling \verb|init_numbers| initializes \verb|Fe_plus| to an
+empty picture and constructs \verb|Fe_base| from its second and third arguments.
+
+
+
+\section{Conclusion}
+\label{concl}
+
+The graph package makes it convenient to generate graphs from within the MetaPost
+language.  The primary benefits are the power of the MetaPost language and its
+ability to interact with \TeX\ or troff for typesetting labels.  Typeset labels
+can be stored in picture variables and manipulated in various ways such measuring
+the bounding box and providing a white background.
+
+We have seen how to generate shaded regions and control line width, color, and
+styles of dashed lines.  Numerous other variations are possible.
+The full MetaPost language~\cite{ho:mp3} provides many other potentially useful
+features.  It also has enough computing power to be useful for generating and
+processing data.
+
+
+
+\appendix
+\section{Summary of the Graph Package}
+\label{summsec}
+
+% Not described elsewhere: gdrawarrow, gdrawdblarrow, Gmarks, Gminlog, Autoform
+
+In the following descriptions, italic letters such as $w$ and $h$ denote
+expression parameters and words in angle brackets denote other syntactic
+elements.  Unless specified otherwise, expression parameters can be either
+numerics or strings.  An \tdescr{option list} is a list of drawing options such
+as {\tt withcolor .5white} or {\tt dashed evenly};
+a \tdescr{label suffix} is one of {\tt lft}, {\tt rt}, {\tt top}, {\tt bot},
+{\tt ulft}, {\tt urt}, {\tt llft}, {\tt lrt}.
+
+\subsection{Graph Administration}
+
+\begin{description}
+\item[{\tt begingraph($w$,$h$)}]
+        Begin a new graph with the frame width and height given by numeric
+        parameters $w$ and $h$.
+\item[{\tt endgraph}]
+        End a graph and return the resulting picture.
+\item[{\tt setcoords($t_x$,\,$t_y$)}]
+        Set up a new coordinate system as specified by numeric flags $t_x$,
+        $t_y$.  Flag values are $\pm{\tt linear}$ and $\pm{\tt log}$.
+\item[{\tt setrange($\descr{coordinates}$,\,$\descr{coordinates}$)}]
+        Set the lower and upper limits for the current coordinate system.
+        Each \tdescr{coordinates} can be a single pair expression or two
+        numeric or string expressions.
+\end{description}
+
+\subsection{Drawing and Labeling}
+
+All of the drawing and labeling commands can be followed by an
+\tdescr{option list}.  In addition to the usual MetaPost drawing options, the
+list can contain a {\tt plot} \tdescr{picture} clause to plot a specified
+picture at each data point.
+
+The drawing and labeling commands are closely related to a set of similarly
+named commands in plain MetaPost.  The {\tt gdrawarrow} and {\tt gdrawdblarrow}
+commands are included to maintain this relationship.
+
+\begin{description}
+\item[{\tt gdotlabel.$\descr{label suffix}$($p$,\,$\descr{location}$)}]
+        This is like {\tt glabel} except it also puts a dot at the location
+        being labeled.
+\item[{\tt gdraw $p$}]
+        Draw path $p$, or if $p$ is a string, read coordinate pairs from
+        file~$p$ and draw a polygonal line through them.
+\item[{\tt gdrawarrow $p$}]
+        This is like {\tt dgraw} $p$ except it adds an arrowhead at the end of
+        the path.
+\item[{\tt gdrawdblarrow $p$}]
+        This is like {\tt dgraw} $p$ except it adds an arrowheads at each end of
+        the path.
+\item[{\tt gfill $p$}]
+        Fill cyclic path~$p$ or read coordinates from the file named by
+        string~$p$ and fill the resulting polygonal outline.
+\item[{\tt glabel.$\descr{label suffix}$($p$,\,$\descr{location}$)}]
+        If $p$ is not a picture, it should be a string.  Typeset it using
+        {\tt defaultfont}, then place it near the given location and offset as
+        specified by the \tdescr{label suffix}.  The \tdescr{location} can be
+        $x$~and $y$ coordinates, a pair giving $x$~and $y$, a numerc value giving
+        a time on the last path drawn, or {\tt OUT} to label the outside of the
+        graph.
+\end{description}
+
+\subsection{Grids, Tick Marks, and Framing}
+
+\begin{description}
+\item[{\tt auto.}$\descr{{\tt x} or {\tt y}}$]
+        Generate default $x$ or $y$ coordinates for tick marks.
+\item[{\tt autogrid($\descr{axis label command}$,\,$\descr{axis label command}$)}]
+        Draw default axis labels using the specified commands for the $x$ and
+        $y$ axes.  An \tdescr{axis label command} may be \tdescr{empty} or it
+        may be {\tt itick}, {\tt otick}, or {\tt grid} followed by a
+        \tdescr{label suffix}.
+\item[{\tt frame.}$\descr{label suffix}$\ $\descr{option list}$]
+        Draw a frame around the graph, or draw the part of the frame specified
+        by the \tdescr{label suffix}.
+\item[{\tt grid.}$\descr{label suffix}$($f$,$z$)]
+        Draw a grid line across the graph from the side specified by the
+        \tdescr{label suffix}, and label it there using format string~$f$ and
+        coordinate value~$z$.  If $f$ is a picture, it gives the label.
+\item[{\tt itick.}$\descr{label suffix}$($f$,$z$)]
+        This is like {\tt grid} except it draws an inward tick mark.
+\item[{\tt otick.}$\descr{label suffix}$($f$,$z$)]
+        This is like {\tt grid} except it draws an outward tick mark.
+\end{description}
+
+\subsection{Miscellaneous Commands}
+
+\begin{description}
+\item[{\tt augment.$\descr{variable}$($\descr{coordinates}$)}]
+        Append \tdescr{coordinates} to the path stored in \tdescr{variable}.
+\item[{\tt format($f$,\,$x$)}]
+        Typeset $x$ according to format string~$f$ and return the resulting
+        picture.
+\item[{\tt gdata($f$,\,$\descr{variable}$,\,$\descr{commands}$)}]
+        Read the file named by string~$f$ and execute \tdescr{commands} for each
+        input line using the \tdescr{variable} as an array to store data fields.
+\item[{\tt init\_numbers($s$,\,$m$,\,$x$,\,$t$,\,$e$)}]
+        Provide five pictures as templates for future {\tt format} operations:
+        $s$ is a leading minus; $m$ is a sample mantissa; $x$ follows the
+        mantissa; $t$ is a leading minus for the exponent~$e$.
+\item[{\tt Mreadpath($f$)}]
+        Read a path for the data file named by string~$f$ and return it in
+        ``{\tt Mlog} form''.
+\end{description}
+
+\subsection{Arithmetic on Numeric Strings}
+
+It is necessary to {\tt input sarith} before using the following macros:
+\begin{description}
+\item[{\tt Sabs $x$}]
+        Compute $|x|$ and return a numeric string.
+\item[{\tt $x$ Sadd $y$}]
+        Compute $x+y$ and return a numeric string.
+\item[{\tt Scvnum $x$}]
+        Return the numeric value for string $x$.
+\item[{\tt $x$ Sdiv $y$}]
+        Compute $x/y$ and return a numeric string.
+\item[{\tt $x$ Sleq $y$}]
+        Return the boolean result of the comparison $x\leq y$.
+\item[{\tt $x$ Smul $y$}]
+        Compute $x*y$ and return a numeric string.
+\item[{\tt $x$ Sneq $y$}]
+        Return the boolean result of the comparison $x\neq y$.
+\item[{\tt $x$ Ssub $y$}]
+        Compute $x-y$ and return a numeric string.
+\end{description}
+
+\subsection{Internal Variables and Constants}
+
+\begin{description}
+\item[{\tt Autoform}]
+        Format string used by {\tt autogrid}.  Default: \verb|"%g"|.
+\item[{\tt Fe\_base}]
+        What precedes the exponent when typesetting a power of ten.
+\item[{\tt Fe\_plus}]
+        Picture of the leading plus sign for positive exponents.
+\item[{\tt Gmarks}]
+        Minimum number of tick marks per axis for {\tt auto} and {\tt autogrid}.
+        Default: 4.
+\item[{\tt Gminlog}]
+        Minimum largest/smallest ratio for logarithmic spacing with {\tt auto}
+        and {\tt autogrid}.  Default: 3.0.
+\item[{\tt Gpaths}]
+        Code for coordinates used in {\tt gdraw} and {\tt gfill} paths:
+        {\tt linear} for standard form, {log} for ``{\tt Mlog} form''.
+\item[{\tt Mten}]
+        The ``{\tt Mlog} form'' for 10.0
+\end{description}
+
+
+\bibliographystyle{plain}
+\bibliography{mpgraph}
+
+\end{document}
+
+
+
+% Copyright 1990 - 1995 by AT&T Bell Laboratories.
+
+% Permission to use, copy, modify, and distribute this software
+% and its documentation for any purpose and without fee is hereby
+% granted, provided that the above copyright notice appear in all
+% copies and that both that the copyright notice and this
+% permission notice and warranty disclaimer appear in supporting
+% documentation, and that the names of AT&T Bell Laboratories or
+% any of its entities not be used in advertising or publicity
+% pertaining to distribution of the software without specific,
+% written prior permission.
+
+% AT&T disclaims all warranties with regard to this software,
+% including all implied warranties of merchantability and fitness.
+% In no event shall AT&T be liable for any special, indirect or
+% consequential damages or any damages whatsoever resulting from
+% loss of use, data or profits, whether in an action of contract,
+% negligence or other tortious action, arising out of or in
+% connection with the use or performance of this software.
+
+% In addition, John Hobby, the original author of MetaPost and this
+% manual, makes the following requests:
+% - I request that it remain clear that I am the author of
+%   "A User's Manual for MetaPost" and "Drawing Graphs with MetaPost".
+% - I request to be consulted before significant changes are made.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-PDF-mode: t
+%%% TeX-master: t
+%%% End: 

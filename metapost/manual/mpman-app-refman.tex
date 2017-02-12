@@ -1,0 +1,1068 @@
+\svnInfo $Id: mpman-app-refman.tex 2022 2014-05-20 21:50:47Z stephanhennig $
+\section{Reference Manual}
+\label{refman}
+
+\begingroup
+\renewcommand\topfraction{1.0}% Allow *lots* of figures and tables.
+\renewcommand\textfraction{0.0}
+\setcounter{topnumber}{10}
+\setcounter{totalnumber}{10}
+
+\subsection{The MetaPost Language}
+\label{refman:lang}
+
+Tables \ref{ivartab}--\ref{pseudotab} summarize the built-in features of
+Plain MetaPost.  Features from the Plain\index{Plain macros} macro
+package are marked by \pl\ symbols.  The distinction between primitives
+and plain macros can be ignored by the casual user.
+
+The tables in this appendix give the name of each feature, the page
+number where it is explained, and a short description.  A few features
+are not explained elsewhere and have no page number listed.  These
+features exist primarily for compatibility with \MF\index{metafont?\MF}
+and are intended to be self-explanatory.  Certain other features from
+\MF\ are omitted entirely because they are of limited interest to the
+MetaPost users and/or would require long explanations.  All of these are
+documented in {\sl The \MF book} \cite{kn:c} as explained in
+Appendix~\ref{MPvsMF}.
+
+Tables~\ref{ivartab} and~\ref{isvartab} list internal variables that
+take on numeric and string values.  Table~\ref{pvartab} lists predefined
+variables of other types.  Table~\ref{consttab} lists predefined
+constants.  Some of these are implemented as variables whose values are
+intended to be left unchanged.
+
+Table~\ref{optab} summarizes MetaPost operators and lists
+the possible argument and result types for each one.  A ``--'' entry for
+the left argument indicates a unary operator; ``--'' entries for both
+arguments indicate a nullary operator.  Operators that take suffix
+parameters are not listed in this table because they are treated as
+``function-like macros''.
+
+The last two tables are Table~\ref{cmdtab} for commands and
+Table~\ref{pseudotab} macros that behave like functions or procedures.
+Such macros take parenthesized argument lists and/or suffix parameters,
+returning either a value whose type is listed in the table, or nothing.
+The latter case is for macros that behave like procedures.  Their return
+values are listed as ``--''.
+
+The figures in this appendix present the syntax of the MetaPost language
+starting with expressions in Figures \ref{syexpr1}--\ref{sypseudo}.
+Although the productions sometimes specify types for expressions, primaries,
+secondaries, and tertiaries, no attempt is made to give separate syntaxes
+for \tdescr{numeric expression}, \tdescr{pair expression}, etc.
+The simplicity of the productions in Figure~\ref{sytypexpr} is due to this
+lack of type information.  Type information
+can be found in Tables \ref{ivartab}--\ref{pseudotab}.
+
+Figures \ref{syprog}, \ref{sycmds1} and~\ref{sycmds2} give the syntax
+for MetaPost programs, including statements and commands.  They do not
+mention loops\index{loops} and {\tt if}\index{if?\texttt{if}} tests
+because these constructions do not behave like statements.  The syntax
+given in Figures \ref{syexpr1}--\ref{sycondloop} applies to the result
+of expanding all conditionals and loops.  Conditionals and loops do have
+a syntax, but they deal with almost arbitrary sequences of tokens.
+Figure~\ref{sycondloop} specifies conditionals in terms of
+\tdescr{balanced tokens} and loops in terms of \tdescr{loop text}, where
+\tdescr{balanced tokens} is any sequence of tokens balanced with respect
+to {\tt if} and {\tt fi}, and \tdescr{loop text} is a sequence of tokens
+balanced with respect to {\tt for}, {\tt forsuffixes}, {\tt forever},
+and {\tt endfor}.
+
+\begin{table}[htp]
+\caption{Internal variables with numeric values}
+$$\begin{tabular}{|l|r|l|}
+\hline
+\multicolumn1{|c}{Name}&  \multicolumn1{|c}{Page}&  \multicolumn1{|c|}{Explanation}\\
+\hline
+\hline
+\pl\tt  ahangle&        \pageref{Dahangle}&
+        Angle for arrowheads in degrees (default: 45)\\\hline
+\pl\tt  ahlength&       \pageref{Dahlength}&
+        Size of arrowheads (default: 4{\tt bp})\\\hline
+\pl\tt  bboxmargin&     \pageref{Dbbmargin}&
+        Extra space allowed by {\tt bbox} (default 2{\tt bp})\\\hline
+\tt     charcode&       \pageref{Dcharcode}&
+        The number of the current figure\\\hline
+\tt     day&            \pageref{Dday}&
+        The current day of the month\\\hline
+\tt     defaultcolormodel&    \pageref{Ddefaultcolormodel}&
+        The initial color model  (default: 5, rgb)\\\hline
+\pl\tt  defaultpen&     \pageref{Ddefaultpen}&
+        Numeric index used by {\tt pickup} to select default pen\\\hline
+\pl\tt  defaultscale&   \pageref{Ddfscale}&
+        Font scale factor for label strings (default 1)\\\hline
+\pl\tt  dotlabeldiam&   \pageref{Ddotlabdiam}&
+        Diameter of the dot drawn by \verb|dotlabel| (default 3{\tt bp})\\\hline
+\tt     hour&           \pageref{Dhour}&
+        The hour of the day this job started\\\hline
+\tt     hppp&           \pageref{Dhppp}&
+        The number of horizontal points per pixel for bitmap output\\\hline
+\pl\tt  labeloffset&    \pageref{Dlaboff}&
+        Offset distance for labels (default 3{\tt bp})\\\hline
+\tt     linecap&        \pageref{Dlinecap}&
+        0 for butt, 1 for round, 2 for square\\\hline
+\tt     linejoin&       \pageref{Dlinejoin}&
+        0 for mitered, 1 for round, 2 for beveled\\\hline
+\tt     minute&         \pageref{Dminute}&
+        The minute of the hour this job started\\\hline
+\tt     miterlimit&     \pageref{Dmiterlim}&
+        Controls miter length as in PostScript\\\hline
+\tt     month&          \pageref{Dmonth}&
+        The current month (e.g, 3 $\equiv$ March)\\\hline
+\tt     mpprocset&      \pageref{Dmpprocset}&
+        Create a PostScript dictionary of command abbreviations\\\hline
+\tt     numberprecision&\pageref{Dnumberprecision}&
+        Arithmetic precision in \texttt{binary} and \texttt{decimal} mode\\\hline
+\tt     pausing&        --&
+        ${}>0$ to display lines on the terminal before they are read\\\hline
+\tt     prologues&      \pageref{Dprologues}&
+        ${}>0$ to output conforming PostScript using built-in fonts\\\hline
+\tt     restoreclipcolor&    --&
+        Restore the graphics state after clip operations (default: 1)\\\hline
+\tt     showstopping&   --&
+        ${}>0$ to stop after each {\tt show} command\\\hline
+\tt     time&           \pageref{Dtime}&
+        The number of minutes past midnight when this job started\\\hline
+\tt     tracingcapsules&        \pageref{Dtcapsules}&
+        ${}>0$ to show capsules too\\\hline
+\tt     tracingchoices& \pageref{Dtchoices}&
+        ${}>0$ to show the control points chosen for paths\\\hline
+\tt     tracingcommands&        \pageref{Dtcommands}&
+        ${}>0$ to show commands and operations as they are performed\\\hline
+\tt     tracingequations&       \pageref{Dtequations}&
+        ${}>0$ to show each variable when it becomes known\\\hline
+\tt     tracinglostchars&       \pageref{Dtlostchars}&
+        ${}>0$ to show characters that aren't {\tt infont}\\\hline
+\tt     tracingmacros&  \pageref{Dtmacros}&
+        ${}>0$ to show macros before they are expanded\\\hline
+\tt     tracingonline&  \pageref{Dtonline}&
+        ${}>0$ to show long diagnostics on the terminal\\\hline
+\tt     tracingoutput&  \pageref{Dtoutput}&
+        ${}>0$ to show digitized edges as they are output\\\hline
+\tt     tracingrestores&        \pageref{Dtrestores}&
+        ${}>0$ to show when a variable or internal is restored\\\hline
+\tt     tracingspecs&   \pageref{Dtspecs}&
+        ${}>0$ to show path subdivision when using a polygonal a pen\\\hline
+\tt     tracingstats&   \pageref{Dtstats}&
+        ${}>0$ to show memory usage at end of job\\\hline
+\tt     tracingtitles&  --&
+        ${}>0$ to show titles online when they appear\\\hline
+\tt     troffmode&    \pageref{Dtroffmode}&
+        Set to~1 if a {\tt -troff} or {\tt -T} option was given\\\hline
+\tt     truecorners&    \pageref{Dtruecorn}&
+        ${}>0$ to make {\tt llcorner} etc. ignore {\tt setbounds}\\\hline
+\tt     vppp&           \pageref{Dvppp}&
+        The number of vertical points per pixel for bitmap output\\\hline
+\tt     warningcheck&   \pageref{Dwarncheck}&
+        Controls error message when variable value is large\\\hline
+\tt     year&           \pageref{Dyear}&
+        The current year (e.g., 1992)\\\hline
+\end{tabular}
+$$
+\label{ivartab}%
+\index{pausing?\texttt{pausing}}\index{showstopping?\texttt{showstopping}}%
+\index{tracingtitles?\texttt{tracingtitles}}
+\end{table}
+
+
+\begin{table}[htp]
+\caption{Internal string variables}
+$$\begin{tabular}{|l|r|l|}
+\hline
+\multicolumn1{|c}{Name}&  \multicolumn1{|c}{Page}&  \multicolumn1{|c|}{Explanation}\\
+\hline
+\hline
+\tt     jobname&    --&
+        The name of this job\\\hline
+\tt     numbersystem&    \pageref{Dnumbersystem}&
+        Arithmetic mode as given on the command-line\\\hline
+\tt     outputfilename&    \pageref{Doutputfilename}&
+        Name of the output file last written\\\hline
+\tt     outputformat&    \pageref{Doutputformat}&
+        Output backend to be used (default: ``eps'')\\\hline
+\tt     outputformatoptions&    \pageref{Doutputformatoptions}&
+        Configure PNG output backend (default: ``'')\\\hline
+\tt     outputtemplate&    \pageref{Doutputtemplate}&
+        Output filename template (default: ``\%j.\%c'')\\\hline
+\end{tabular}
+$$
+\label{isvartab}
+\index{jobname?\texttt{jobname}}
+\end{table}
+
+
+\begin{table}[htp]
+\caption{Other Predefined Variables}
+$$\begin{tabular}{|l|l|r|l|}
+\hline
+\multicolumn1{|c}{Name}&  \multicolumn1{|c}{Type}&  \multicolumn1{|c}{Page}&
+        \multicolumn1{|c|}{Explanation}\\
+\hline
+\hline
+\pl\tt  background&     color&  \pageref{Dbground}&
+        Color for {\tt unfill} and {\tt undraw} (usually white)\\\hline
+\pl\tt  currentpen&     pen&    \pageref{Dcurpen}&
+        Last pen picked up (for use by the {\tt draw} command)\\\hline
+\pl\tt  currentpicture& picture&        \pageref{Dcurpic}&
+        Accumulate results of {\tt draw} and {\tt fill} commands\\\hline
+\pl\tt  cuttings&       path&   \pageref{Dcuttings}&
+        Subpath cut off by last {\tt cutbefore} or {\tt cutafter}\\\hline
+\pl\tt  defaultfont&    string& \pageref{Ddffont}&
+        Font used by label commands for typesetting strings\\\hline
+\pl\tt  extra\_beginfig&        string& \pageref{Dxbfig}&
+        Commands for {\tt beginfig} to scan\\\hline
+\pl\tt  extra\_endfig&  string& \pageref{Dxefig}&
+        Commands for {\tt endfig} to scan\\\hline
+\end{tabular}
+$$
+\label{pvartab}
+\end{table}
+
+
+\begin{table}[htp]
+\caption{Predefined Constants}
+$$\begin{tabular}{|l|l|r|l|}
+\hline
+\multicolumn1{|c}{Name}&  \multicolumn1{|c}{Type}&  \multicolumn1{|c}{Page}&
+        \multicolumn1{|c|}{Explanation}\\
+\hline
+\hline
+\pl\tt  beveled&        numeric&        \pageref{Dbvled}&
+        {\tt linejoin} value for beveled joins [2]\\\hline
+\pl\tt  black&  color&  \pageref{Dblack}&
+        Equivalent to {\tt (0,0,0)}\\\hline
+\pl\tt  blue&   color&  \pageref{Dblue}&
+        Equivalent to {\tt (0,0,1)}\\\hline
+\pl\tt  bp&     numeric&        \pageref{Dbp}&
+        One PostScript point in {\tt bp} units [1]\\\hline
+\pl\tt  butt&   numeric&        \pageref{Dbutt}&
+        {\tt linecap} value for butt end caps [0]\\\hline
+\pl\tt  cc&     numeric&        \pageref{Dcc}&
+        One cicero in {\tt bp} units [12.79213]\\\hline
+\pl\tt  cm&     numeric&        \pageref{Dcm}&
+        One centimeter in {\tt bp} units [28.34645]\\\hline
+\pl\tt  dd&     numeric&        \pageref{Ddd}&
+        One didot point in {\tt bp} units [1.06601]\\\hline
+\pl\tt  ditto&  string& --&
+        The {\tt "} character as a string of length 1\\\hline
+\pl\tt  down&   pair&   \pageref{Ddown}&
+        Downward direction vector $(0,-1)$\\\hline
+\pl\tt  epsilon&        numeric&        \pageref{Depsilon}&
+        Smallest positive MetaPost number [$1\over65536$]\\\hline
+\pl\tt  evenly& picture&        \pageref{Devenly}&
+        Dash pattern for equal length dashes\\\hline
+\pl\tt  EOF& string&        \pageref{Deof}&
+        Single null character\\\hline
+\tt     false&  boolean&        \pageref{Dfalse}&
+        The boolean value {\it false\/}\\\hline
+\pl\tt  fullcircle&     path&   \pageref{Dfcirc}&
+        Circle of diameter 1 centered on $(0,0)$\\\hline
+\pl\tt  green&  color&  \pageref{Dgreen}&
+        Equivalent to {\tt (0,1,0)}\\\hline
+\pl\tt  halfcircle&     path&   \pageref{Dhcirc}&
+        Upper half of a circle of diameter 1\\\hline
+\pl\tt  identity&       transform&      \pageref{Dident}&
+        Identity transformation\\\hline
+\pl\tt  in&     numeric&        \pageref{Din}&
+        One inch in {\tt bp} units [72]\\\hline
+\pl\tt  infinity&       numeric&        \pageref{Dinf}&
+        Large positive value [4095.99998]\\\hline
+\pl\tt  left&   pair&   \pageref{Dleft}&
+        Leftward direction $(-1,0)$\\\hline
+\pl\tt  mitered&        numeric&        \pageref{Dmitred}&
+        {\tt linejoin} value for mitered joins [0]\\\hline
+\pl\tt  mm&     numeric&        \pageref{Dmm}&
+        One millimeter in {\tt bp} units [2.83464]\\\hline
+\tt     mpversion&  string&   \pageref{Dmpversion}&
+        MetaPost version number\\\hline
+\tt     nullpen&    pen&        \pageref{Dnlpen}&
+        Empty pen\\\hline
+\tt     nullpicture&    picture&        \pageref{Dnlpic}&
+        Empty picture\\\hline
+\pl\tt  origin& pair&   \pageref{Dorigin}&
+        The pair $(0,0)$\\\hline
+\pl\tt  pc&     numeric&        \pageref{Dpc}&
+        One pica in {\tt bp} units [11.95517]\\\hline
+\tt     pencircle&      pen&    \pageref{Dpncirc}&
+        Circular pen of diameter 1\\\hline
+\pl\tt  pensquare&      pen&    \pageref{Dpnsqr}&
+        Square pen of height 1 and width 1\\\hline
+\pl\tt  pt&     numeric&        \pageref{Dpt}&
+        One printer's point in {\tt bp} units [0.99626]\\\hline
+\pl\tt  quartercircle&  path&   \pageref{Dqcirc}&
+        First quadrant of a circle of diameter 1\\\hline
+\pl\tt  red&    color&  \pageref{Dred}&
+        Equivalent to {\tt (1,0,0)}\\\hline
+\pl\tt  right&  pair&   \pageref{Dright}&
+        Rightward direction $(1,0)$\\\hline
+\pl\tt  rounded&        numeric&        \pageref{Drnded}&
+        {\tt linecap} and {\tt linejoin} value for round joins\\
+\tt     &       &       &
+        and end caps [1]\\\hline
+\pl\tt  squared&        numeric&        \pageref{Dsqred}&
+        {\tt linecap} value for square end caps [2]\\\hline
+\tt     true&   boolean&        \pageref{Dtrue}&
+        The boolean value {\tt true}\\\hline
+\pl\tt  unitsquare&     path&   \pageref{Dunitsqr}&
+        The path \verb|(0,0)--(1,0)--(1,1)--(0,1)--cycle|\\\hline
+\pl\tt  up&     pair&   \pageref{Dup}&
+        Upward direction $(0,1)$\\\hline
+\pl\tt  white&  color&  \pageref{Dwhite}&
+        Equivalent to {\tt (1,1,1)}\\\hline
+\pl\tt  withdots&       picture&        \pageref{Dwdots}&
+        Dash pattern that produces dotted lines\\\hline
+\end{tabular}
+$$
+\label{consttab}%
+\index{ditto?\texttt{ditto}}%
+\end{table}
+
+
+\clearpage
+\LTXtable{\textwidth}{mpman-app-optab}
+
+\begin{table}[htp]
+\caption{Commands}
+$$\begin{tabular}{|l|r|l|}
+\hline
+\multicolumn1{|c}{Name}&  \multicolumn1{|c}{Page}&  \multicolumn1{|c|}{Explanation}\\
+\hline
+\hline
+\tt \verb|addto|&       \pageref{sydraw}&
+        Low-level command for drawing and filling\\\hline
+\tt \verb|clip|&        \pageref{Dclip}&
+        Applies a clipping path to a picture\\\hline
+\tt \verb|closefrom|&  \pageref{Dclosefrom}&
+        Close a file opened by {\tt readfrom}\\\hline
+\pl\tt \verb|cutdraw|&  \pageref{Dctdraw}&
+        Draw with butt end caps\\\hline
+\tt \verb|dashed|&     \pageref{Ddashed}&
+        Apply dash pattern to drawing command\\\hline
+\pl\tt \verb|draw|&     \pageref{curves}&
+        Draw a line or a picture\\\hline
+\pl\tt \verb|drawarrow|&        \pageref{Ddrwarr}&
+        Draw a line with an arrowhead at the end\\\hline
+\pl\tt \verb|drawdblarrow|&     \pageref{Ddrwdar}&
+        Draw a line with arrowheads at both ends\\\hline
+\tt \verb|errhelp|& \pageref{Derrhelp}&
+        Declare help message for interactive mode\\\hline
+\tt \verb|errmessage|& \pageref{Derrmessage}&
+        Show error message on the terminal and enter interactive
+        mode\\\hline
+\tt \verb|filenametemplate|& \pageref{Dfilenametemplate}&
+        Set output file name pattern (deprecated, see
+        \verb|outputtemplate|)\\\hline
+\pl\tt \verb|fill|&     \pageref{Dfill}&
+        Fill inside a cyclic path\\\hline
+\pl\tt \verb|filldraw|& \pageref{Dfildrw}&
+        Draw a cyclic path and fill inside it\\\hline
+\tt \verb|fontmapfile|&     \pageref{Dfontmapfile}&
+        Read font map entries from file\\\hline
+\tt \verb|fontmapline|&     \pageref{Dfontmapline}&
+        Declare a font map entry\\\hline
+\tt \verb|interim|&     \pageref{Dinterm}&
+        Make a local change to an internal variable\\\hline
+\tt \verb|let|& --&
+        Assign one symbolic token the meaning of another\\\hline
+\pl\tt \verb|loggingall|&       \pageref{Dlogall}&
+        Turn on all tracing (log file only)\\\hline
+\tt \verb|message|& \pageref{Dmessage}&
+        Show message string on the terminal\\\hline
+\tt \verb|newinternal|& \pageref{Dnewint}&
+        Declare new internal variables\\\hline
+\pl\tt \verb|pickup|&   \pageref{Dpickup}&
+        Specify new pen for line drawing\\\hline
+\tt \verb|save|&        \pageref{Dsave}&
+        Make variables local\\\hline
+\tt \verb|setbounds|&   \pageref{Dsetbnd}&
+        Make a picture lie about its bounding box\\\hline
+\tt \verb|shipout|&     \pageref{Dship}&
+        Low-level command to output a figure\\\hline
+\tt \verb|show|&        \pageref{Dshow}&
+        Print out expressions symbolically\\\hline
+\tt \verb|showdependencies|&    \pageref{Dshdep}&
+        Print out all unsolved equations\\\hline
+\tt \verb|showtoken|&   \pageref{Dshtok}&
+        Print an explanation of what a token is\\\hline
+\tt \verb|showvariable|&        \pageref{Dshvar}&
+        Print variables symbolically\\\hline
+\tt \verb|special|&     \pageref{Dspecl}&
+        Print a string directly in the PostScript output file\\\hline
+\pl\tt \verb|tracingall|&       \pageref{Dtall}&
+        Turn on all tracing\\\hline
+\pl\tt \verb|tracingnone|&      \pageref{Dtnone}&
+        Turn off all tracing\\\hline
+\pl\tt \verb|undraw|&   \pageref{Dundraw}&
+        Erase a line or a picture\\\hline
+\pl\tt \verb|unfill|&   \pageref{Dunfill}&
+        Erase inside a cyclic path\\\hline
+\pl\tt \verb|unfilldraw|&       \pageref{Dunfdrw}&
+        Erase a cyclic path and its inside\\\hline
+\tt \verb|withcmykcolor|&    \pageref{Dwithcmykcolor}&
+        Apply CMYK color to drawing command\\\hline
+\tt \verb|withcolor|&        \pageref{Dwithcolor}&
+        Apply generic color specification to drawing command\\\hline
+\tt \verb|withgreyscale|&    \pageref{Dwithgreyscale}&
+        Apply greyscale color to drawing command\\\hline
+\tt \verb|withoutcolor|&     \pageref{Dwithoutcolor}&
+        Don't apply any color specification to drawing command\\\hline
+\tt \verb|withpen|&          \pageref{sec.pens}&
+        Apply pen to drawing operation\\\hline
+\tt \verb|withpostscript|&   \pageref{Dwithpost}&
+        End raw PostScript code\\\hline
+\tt \verb|withprescript|&    \pageref{Dwithpre}&
+        Begin raw PostScript code\\\hline
+\tt \verb|withrgbcolor|&     \pageref{Dwithrgbcolor}&
+        Apply RGB color to drawing command\\\hline
+\tt \verb|write to|&         \pageref{Dwrite}&
+        Write string to file\\\hline
+\end{tabular}
+$$
+\index{let?\texttt{let}}%
+\label{cmdtab}
+\end{table}
+
+
+\begin{table}[htp]
+\caption{Function-Like Macros}
+$$\begin{tabular}{|l|l|l|r|l|}
+\hline
+\multicolumn1{|c}{Name}&  \multicolumn1{|c}{Arguments}&
+        \multicolumn1{|c}{Result}&  \multicolumn1{|c}{Page}&
+        \multicolumn1{|c|}{Explanation}\\
+\hline
+\hline
+\pl\tt \verb|buildcycle|&       list of paths&  path&   \pageref{buildcy}&
+        Build a cyclic path\\\hline
+\pl\tt \verb|dashpattern|&      on/off distances&       picture&        \pageref{Ddshpat}&
+        Create a pattern for dashed lines\\\hline
+\pl\tt \verb|decr|&     numeric variable&       numeric&        \pageref{Dincr}&
+        Decrement and return new value\\\hline
+\pl\tt \verb|dotlabel|& suffix, picture, pair&  --&     \pageref{Ddotlab}&
+        Mark point and draw picture nearby\\\hline
+\pl\tt \verb|dotlabel|& suffix, string, pair&   --&     \pageref{Ddotlab}&
+        Mark point and place text nearby\\\hline
+\pl\tt \verb|dotlabels|&        suffix, point numbers&  --&     \pageref{Ddotlbs}&
+        Mark {\tt z} points with their numbers\\\hline
+\pl\tt \verb|drawdot|&          pair&       --&     \pageref{Ddrawdot}&
+        Draw a dot at the given point\\\hline
+\pl\tt \verb|drawoptions|&      drawing options&        --&     \pageref{Ddropts}&
+        Set options for drawing commands\\\hline
+\pl\tt \verb|image|&              string&       picture&      \pageref{Dimage}&
+        Return picture from text\\\hline
+\pl\tt \verb|incr|&     numeric variable&       numeric&       \pageref{Dincr}&
+        Increment and return new value\\\hline
+\pl\tt \verb|label|&    suffix, picture, pair&  --&     \pageref{Dlabel}&
+        Draw picture near given point\\\hline
+\pl\tt \verb|label|&    suffix, string, pair&   --&     \pageref{Dlabel}&
+        Place text near given point\\\hline
+\pl\tt \verb|labels|&   suffix, point numbers&  --&     \pageref{Dlabels}&
+        Draw {\tt z} point numbers; no dots\\\hline
+\pl\tt \verb|max|&      list of numerics&       numeric&        --&
+        Find the maximum\\\hline
+\pl\tt \verb|max|&      list of strings&        string& --&
+        Find the lexicographically last string\\\hline
+\pl\tt \verb|min|&      list of numerics&       numeric&        --&
+        Find the minimum\\\hline
+\pl\tt \verb|min|&      list of strings&        string& --&
+        Find the lexicographically first string\\\hline
+\pl\tt \verb|thelabel|& suffix, picture, pair&  picture&        \pageref{Dthelab}&
+        Picture shifted as if to label a point\\\hline
+\pl\tt \verb|thelabel|& suffix, string, pair&   picture&        \pageref{Dthelab}&
+        Text positioned as if to label a point\\\hline
+\pl\tt \verb|z|&        suffix& pair&   \pageref{Dzconv}&
+        The pair ${\tt x}\descr{suffix},{\tt y}\descr{suffix})$\\\hline
+\end{tabular}
+$$
+\index{min?\texttt{min}}\index{max?\texttt{max}}%
+\label{pseudotab}
+\end{table}
+
+\clearpage
+
+\begin{figure}[htp]
+\begin{ctabbing}
+$\tt \descr{atom} \rightarrow \descr{variable} \;|\; \descr{argument}$\\
+$\tt \qquad \;|\; \descr{number or fraction}$\\
+$\tt \qquad \;|\; \descr{internal variable}$\\
+$\tt \qquad \;|\; \hbox{\tt (}\descr{expression}\hbox{\tt )}$\\
+$\tt \qquad \;|\; begingroup \descr{statement list} \descr{expression} endgroup$\\
+$\tt \qquad \;|\; \descr{nullary op}$\\
+$\tt \qquad \;|\; btex \descr{typesetting commands} etex$\\
+$\tt \qquad \;|\; \descr{pseudo function}$\\
+$\tt \descr{primary} \rightarrow \descr{atom}$\\
+$\tt \qquad \;|\; \hbox{\tt (}\descr{numeric expression}\hbox{\tt ,} \descr{numeric expression}\hbox{\tt )}$\\
+$\tt \qquad \;|\; \hbox{\tt (}\descr{numeric expression}\hbox{\tt ,} \descr{numeric expression}\hbox{\tt ,} \descr{numeric expression}\hbox{\tt )}$\\
+$\tt \qquad \;|\; \descr{of operator} \descr{expression} of \descr{primary}$\\
+$\tt \qquad \;|\; \descr{unary op} \descr{primary}$\\
+$\tt \qquad \;|\; str \descr{suffix}$\\
+$\tt \qquad \;|\; z \descr{suffix}$\\
+$\tt \qquad \;|\; \descr{numeric atom}\hbox{\tt [}\descr{expression}\hbox{\tt ,}\descr{expression}\hbox{\tt ]}$\\
+$\tt \qquad \;|\; \descr{scalar multiplication op} \descr{primary}$\\
+$\tt \descr{secondary} \rightarrow \descr{primary}$\\
+$\tt \qquad \;|\; \descr{secondary} \descr{primary binop} \descr{primary}$\\
+$\tt \qquad \;|\; \descr{secondary} \descr{transformer}$\\
+$\tt \descr{tertiary} \rightarrow \descr{secondary}$\\
+$\tt \qquad \;|\; \descr{tertiary} \descr{secondary binop} \descr{secondary}$\\
+$\tt \descr{subexpression} \rightarrow \descr{tertiary}$\\
+$\tt \qquad \;|\; \descr{path expression} \descr{path join} \descr{path knot}$\\
+$\tt \descr{expression} \rightarrow \descr{subexpression}$\\
+$\tt \qquad \;|\; \descr{expression} \descr{tertiary binop} \descr{tertiary}$\\
+$\tt \qquad \;|\; \descr{path subexpression} \descr{direction specifier}$\\
+$\tt \qquad \;|\; \descr{path subexpression} \descr{path join} cycle$\\
+$\tt $\\
+$\tt \descr{path knot} \rightarrow \descr{tertiary}$\\
+$\tt \descr{path join} \rightarrow \verb|--|$\\
+$\tt \qquad \;|\; \descr{direction specifier} \descr{basic path join} \descr{direction specifier}$\\
+$\tt \descr{direction specifier} \rightarrow \descr{empty}$\\
+$\tt \qquad \;|\; \verb|{|curl \descr{numeric expression}\verb|}|$\\
+$\tt \qquad \;|\; \verb|{|\descr{pair expression}\verb|}|$\\
+$\tt \qquad \;|\; \verb|{|\descr{numeric expression}\hbox{\tt ,}\descr{numeric expression}\verb|}|$\\
+$\tt \descr{basic path join} \rightarrow \hbox{\tt ..} \;|\; \hbox{\tt ...} \;|\; \hbox{\tt ..}\descr{tension}\hbox{\tt ..} \;|\; \hbox{\tt ..}\descr{controls}\hbox{\tt ..}$\\
+$\tt \descr{tension} \rightarrow tension \descr{numeric primary}$\\
+$\tt \qquad \;|\; tension \descr{numeric primary} and \descr{numeric primary}$\\
+$\tt \descr{controls} \rightarrow controls \descr{pair primary}$\\
+$\tt \qquad \;|\; controls \descr{pair primary} and \descr{pair primary}$\\
+$\tt $\\
+$\tt \descr{argument} \rightarrow \descr{symbolic token}$\\
+$\tt \descr{number or fraction} \rightarrow \descr{number}\hbox{\tt /}\descr{number}$\\
+$\tt \qquad \;|\; \descr{number not followed by `\hbox{\tt /}\tdescr{number}'}$\\
+$\tt \descr{scalar multiplication op} \rightarrow + \;|\; -$\\
+$\tt \qquad \;|\; \descr{`\tdescr{number or fraction}' not followed by `\tdescr{add op}\tdescr{number}'}$
+\end{ctabbing}
+\caption{Part 1 of the syntax for expressions}
+\index{expression?\tdescr{expression}}\index{nullary op?\tdescr{nullary op}}\index{of operator?\tdescr{of operator}}%
+\index{path knot?\tdescr{path knot}}\index{primary?\tdescr{primary}}\index{primary binop?\tdescr{primary binop}}%
+\index{secondary?\tdescr{secondary}}\index{secondary binop?\tdescr{secondary binop}}\index{suffix?\tdescr{suffix}}%
+\index{tertiary?\tdescr{tertiary}}\index{tertiary binop?\tdescr{tertiary binop}}\index{unary op?\tdescr{unary op}}%
+\label{syexpr1}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{ctabbing}
+$\tt \descr{transformer} \rightarrow rotated \descr{numeric primary}$\\
+$\tt \qquad \;|\; scaled \descr{numeric primary}$\\
+$\tt \qquad \;|\; shifted \descr{pair primary}$\\
+$\tt \qquad \;|\; slanted \descr{numeric primary}$\\
+$\tt \qquad \;|\; transformed \descr{transform primary}$\\
+$\tt \qquad \;|\; xscaled \descr{numeric primary}$\\
+$\tt \qquad \;|\; yscaled \descr{numeric primary}$\\
+$\tt \qquad \;|\; zscaled \descr{pair primary}$\\
+$\tt \qquad \;|\; reflectedabout\hbox{\tt (}\descr{pair expression}\hbox{\tt ,} \descr{pair expression}\hbox{\tt )}$\\
+$\tt \qquad \;|\; rotatedaround\hbox{\tt (}\descr{pair expression}\hbox{\tt ,} \descr{numeric expression}\hbox{\tt )}$\\
+$\tt $\\
+$\tt \descr{nullary op} \rightarrow false \;|\; normaldeviate \;|\; nullpen \;|\; nullpicture \;|\; pencircle$\\
+$\tt \qquad \;|\; true \;|\; whatever$\\
+$\tt \descr{unary op} \rightarrow \descr{type}$\\
+$\tt \qquad \;|\; abs \;|\; angle \;|\; arclength \;|\; ASCII \;|\; bbox \;|\; blackpart \;|\; bluepart \;|\; bot \;|\; bounded$\\
+$\tt \qquad \;|\; ceiling \;|\; center \;|\; char \;|\; clipped \;|\; colormodel \;|\; cosd \;|\; cyanpart  \;|\; cycle$\\
+$\tt \qquad \;|\; dashpart \;|\; decimal \;|\; dir \;|\; floor \;|\; filled \;|\; fontpart \;|\; fontsize$\\
+$\tt \qquad \;|\; greenpart \;|\; greypart \;|\; hex \;|\; inverse \;|\; known \;|\; length \;|\; lft \;|\; llcorner$\\
+$\tt \qquad \;|\; lrcorner\;|\; magentapart \;|\; makepath \;|\; makepen \;|\; mexp \;|\; mlog \;|\; not \;|\; oct \;|\; odd$\\
+$\tt \qquad \;|\; pathpart \;|\; penpart \;|\; readfrom \;|\; redpart \;|\; reverse \;|\; round \;|\; rt \;|\; sind \;|\; sqrt$\\
+$\tt \qquad  \;|\; stroked \;|\; textpart \;|\; textual \;|\; top \;|\; ulcorner$\\
+$\tt \qquad \;|\; uniformdeviate \;|\; unitvector \;|\; unknown \;|\; urcorner \;|\; xpart \;|\; xxpart$\\
+$\tt \qquad \;|\; xypart \;|\; yellowpart \;|\; ypart \;|\; yxpart \;|\; yypart$\\
+$\tt \descr{type} \rightarrow boolean \;|\; cmykcolor \;|\; color \;|\; numeric \;|\; pair$\\
+$\tt \qquad \;|\; path \;|\; pen \;|\; picture \;|\; rgbcolor \;|\; string \;|\; transform$\\
+$\tt \descr{internal type} \rightarrow numeric \;|\; string$\\
+$\tt \descr{primary binop} \rightarrow \hbox{\tt *} \;|\; \hbox{\tt /} \;|\; \hbox{\tt **} \;|\; and$\\
+$\tt \qquad \;|\; dotprod \;|\; div \;|\; infont \;|\; mod$\\
+$\tt \descr{secondary binop} \rightarrow + \;|\; - \;|\; ++ \;|\; +-+ \;|\; or$\\
+$\tt \qquad \;|\; intersectionpoint \;|\; intersectiontimes$\\
+$\tt \descr{tertiary binop} \rightarrow \hbox{\tt \&} \;|\; \hbox{\verb|<|} \;|\; \hbox{\verb|<=|} \;|\; \hbox{\verb|<>|} \;|\; \hbox{\tt =} \;|\; \hbox{\verb|>|} \;|\; \hbox{\verb|>=|}$\\
+$\tt \qquad \;|\; cutafter \;|\; cutbefore$\\
+$\tt \descr{of operator} \rightarrow arctime \;|\; direction \;|\; directiontime \;|\; directionpoint$\\
+$\tt \qquad \;|\; glyph \;|\; penoffset \;|\; point \;|\; postcontrol \;|\; precontrol$\\
+$\tt \qquad \;|\; subpath \;|\; substring$\\
+$\tt $\\
+$\tt \descr{variable} \rightarrow \descr{tag}\descr{suffix}$\\
+$\tt \descr{suffix} \rightarrow \descr{empty} \;|\; \descr{suffix}\descr{subscript} \;|\; \descr{suffix}\descr{tag}$\\
+$\tt \qquad \;|\; \descr{suffix parameter}$\\
+$\tt \descr{subscript} \rightarrow \descr{number} \;|\; \hbox{\tt [}\descr{numeric expression}\hbox{\tt ]}$\\
+$\tt $\\
+$\tt \descr{internal variable} \rightarrow ahangle \;|\; ahlength \;|\; bboxmargin$\\
+$\tt \qquad \;|\; charcode \;|\; day \;|\; defaultcolormodel \;|\; defaultpen \;|\; defaultscale$\\
+$\tt \qquad \;|\; hour \;|\; hppp \;|\; jobname \;|\; labeloffset \;|\; linecap \;|\; linejoin
+\;|\; minute \;|\; miterlimit \;|\; month$\\
+$\tt \qquad \;|\; numberprecision \;|\; numbersystem$\\
+$\tt \qquad \;|\; outputfilename \;|\; outputformat \;|\; outputformatoptions \;|\; outputtemplate$\\
+$\tt \qquad \;|\; pausing \;|\; prologues \;|\; showstopping$\\
+$\tt \qquad \;|\; time \;|\; tracingoutput \;|\; tracingcapsules \;|\; tracingchoices \;|\; tracingcommands$\\
+$\tt \qquad \;|\; tracingequations \;|\; tracinglostchars \;|\; tracingmacros$\\
+$\tt \qquad \;|\; tracingonline \;|\; tracingrestores \;|\; tracingspecs$\\
+$\tt \qquad \;|\; tracingstats \;|\; tracingtitles \;|\; truecorners$\\
+$\tt \qquad \;|\; warningcheck \;|\; vppp \;|\; year$\\
+$\tt \qquad \;|\; \descr{symbolic token defined by {\tt newinternal}}$
+\end{ctabbing}
+\caption{Part 2 of the syntax for expressions}
+\index{nullary op?\tdescr{nullary op}}\index{of operator?\tdescr{of operator}}\index{primary binop?\tdescr{primary binop}}%
+\index{secondary binop?\tdescr{secondary binop}}\index{subscript?\tdescr{subscript}}\index{suffix?\tdescr{suffix}}%
+\index{tertiary binop?\tdescr{tertiary binop}}\index{unary op?\tdescr{unary op}}%
+\label{syexpr2}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{ctabbing}
+$\tt \descr{pseudo function} \rightarrow min\hbox{\tt (}\descr{expression list}\hbox{\tt )}$\\
+$\tt \qquad \;|\; max\hbox{\tt (}\descr{expression list}\hbox{\tt )}$\\
+$\tt \qquad \;|\; incr\hbox{\tt (}\descr{numeric variable}\hbox{\tt )}$\\
+$\tt \qquad \;|\; decr\hbox{\tt (}\descr{numeric variable}\hbox{\tt )}$\\
+$\tt \qquad \;|\; dashpattern\hbox{\tt (}\descr{on\hbox{\tt /}off list}\hbox{\tt )}$\\
+$\tt \qquad \;|\; interpath\hbox{\tt (}\descr{numeric expression}\hbox{\tt ,} \descr{path expression}\hbox{\tt ,} \descr{path expression}\hbox{\tt )}$\\
+$\tt \qquad \;|\; buildcycle\hbox{\tt (}\descr{path expression list}\hbox{\tt )}$\\
+$\tt \qquad \;|\; thelabel\descr{label suffix}\hbox{\tt (}\descr{expression}\hbox{\tt ,} \descr{pair expression}\hbox{\tt )}$\\
+$\tt \descr{path expression list} \rightarrow \descr{path expression}$\\
+$\tt \qquad \;|\; \descr{path expression list}\hbox{\tt ,} \descr{path expression}$\\
+$\tt \descr{on\hbox{\tt /}off list} \rightarrow \descr{on\hbox{\tt /}off list}\descr{on\hbox{\tt /}off clause} \;|\; \descr{on\hbox{\tt /}off clause}$\\
+$\tt \descr{on\hbox{\tt /}off clause} \rightarrow on \descr{numeric tertiary} \;|\; off \descr{numeric tertiary}$
+\end{ctabbing}
+\caption{The syntax for function-like macros}
+\index{label suffix?\tdescr{label suffix}}%
+\label{sypseudo}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{ctabbing}
+$\tt \descr{boolean expression} \rightarrow \descr{expression}$\\
+$\tt \descr{cmykcolor expression} \rightarrow \descr{expression}$\\
+$\tt \descr{color expression} \rightarrow \descr{expression}$\\
+$\tt \descr{numeric atom} \rightarrow \descr{atom}$\\
+$\tt \descr{numeric expression} \rightarrow \descr{expression}$\\
+$\tt \descr{numeric primary} \rightarrow \descr{primary}$\\
+$\tt \descr{numeric tertiary} \rightarrow \descr{tertiary}$\\
+$\tt \descr{numeric variable} \rightarrow \descr{variable} \;|\; \descr{internal variable}$\\
+$\tt \descr{pair expression} \rightarrow \descr{expression}$\\
+$\tt \descr{pair primary} \rightarrow \descr{primary}$\\
+$\tt \descr{path expression} \rightarrow \descr{expression}$\\
+$\tt \descr{path subexpression} \rightarrow \descr{subexpression}$\\
+$\tt \descr{pen expression} \rightarrow \descr{expression}$\\
+$\tt \descr{picture expression} \rightarrow \descr{expression}$\\
+$\tt \descr{picture variable} \rightarrow \descr{variable}$\\
+$\tt \descr{rgbcolor expression} \rightarrow \descr{expression}$\\
+$\tt \descr{string expression} \rightarrow \descr{expression}$\\
+$\tt \descr{suffix parameter} \rightarrow \descr{parameter}$\\
+$\tt \descr{transform primary} \rightarrow \descr{primary}$
+\end{ctabbing}
+\caption{Miscellaneous productions needed to complete the BNF}
+\label{sytypexpr}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{ctabbing}
+$\tt \descr{program} \rightarrow \descr{statement list} end$\\
+$\tt \descr{statement list} \rightarrow \descr{empty} \;|\; \descr{statement list} \hbox{\tt ;} \descr{statement}$\\
+$\tt \descr{statement} \rightarrow \descr{empty}$\\
+$\tt \qquad \;|\; \descr{equation} \;|\; \descr{assignment}$\\
+$\tt \qquad \;|\; \descr{declaration} \;|\; \descr{macro definition}$\\
+$\tt \qquad \;|\; \descr{compound} \;|\; \descr{pseudo procedure}$\\
+$\tt \qquad \;|\; \descr{command}$\\
+$\tt \descr{compound} \rightarrow begingroup \descr{statement list} endgroup$\\
+$\tt \qquad \;|\; beginfig\hbox{\tt (}\descr{numeric expression}\hbox{\tt );} \descr{statement list}\hbox{\tt ;} endfig$\\
+$\tt $\\
+$\tt \descr{equation} \rightarrow \descr{expression} \hbox{\tt =} \descr{right-hand side}$\\
+$\tt \descr{assignment} \rightarrow \descr{variable} \hbox{\tt :=} \descr{right-hand side}$\\
+$\tt \qquad \;|\; \descr{internal variable} \hbox{\tt :=} \descr{right-hand side}$\\
+$\tt \descr{right-hand side} \rightarrow \descr{expression} \;|\; \descr{equation} \;|\; \descr{assignment}$\\
+$\tt $\\
+$\tt \descr{declaration} \rightarrow \descr{type} \descr{declaration list}$\\
+$\tt \descr{declaration list} \rightarrow \descr{generic variable}$\\
+$\tt \qquad \;|\; \descr{declaration list}\hbox{\tt ,} \descr{generic variable}$\\
+$\tt \descr{generic variable} \rightarrow \descr{symbolic token} \descr{generic suffix}$\\
+$\tt \descr{generic suffix} \rightarrow \descr{empty} \;|\; \descr{generic suffix} \descr{tag}$\\
+$\tt \qquad \;|\; \descr{generic suffix} \hbox{\tt []}$\\
+$\tt $\\
+$\tt \descr{macro definition} \rightarrow \descr{macro heading} \hbox{\tt =} \descr{replacement text} enddef$\\
+$\tt \descr{macro heading} \rightarrow def \descr{symbolic token} \descr{delimited part} \descr{undelimited part}$\\
+$\tt \qquad \;|\; vardef \descr{generic variable} \descr{delimited part} \descr{undelimited part}$\\
+$\tt \qquad \;|\; vardef \descr{generic variable} \hbox{\verb|@#|} \descr{delimited part} \descr{undelimited part}$\\
+$\tt \qquad \;|\; \descr{binary def} \descr{parameter} \descr{symbolic token} \descr{parameter}$\\
+$\tt \descr{delimited part} \rightarrow \descr{empty}$\\
+$\tt \qquad \;|\; \descr{delimited part}\hbox{\tt (}\descr{parameter type} \descr{parameter tokens}\hbox{\tt )}$\\
+$\tt \descr{parameter type} \rightarrow expr \;|\; suffix \;|\; text$\\
+$\tt \descr{parameter tokens} \rightarrow \descr{parameter} \;|\; \descr{parameter tokens}\hbox{\tt ,} \descr{parameter}$\\
+$\tt \descr{parameter} \rightarrow \descr{symbolic token}$\\
+$\tt \descr{undelimited part} \rightarrow \descr{empty}$\\
+$\tt \qquad \;|\; \descr{parameter type} \descr{parameter}$\\
+$\tt \qquad \;|\; \descr{precedence level} \descr{parameter}$\\
+$\tt \qquad \;|\; expr \descr{parameter} of \descr{parameter}$\\
+$\tt \descr{precedence level} \rightarrow primary \;|\; secondary \;|\; tertiary$\\
+$\tt \descr{binary def} \rightarrow primarydef \;|\; secondarydef \;|\; tertiarydef$\\
+$\tt $\\
+$\tt \descr{pseudo procedure} \rightarrow drawoptions\hbox{\tt (}\descr{option list}\hbox{\tt )}$\\
+$\tt \qquad \;|\; label\descr{label suffix}\hbox{\tt (}\descr{expression}\hbox{\tt ,} \descr{pair expression}\hbox{\tt )}$\\
+$\tt \qquad \;|\; dotlabel\descr{label suffix}\hbox{\tt (}\descr{expression}\hbox{\tt ,} \descr{pair expression}\hbox{\tt )}$\\
+$\tt \qquad \;|\; labels\descr{label suffix}\hbox{\tt (}\descr{point number list}\hbox{\tt )}$\\
+$\tt \qquad \;|\; dotlabels\descr{label suffix}\hbox{\tt (}\descr{point number list}\hbox{\tt )}$\\
+$\tt \descr{point number list} \rightarrow \descr{suffix} \;|\; \descr{point number list}\hbox{\tt ,} \descr{suffix}$\\
+$\tt \descr{label suffix} \rightarrow \descr{empty} \;|\; lft \;|\; rt \;|\; top \;|\; bot \;|\; ulft \;|\; urt \;|\; llft \;|\; lrt$
+\end{ctabbing}
+\caption{Overall syntax for MetaPost programs}
+\index{generic variable?\tdescr{generic variable}}\index{label suffix?\tdescr{label suffix}}\index{replacement text?\tdescr{replacement text}}%
+\index{suffix?\tdescr{suffix}}%
+\label{syprog}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{ctabbing}
+$\tt \descr{command} \rightarrow clip \descr{picture variable} to \descr{path expression}$\\
+$\tt \qquad \;|\; interim \descr{internal variable} \hbox{\tt :=} \descr{right-hand side}$\\
+$\tt \qquad \;|\; let \descr{symbolic token} \hbox{\tt =} \descr{symbolic token}$\\
+$\tt \qquad \;|\; pickup \descr{expression}$\\
+$\tt \qquad \;|\; randomseed \hbox{\tt :=} \descr{numeric expression}$\\
+$\tt \qquad \;|\; save \descr{symbolic token list}$\\
+$\tt \qquad \;|\; setbounds \descr{picture variable} to \descr{path expression}$\\
+$\tt \qquad \;|\; shipout \descr{picture expression}$\\
+$\tt \qquad \;|\; write \descr{string expression} to \descr{string expression}$\\
+$\tt \qquad \;|\; \descr{addto command}$\\
+$\tt \qquad \;|\; \descr{drawing command}$\\
+$\tt \qquad \;|\; \descr{font metric command}$\\
+$\tt \qquad \;|\; \descr{newinternal command}$\\
+$\tt \qquad \;|\; \descr{message command}$\\
+$\tt \qquad \;|\; \descr{mode command}$\\
+$\tt \qquad \;|\; \descr{show command}$\\
+$\tt \qquad \;|\; \descr{special command}$\\
+$\tt \qquad \;|\; \descr{tracing command}$\\
+$\tt $\\
+$\tt \descr{show command} \rightarrow show \descr{expression list}$\\
+$\tt \qquad \;|\; showvariable \descr{symbolic token list}$\\
+$\tt \qquad \;|\; showtoken \descr{symbolic token list}$\\
+$\tt \qquad \;|\; showdependencies$\\
+$\tt $\\
+$\tt \descr{symbolic token list} \rightarrow \descr{symbolic token}$\\
+$\tt \qquad \;|\; \descr{symbolic token}\hbox{\tt ,} \descr{symbolic token list}$\\
+$\tt \descr{expression list} \rightarrow \descr{expression} \;|\; \descr{expression list}\hbox{\tt ,} \descr{expression}$\\
+$\tt $\\
+$\tt \descr{addto command} \rightarrow$\\
+$\tt \qquad addto \descr{picture variable} also \descr{picture expression} \descr{option list}$\\
+$\tt \qquad \;|\; addto \descr{picture variable} contour \descr{path expression} \descr{option list}$\\
+$\tt \qquad \;|\; addto \descr{picture variable} doublepath \descr{path expression} \descr{option list}$\\
+$\tt \descr{option list} \rightarrow \descr{empty} \;|\; \descr{drawing option} \descr{option list}$\\
+$\tt \descr{drawing option} \rightarrow withcolor \descr{color expression}$\\
+$\tt \qquad \;|\; withrgbcolor \descr{rgbcolor expression} \;|\; withcmykcolor \descr{cmykcolor expression}$\\
+$\tt \qquad \;|\; withgreyscale \descr{numeric expression} \;|\; withoutcolor$\\
+$\tt \qquad \;|\; withprescript \descr{string expression} \;|\; withpostscript \descr{string expression}$\\
+$\tt \qquad \;|\; withpen \descr{pen expression} \;|\; dashed \descr{picture expression}$\\
+$\tt $\\
+$\tt \descr{drawing command} \rightarrow draw \descr{picture expression} \descr{option list}$\\
+$\tt \qquad \;|\; \descr{fill type} \descr{path expression} \descr{option list}$\\
+$\tt \descr{fill type} \rightarrow fill \;|\; draw \;|\; filldraw \;|\; unfill \;|\; undraw \;|\; unfilldraw$\\
+$\tt \qquad \;|\; drawarrow \;|\; drawdblarrow \;|\; cutdraw$\\
+$\tt $\\
+$\tt \descr{newinternal command} \rightarrow newinternal \descr{internal type} \descr{symbolic token list}$\\
+$\tt \qquad \;|\; newinternal \descr{symbolic token list}$\\
+$\tt $\\
+$\tt \descr{message command} \rightarrow errhelp \descr{string expression}$\\
+$\tt \qquad \;|\; errmessage \descr{string expression}$\\
+$\tt \qquad \;|\; filenametemplate \descr{string expression}$\\
+$\tt \qquad \;|\; message \descr{string expression}$
+\end{ctabbing}
+\caption{Part 1 of the syntax for commands}
+\index{option list?\tdescr{option list}}\index{picture variable?\tdescr{picture variable}}%
+\label{sycmds1}
+
+% is this really true?  in practice, in real implementations?
+%\bigskip
+%By the way, the default for \ttindex{randomseed} is, in effect,
+%$\textsl{day} + \textsl{time}*\epsilon$.  Unfortunately, \textsl{time}
+%is in minutes.
+\end{figure}
+
+\begin{figure}[htp]
+\begin{ctabbing}
+$\tt \descr{mode command} \rightarrow batchmode \;|\; nonstopmode$\\
+$\tt \qquad \;|\; scrollmode \;|\; errorstopmode$\\
+$\tt $\\
+$\tt \descr{special command} \rightarrow fontmapfile \descr{string expression}$\\
+$\tt \qquad \;|\; fontmapline \descr{string expression}$\\
+$\tt \qquad \;|\; special \descr{string expression}$\\
+$\tt $\\
+$\tt \descr{tracing command} \rightarrow tracingall \;|\; loggingall \;|\; tracingnone$
+\end{ctabbing}
+\caption{Part 2 of the syntax for commands}
+\index{batchmode?\texttt{batchmode}}\index{nonstopmode?\texttt{nonstopmode}}\index{scrollmode?\texttt{scrollmode}}\index{errorstopmode?\texttt{errorstopmode}}%
+\label{sycmds2}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{ctabbing}
+$\tt \descr{if test} \rightarrow if \descr{boolean expression} \hbox{\tt :} \descr{balanced tokens} \descr{alternatives} fi$\\
+$\tt \descr{alternatives} \rightarrow \descr{empty}$\\
+$\tt \qquad \;|\; else\hbox{\tt :} \descr{balanced tokens}$\\
+$\tt \qquad \;|\; elseif \descr{boolean expression} \hbox{\tt :} \descr{balanced tokens} \descr{alternatives}$\\
+$\tt $\\
+$\tt \descr{loop} \rightarrow \descr{loop header}\hbox{\tt :} \descr{loop text} endfor$\\
+$\tt \descr{loop header} \rightarrow for \descr{symbolic token} \hbox{\tt =} \descr{progression}$\\
+$\tt \qquad \;|\; for \descr{symbolic token} \hbox{\tt =} \descr{for list}$\\
+$\tt \qquad \;|\; for \descr{symbolic token} \hbox{\tt within} \descr{picture expression}$\\
+$\tt \qquad \;|\; forsuffixes \descr{symbolic token} \hbox{\tt =} \descr{suffix list}$\\
+$\tt \qquad \;|\; forever$\\
+$\tt \descr{progression} \rightarrow \descr{numeric expression} upto \descr{numeric expression}$\\
+$\tt \qquad \;|\; \descr{numeric expression} downto \descr{numeric expression}$\\
+$\tt \qquad \;|\; \descr{numeric expression} step \descr{numeric expression} until \descr{numeric expression} $\\
+$\tt \descr{for list} \rightarrow \descr{expression} \;|\; \descr{for list}\hbox{\tt ,} \descr{expression}$\\
+$\tt \descr{suffix list} \rightarrow \descr{suffix} \;|\; \descr{suffix list}\hbox{\tt ,} \descr{suffix}$
+\end{ctabbing}
+\caption{The syntax for conditionals and loops}
+\index{balanced tokens?\tdescr{balanced tokens}}\index{suffix?\tdescr{suffix}}%
+\label{sycondloop}
+\end{figure}
+
+\endgroup
+
+
+\subsection{Command-Line Syntax}
+\label{refman:commandline}
+
+\begingroup
+\renewcommand*{\arraystretch}{1.25}% Give command-line switch tables air.
+
+\subsubsection{The MetaPost Program}
+\label{refman:mpost}
+
+\newcommand*{\opt}[1]{\ensuremath{\big[}#1\ensuremath{\big]}}
+\newcommand*{\cmdsw}{\tdescr{switches}}
+\newcommand*{\cmdmem}{\tdescr{preloadfile}}
+\newcommand*{\cmdin}{\tdescr{infile}}
+\newcommand*{\cmdcode}{\tdescr{commands}}
+\newcommand*{\cmdindex}[1]{\index{command-line!mpost?\texttt{mpost}!#1?\texttt{#1}}\texttt{#1}}
+
+The MetaPost program processes commands in the MetaPost language, either
+read from a file or typed-in interactively, and compiles them into
+PostScript or SVG graphics.  The run-time behavior of the executable can
+be controlled by command-line parameters, environment variables, and
+configuration files.  The MetaPost executable is named
+mpost\label{Dmpost}\index{mpost} (or occasionally just mp).  The
+command-line syntax of the executable is
+$$
+\begin{verbatim}[commandchars=\\\{\}]
+mpost \opt{\cmdsw} \opt{\&\cmdmem} \opt{\cmdin} \opt{\cmdcode}
+\end{verbatim}
+\index{mpost?\texttt{mpost}}\index{command-line!mpost?\texttt{mpost}}
+$$
+Any of the parameters is optional.  If no argument is given to the
+\verb|mpost| command, MetaPost enters interactive mode\index{interactive
+  mode}, indicated by a \verb|**| prompt\index{**?\texttt{**}!prompt},
+waiting for a file name to be typed-in by keyboard.  The file is then
+read-in and processed as if it were given as parameter \cmdin\ on the
+command-line.
+
+\begin{description}
+\item[\cmdin] A MetaPost input file is a text file containing statements
+  in the MetaPost language.  Typically, input files have file extension
+  \texttt{mp}\index{mp file?{\tt mp} file}\index{files!mp?{\tt mp}},
+  e.g., \texttt{fig.mp}.  Here is how MetaPost searches for input files.
+  If \cmdin\ doesn't end with \texttt{.mp}\index{mp file?{\tt mp}
+    file}\index{files!mp?{\tt mp}}, MetaPost first looks for a file
+  \texttt{\cmdin.mp}.  Only if that file doesn't exist, it looks for
+  file \cmdin\ literally.  That way, the \texttt{mp}\index{mp file?{\tt
+      mp} file}\index{files!mp?{\tt mp}} file extension can be omitted
+  when calling MetaPost.  If \cmdin\ already ends with
+  \texttt{.mp}\index{mp file?{\tt mp} file}\index{files!mp?{\tt mp}}, no
+  special file name handling takes place and MetaPost looks for that
+  file only.
+
+  As an example, if there are two files \texttt{fig} and \texttt{fig.mp}
+  in the current directory and MetaPost is invoked with
+  \verb|'mpost fig'|, the file that gets processed is \texttt{fig.mp}.
+  To process file \texttt{fig} in this situation, MetaPost can be called
+  as \verb|'mpost fig.'|.  Note, the trailing dot is only needed as long
+  as there exists a file \texttt{fig.mp} alongside file \texttt{fig}.
+
+  If MetaPost cannot find any input file by the rules specified above,
+  it complaints with an error message and interactively asks for a new
+  input file name.
+
+\item[\cmdcode] All text on the command-line after \cmdin\ is
+  interpreted as MetaPost code and is processed after \cmdin\ is read.
+  If \cmdin\ already contains an \verb|end| statement, \cmdcode\ gets
+  effectively ignored.  If MetaPost doesn't encounter an \verb|end|
+  statement neither in \cmdin\ nor in \cmdcode, it enters interactive
+  mode after processing all input.
+
+\item[\texttt{\&\cmdmem}] The MetaPost program code in the \cmdmem\
+  MetaPost source file (and any other files that it inputs) is executed
+  before all other processing starts. The \cmdmem\ file should end with
+  an \texttt{end}\index{end?\texttt{end}} or
+  \texttt{dump}\index{dump?\texttt{dump}} command.
+
+  If neither \texttt{\&\cmdmem} nor \cmdindex{-mem} is specified on the
+  command line, MetaPost will default to loading the macro file
+  \texttt{mpost.mp}\index{mpost.mp?\texttt{mpost.mp}}, or to whatever
+  the actual name of the MetaPost executable is. The \cmdindex{-ini}
+  switch can be used to suppress this behavior.
+
+\item[\cmdsw] MetaPost provides a number of command-line switches that
+  control the run-time behavior.  Switches can be prefixed by one or two
+  dashes.  Both forms have the same meaning.  An exemplary call to
+  MetaPost that compiles a file \texttt{fig.mp}, using \LaTeX\ to
+  typeset \verb|btex|\slash\verb|etex| labels, would look like:
+$$
+\begin{verbatim}
+mpost -tex=latex fig
+\end{verbatim}
+\index{mpost?\texttt{mpost}}
+$$
+
+Here's a summary of the command-line switches provided by mpost:
+
+\setlength{\LTleft}{\leftmargin}
+\begin{longtable}{>{\ttfamily}p{.35\linewidth}>{\raggedright\arraybackslash}p{.6\linewidth}}
+  \cmdindex{-debug}
+  & Don't delete intermediate files.\\
+  \cmdindex{-dvitomp}
+  & Act as the \texttt{dvitomp} executable (see below).\\
+  \cmdindex{-file-line-error}
+  & Start error messages with \verb|`filename:lineno:'| instead of
+  \verb|`!'|.\\
+  \cmdindex{-halt-on-error}
+  & Immediately exit after the first error occurred.\\
+  \cmdindex{-help}
+  & Show help on command-line switches.\\
+  \cmdindex{-ini}
+  & Do not load any preload file.\\
+  \cmdindex{-interaction}=\tdescr{string}
+  & Set interaction mode to one of \texttt{batchmode},
+  \texttt{nonstopmode}, \texttt{scrollmode}, \texttt{errorstopmode}.\\
+  \cmdindex{-jobname}=\tdescr{jobname}
+  & Set the name of the job (affects output file names).\\
+  \cmdindex{-kpathsea-debug}=\tdescr{number}
+  & Set debugging flags for path searching.\\
+  \cmdindex{-mem}=\tdescr{string}
+  & Use \tdescr{string} for the name of the file that contains macros to be preloaded 
+  (same as \texttt{\&\cmdmem})\\
+  \cmdindex{-no-file-line-error}
+  & Enable normal MetaPost and \TeX\ style error messages.\\
+  \cmdindex{-no-kpathsea}
+  & Do not use the kpathsea program to find files.  All files have to be
+  in the current directory or specified via a full path.\\
+  \cmdindex{-numbersystem}=\tdescr{string}
+  & Set arithmetic mode to one of \texttt{scaled}, \texttt{double},
+  \texttt{binary}, \texttt{decimal}\\
+  \cmdindex{-progname}=\tdescr{string}
+  & Pretend to be the \tdescr{string} executable.\\
+  \cmdindex{-recorder}
+  & Write a list of all opened disk files to
+  \texttt{\tdescr{jobname}.fls}\index{fls file?{\tt fls}
+    file}\index{files!fls?{\tt fls}}.  (This functionality is provided
+  by kpathsea.)\\
+  \cmdindex{-s} \tdescr{key}=\tdescr{value}
+  & Set internal variable \tdescr{key} to \tdescr{value}.  This switch
+  can be given multiple times on the command-line.  The assignments are
+  applied just before the input file is read-in.  \tdescr{value} can be
+  an integer between -16383 and 16383 or a string in double quotes.  For
+  strings, double quotes are stripped, but no other processing takes
+  place.  To avoid double quotes being already stripped by the shell,
+  the whole assignment can be enclosed in another pair of single quotes.
+  Example: \verb|-s 'outputformat="svg"' -s prologues=3|\newline
+  Use SVG backend converting font shapes to paths.\\
+  \cmdindex{-tex}=\tdescr{texprogram}
+  & Load format \tdescr{texprogram} for rendering \TeX\ material.\\
+  \cmdindex{-troff}, \cmdindex{-T}
+  & Output troff compatible PostScript files.\\
+  \cmdindex{-version}
+  & Print version information and exit.\\
+\end{longtable}
+
+The following command-line switches are silently ignored in
+\emph{mplib}-based MetaPost (v1.100 or later), because they are always
+`on':
+
+\begin{longtable}{>{\ttfamily}p{.35\linewidth}>{\raggedright\arraybackslash}p{.6\linewidth}}
+  \cmdindex{-8bit}
+  & \\
+  \cmdindex{-parse-first-line}
+  & \\
+\end{longtable}
+
+The following command-line switches are ignored, but trigger a warning:
+
+\begin{longtable}{>{\ttfamily}p{.35\linewidth}>{\raggedright\arraybackslash}p{.6\linewidth}}
+  \cmdindex{-no-parse-first-line}
+  & \\
+  \cmdindex{-output-directory}=\tdescr{string}
+  & \\
+  \cmdindex{-translate-file}=\tdescr{string}
+  & \\
+\end{longtable}
+
+\end{description}
+
+\subsubsection{The dvitomp Program}
+\label{refman:dvitomp}
+
+\renewcommand*{\cmdindex}[1]{\index{command-line!dvitomp?\texttt{dvitomp}!#1?\texttt{#1}}\texttt{#1}}
+\renewcommand*{\cmdin}{\tdescr{infile}}
+\newcommand*{\cmdout}{\tdescr{outfile}}
+
+The dvitomp\label{Ddvitomp}\index{dvitomp} program converts
+DVI\index{dvi file?{\tt dvi} file}\index{files!dvi?{\tt dvi}} files into
+low-level MetaPost code.  MetaPost uses the dvitomp program when
+typesetting \verb|btex|\slash\verb|etex| labels by \TeX\ for the final
+conversion back into MetaPost code.  The command-line syntax of the
+executable is
+$$
+\begin{verbatim}[commandchars=\\\{\}]
+dvitomp \opt{\cmdsw} \cmdin \opt{\cmdout}
+\end{verbatim}
+\index{dvitomp?\texttt{dvitomp}}\index{command-line!dvitomp?\texttt{dvitomp}}
+$$
+Parameters \cmdsw\ and \cmdout\ are optional.
+
+\begin{description}
+\item[\cmdin] This is the name of the DVI file to convert.  If the name
+  doesn't end with \texttt{.dvi}\index{dvi file?{\tt dvi}
+    file}\index{files!dvi?{\tt dvi}}, that extension is appended.  Note,
+  dvitomp never opens files not ending \texttt{.dvi}.  This file is in
+  general automatically generated by \TeX\ or troff, driven by MetaPost.
+
+\item[\cmdout] This is the name of the output file containing the
+  MetaPost code equivalent to \cmdin.  If \cmdout\ is not given,
+  \cmdout\ is \cmdin\ with the extension \texttt{.dvi} replaced by
+  \texttt{.mpx}\index{mpx file?{\tt mpx} file}\index{files!mpx?{\tt
+      mpx}}.  If \cmdout\ is given and doesn't end with
+  \texttt{.mpx}\index{mpx file?{\tt mpx} file}\index{files!mpx?{\tt
+      mpx}}, that extension is appended.
+
+\item[\cmdsw] Command-line switches can be prefixed by one or two
+  dashes.  Both forms have the same meaning.  The following command-line
+  switches are provided by dvitomp:
+
+\setlength{\LTleft}{\leftmargin}
+\begin{longtable}{>{\ttfamily}p{.35\linewidth}>{\raggedright\arraybackslash}p{.6\linewidth}}
+  \cmdindex{-help}
+  & Show help on command-line switches.\\
+  \cmdindex{-kpathsea-debug}=\tdescr{number}
+  & Set debugging flags for path searching.\\
+  \cmdindex{-progname}=\tdescr{string}
+  & Pretend to be the \tdescr{string} executable.\\
+  \cmdindex{-version}
+  & Print version information and exit.\\
+\end{longtable}
+
+\end{description}
+
+The dvitomp program used to be part of a set of external tools, called
+\emph{mpware}\index{mpware tools}\footnote{makempx, mpto, dvitomp, and
+  dmp.}, which were used by MetaPost for processing
+\verb|btex|\slash\verb|etex| labels.  Since MetaPost version~1.100, the
+label conversion is handled internally by the mpost\index{mpost}
+program.  The \emph{mpware} tools are therefore obsolete and no longer
+part of the MetaPost distribution.  Nowadays, dvitomp is either a copy
+of the mpost executable with the name dvitomp or a wrapper, calling
+mpost\index{mpost} as
+$$
+\begin{verbatim}[commandchars=\\\{\}]
+mpost -dvitomp \cmdin \cmdout
+\end{verbatim}
+\index{mpost?\texttt{mpost}}
+$$
+
+\endgroup
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-PDF-mode: t
+%%% TeX-master: "mpman"
+%%% End: 

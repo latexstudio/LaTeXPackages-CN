@@ -1,0 +1,46 @@
+\subsection{The \texttt{draw} command}
+
+The most common command in \MP{} is the |draw| command.  This command is
+used to draw paths or pictures.  In order to draw a path from
+|z1:=(0,0)| to |z2:=(54,18)| to |z3:=(72,72)|, we should first decide
+how we want the path to look.  For example, if we want these points to
+simply be connected by line segments, then we use
+
+\begin{lstlisting}[style=MP]
+draw z1--z2--z3;
+\end{lstlisting}
+
+However, if we want a smooth path between these points, we use
+
+\begin{lstlisting}[style=MP]
+draw z1..z2..z3;
+\end{lstlisting}
+
+In order to specify the direction of the path at the points, we use the
+|dir| operator.  In \autoref{fig:draw1} we see that the smooth path is
+horizontal at |z1|, a 45\textdegree\ angle at |z2|, and vertical at
+|z3|.  These constraints on the B\'{e}zier curve are imposed by
+
+\begin{lstlisting}[style=MP]
+draw z1{right}..z2{dir 45}..{up}z3;
+\end{lstlisting}
+
+\begin{figure}
+  \begin{withattachment}{draw.mp}
+    \centering
+    \includegraphics{draw-1.mps}
+  \end{withattachment}
+  \caption{\texttt{draw} examples}
+  \label{fig:draw1}
+\end{figure}
+
+Notice that |z2{dir 45}| forces the \textit{outgoing} direction at |z2|
+to be 45\textdegree.  This implies an \textit{incoming} direction at
+|z2| of 45\textdegree.  In order to require different incoming and
+outgoing directions, we would use
+
+\begin{lstlisting}[style=MP]
+draw z1{right}..{dir |$\theta_i$|}z2{dir |$\theta_o$|}..{up}z3;
+\end{lstlisting}
+where $\theta_i$ and $\theta_o$ are the incoming and outgoing
+directions, respectively.
