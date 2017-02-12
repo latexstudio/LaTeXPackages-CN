@@ -44,10 +44,13 @@ PGF是用于生成图的宏包。它独立于平台和格式，与最重要的Te
 - [ ] Part X The System Layer
 - [ ] Part XI References and Index
 
-
 ### 编译
 
 Till Tantau为我们提供了非常便捷的编译方式——`Makefile`(在每个版本文件夹中，如`/doc-zh/version-for-xetex/en/`)：
 
 - 在终端键入命令`make`即实现编译。
 - 键入`make clean`即清除临时文件。
+
+## 联系人
+
+未尽事宜，请来信垂询：[杨大伟](yangdawei.hit@qq.com)
