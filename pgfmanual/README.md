@@ -56,7 +56,7 @@ Till Tantau为我们提供了非常便捷的编译方式——`Makefile`(在每�
         git checkout current
         # 翻译、编辑正文
         git add .
-        git commit -m "soem comment"
+        git commit -m "some comments"
         git checkout master
         git merge current
 
