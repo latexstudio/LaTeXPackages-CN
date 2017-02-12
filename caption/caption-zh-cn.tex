@@ -177,12 +177,12 @@
 \let\subsectionautorefname\sectionautorefname
 \let\subsubsectionautorefname\sectionautorefname
 
-\def\thispackage{the \package{caption} package}
-\def\Thispackage{The \package{caption} package}
+\def\thispackage{\package{caption}宏包}
+\def\Thispackage{\package{caption}宏包}
 
-\newcommand*\DefaultNoteText{Note}
-\newcommand*\NEWfeature{\NEW{New feature}}
-\newcommand*\NEWdescription{\NEW{New description}}
+\newcommand*\DefaultNoteText{笔记}
+\newcommand*\NEWfeature{\NEW{新特性}}
+\newcommand*\NEWdescription{\NEW{新的描述}}
 \makeatletter
 \newcommand*\See{\@ifstar{\SEE{See}}{\SEE[\small]{See}}}
 \newcommand*\see{\@ifstar{\SEE{see}}{\SEE[\small]{see}}}
@@ -190,65 +190,49 @@
 
 % --------------------------------------------------------------------------- %
 
-\GetFileInfo{caption-eng.tex}
+\GetFileInfo{caption-zh-cn.tex}
 \let\docdate\filedate
 \GetFileInfo{caption.sty}
 
-\title{Customizing captions of floating environments}
+\title{在浮动环境中定制标题}
 \author{Axel Sommerfeldt\\
          \url{http://sourceforge.net/projects/latex-caption/}}
-\date{\docdate}
+\date{2011/11/02}
 \maketitle
 
 % --------------------------------------------------------------------------- %
 
-\begin{摘要}
-\Thispackage\ offers customization of captions
-in floating environments such |figure| and |table| and cooperates with
-many other packages.
+\begin{abstract}
+\Thispackage\ 可以在一些浮动环境中的个性化制作标题，像图、表以及许多其它宏包。
 \par\smallskip
-\textit{Please note:} Many document classes already have build-in options and
-commands for customizing captions.
-If these possibilities are sufficient for you, there is usually no need for
-you to use the \package{caption} package at all.
-And if you are just interested in using the command \cs{captionof}, loading of
-the very small \package{capt-of} package is usually sufficient.
-\end{}
+\textit{请注意:} 许多类文件已经有了内置的个性化标题选项和命令。
+如果你有足够能力的话，你根本不需要使用\package{caption}宏包。
+而且如果你只对使用\cs{captionof}这个命令感兴趣的话，加载\package{capt-of}这个足够小的宏包已经足够了。
+\end{abstract}
 
 \newcommand\exampletext{%
-  White sand beaches. The pink smoothness of the conch shell. A sea abundant
-  with possibilities. Duty-free shops filled with Europe's finest gifts and
-  perfumes. Play your favorite game of golf amidst the tropical greens on one
-  of the many championship courses.}
+  白色的沙滩。海螺壳的粉红色平滑度。有着各种可能性的海洋。装满欧洲最好的礼物和香水的免税商店。在一个热带果岭上玩你最喜欢的高尔夫球比赛的许多锦标赛课程。}
 
 % --------------------------------------------------------------------------- %
 
 \section*{Introduction}
 
-Within the standard \LaTeX\ document classes captions haven't received the
-attention they deserve. Simply typeset as an ordinary paragraph there is no
-remarkable visual difference from the rest of the text, like here:
+在标准的 \LaTeX\ 类中标题没有得到应有的注意。它仅仅被当成一般的段落来排版，这和其它内容没有显著的视觉差，像这样:
 
 \example*{size=normalsize,margin=0pt}{\exampletext}
 
-There should be possibilities to change this; for example, it would be nice
-to make the text of the caption a little bit smaller as the normal
-text, add an extra margin, typeset the caption label with the same font
-family and shape as your headings etc. Just like this one:
+我们可以改变这种情况；例如，可以使用比正常字体小一些的字，加一些额外的边距，使用和题目一样的字体系列和形状等等。像这个标题：
 
 \example*{size=small,margin=10pt,labelfont=bf,labelsep=endash}{\exampletext}
 
-You can do this easily with this package as there are many ready-to-use
-caption formatting options, but you are free to define your very own stuff, too.
+使用本宏包你可以很容易的做到这些，因为这里已经定义好了很多标题格式选项，而且你也可以自由的定义你自己的选项。
 
 \bigskip
 
 \INFO\begin{minipage}[t]{\textwidth}
 \small
-Please note that \thispackage\ is only controlling the look \& feel of the
-captions. It does \emph{not} control the placement of the captions.
-(But you could do so by using other packages like the \package{floatrow}
- package\cite{floatrow}.)
+请注意\thispackage\ 只是控制标题的外观以及给人的感觉。它\emph{不}控制标题的位置摆放。（但是你可以通过使用其它的像\package{floatrow}
+宏包\cite{floatrow}来做到这点。）
 \end{minipage}
 
 % --------------------------------------------------------------------------- %
