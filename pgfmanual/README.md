@@ -25,11 +25,9 @@ PGF是用于生成图的宏包。它独立于平台和格式，与最重要的Te
 # 操作
 
 ## 翻译
- [X] Introduction
-
- [ ] Tutorials and Guidelines
-
-    [ ] Tutorial: A Picture for Karl’s Students
+- [X] Introduction
+- [ ] Tutorials and Guidelines
+   + [ ] Tutorial: A Picture for Karl’s Students
 
 ## 编译
 Till Tantau为我们提供了非常便捷的编译方式——`Makefile`(在每个版本文件夹中，如`/doc-zh/version-for-xetex/en/`)：
