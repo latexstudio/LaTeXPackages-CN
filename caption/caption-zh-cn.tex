@@ -243,45 +243,40 @@
 % --------------------------------------------------------------------------- %
 
 \clearpage
-\section{Using this package}
+\section{使用本宏包}
 \label{usage}
 
 \DescribeMacro{\usepackage}
-Insert
+把
 \begin{quote}
   |\usepackage|\oarg{options}|{caption}[|\texttt{\filedate}|]|
 \end{quote}
-into the preamble of your document, i.e.~the part of your document
-between |\document|\-|class| and |\begin{doc|\-|u|\-|ment}|.
-The options control how your captions will look like; e.g.,
+插入到你文档的导言区，也就是在|\document|\-|class| 和 |\begin{doc|\-|u|\-|ment}|之间。这个选项控制文档标题的外观；比如，
 \begin{quote}
   |\usepackage[margin=10pt,font=small,labelfont=bf,|\\
   |            labelsep=endash]{caption}|%
   %|[|\texttt{\filedate}|]|
 \end{quote}
-would result in captions looking like the second one in the introduction.
+会使你的标题长成像引言第二个示例那样。
 
 \DescribeMacro{\captionsetup}
-For a later change of options \thispackage\ provides the command
+对于选项以后的更改， \thispackage\ 提供了
 \begin{quote}
   |\captionsetup|\oarg{float type}\marg{options}\quad.
 \end{quote}
-So
+命令。
+因此
 \begin{quote}
   |\usepackage[margin=10pt,font=small,labelfont=bf]{caption}|
 \end{quote}
-and
+和
 \begin{quote}
   |\usepackage{caption}|\\
   |\captionsetup{margin=10pt,font=small,labelfont=bf}|
 \end{quote}
-are equal in their results.
+在最终结果上是一样的。
 
-It's good to know that |\caption|\-|setup| has an effect on the current
-environment only. So if you want to change settings for the
-current |figure| or |table| only, just place the |\caption|\-|setup| command
-inside the |figure| or |table| right before the |\caption| command.
-For example
+知道|\caption|\-|setup|只影响当前环境是有好处的。因此如果你只想改变当前|figure| 或者 |table|的设置，只需要把|\caption|\-|setup|命令放进|figure| 或 |table|环境中|\caption|命令的前面。你可以像下面这样
 \begin{quote}
   |\begin{figure}|\\
   |  |\ldots\\
@@ -289,17 +284,17 @@ For example
   |  \caption{|\ldots|}|\\
   |\end{figure}|
 \end{quote}
-switches the single-line-check off, but only for this |figure|,
-so all the other captions remain untouched.
+关闭了single-line-check选项，但是仅仅对这个 |figure|起作用，
+因此，所有其它的标题没有受到影响。
 
 \begin{Annotation}
-For a detailed description of |\caption|\-|setup| see \Ref{captionsetup}.
+更加详细的关于 |\caption|\-|setup|命令的描述参见 \Ref{captionsetup}.
 \end{Annotation}
 
 % --------------------------------------------------------------------------- %
 
 \clearpage
-\section{Options}
+\section{选项}
 \label{options}
 
 \def\OptionLabel{RaggedRight}
