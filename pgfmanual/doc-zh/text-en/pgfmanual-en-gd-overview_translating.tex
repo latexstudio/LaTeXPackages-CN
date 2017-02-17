@@ -102,14 +102,18 @@ year dozens of new algorithms are proposed.
 因为你可以使用 Lua 而不需要了解 \TeX\ 编程知识。
 
 
-\subsection{Using the Graph Drawing System}
+%\subsection{Using the Graph Drawing System}
+\subsection{开始使用绘图系统}
 
-``Users'' of the graph drawing engine can invoke the graph
-drawing algorithms often by just adding a single option to their
-picture. Here is a typical example, where the |layered layout| option
-tells \tikzname\ that the graph should be drawn (``should be layed
-out'') using a so-called ``layered graph drawing algorithm'' (what
-these are will be explained later):
+%``Users'' of the graph drawing engine can invoke the graph
+绘图引擎的用户通常仅需在绘图时加上参数就可以调用绘图算法（引擎）。
+%drawing algorithms often by just adding a single option to their
+%picture. Here is a typical example, where the |layered layout| option
+下面是一个典型的例子——其中 |分层布局| 选项告诉了 \tikzname\ 它应使用
+%tells \tikzname\ that the graph should be drawn (``should be layed
+被称为“分层绘图”的算法（后文将会介绍）并“输出图像”(``should be layed out``)：。
+%out'') using a so-called ``layered graph drawing algorithm'' (what
+%these are will be explained later):
 \begin{codeexample}[]
 \tikz [>=spaced stealth']
   \graph [layered layout, components go right top aligned, nodes=draw, edges=rounded corners]
@@ -119,8 +123,9 @@ these are will be explained later):
     third root -> child -> grandchild -> youngster -> third root;    
   };
 \end{codeexample}
-Here is another example, where a different layout method is used
-that is more appropriate for trees:
+%Here is another example, where a different layout method is used
+下面是另一个例子，它实现了另一种更适合绘制“树”的输出效果。
+%that is more appropriate for trees:
 \begin{codeexample}[]
 \tikz [grow'=up, binary tree layout, nodes={circle,draw}]
   \node {1}
@@ -138,8 +143,9 @@ that is more appropriate for trees:
     }
   };
 \end{codeexample}
-A final example, this time using a ``spring electrical layout''
-(whatever that might be\dots):
+%A final example, this time using a ``spring electrical layout''
+在这一小节的最后，是时候用“spring electrical layout”（无所谓是什么啦……）装个逼啦\^\_\^：
+%(whatever that might be\dots):
 \begin{codeexample}[]
 \tikz [spring electrical layout, node distance=1.3cm,
        every edge/.style={
@@ -158,45 +164,66 @@ A final example, this time using a ``spring electrical layout''
                  edge (node 6);
 }
 \end{codeexample}
-In all of the example, the positions of the nodes have only been
-computed \emph{after} all nodes have been created and the edges have
-been specified. For instance, in the last example, without the
-option |spring electrical layout|, all of the nodes would have been
-placed on top of each other.
+%In all of the example, the positions of the nodes have only been
+在之前所有的例子中，图像中节点的位置都是在节点和边的明确定义\emph{之后}被
+%computed \emph{after} all nodes have been created and the edges have
+计算出来的。
+%been specified. For instance, in the last example, without the
+比如在最后一个例子中，在没有 |spring electrical layout| 选项时，
+%option |spring electrical layout|, all of the nodes would have been
+%placed on top of each other.
+所有的节点都在页面顶端挤在了一起\ (>\_<)\ 。
 
 
-\subsection{Extending the Graph Drawing System}
+%\subsection{Extending the Graph Drawing System}
+\subsection{绘图系统使用拓展}
 
-The graph drawing engine is also intended to make is
-(relatively) easy to implement new graph drawing algorithms. These
-algorithms can either be implemented in the Lua programming
-language (which is \emph{much} easier to program than \TeX\
-itself) or in C/C++ (but at a great cost regarding portability). The
-Lua code for a graph drawing algorithm gets an 
-object-oriented model of the input graph as an input and must just
-compute the desired new positions of the nodes. The complete
-handling of passing options and configurations back-and-forth
-between the different \tikzname\ and \pgfname\ layers is handled by
-the graph drawing engine. 
+%The graph drawing engine is also intended to make is
+图像绘制引擎同样可以用来实现显得绘图算法
+%(relatively) easy to implement new graph drawing algorithms. These
+%algorithms can either be implemented in the Lua programming
+这些（自定义的）绘图算法既可以使用 Lua 语言（这可比\TeX\ 语言编程\emph{简单多了}），
+%language (which is \emph{much} easier to program than \TeX\
+%itself) or in C/C++ (but at a great cost regarding portability). The
+也可以使用 C/C++ （但在可移植性上需要付出很多精力）。
+%Lua code for a graph drawing algorithm gets an 
+%object-oriented model of the input graph as an input and must just
+对于一个图，绘图算法中的 Lua 代码使用面向对象的模型来描述，
+%compute the desired new positions of the nodes. The complete
+而其仅需要做的（微小的）工作就是计算节点的位置。
+%handling of passing options and configurations back-and-forth
+在整个计算过程中，不同 \tikzname\ 和 \pgfname\ 图层之间参数及选项的来回传递
+%between the different \tikzname\ and \pgfname\ layers is handled by
+%the graph drawing engine. 
+经由绘图引擎完成。
 
-As a caveat, the graph drawing engine comes with a library of
-functions and methods that simplify the writing of new
-graph drawing algorithms. As a typical example, when you implement a 
-graph drawing algorithm for trees, you typically require that your
-input is a tree; but you can bet that users will feed all sorts of
-graphs to your algorithm, including disjoint unions of cliques. The
-graph drawing engine offers you to say that a precondition to running
-your algorithm is that the graph is a |tree| and instead of the original graph your
-algorithm will be provided with a spanning tree of the graph on
-which it can work. There are numerous further automatic pre- and
-postprocessing steps that include orienting, anchoring, and packing
-of components, to name a few.
+%As a caveat, the graph drawing engine comes with a library of
+需要提醒读者的是，绘图引擎来源于一个可以简化编写新绘图算法
+%functions and methods that simplify the writing of new
+的代码库（由多个函数和method组成）。
+%graph drawing algorithms. As a typical example, when you implement a 
+一个典型的例子是，当你使用算法来绘制一张描述“树”的图时，读者自己会很自然地
+%graph drawing algorithm for trees, you typically require that your
+%input is a tree; but you can bet that users will feed all sorts of
+输入一个“树”的相应数据；但是必须要指出的是，不同的用户在使用你写的算法时
+%graphs to your algorithm, including disjoint unions of cliques. The
+会输入各式各样（活久见）的“树”，其中难免会有包含不相交集的团（图论术语）。
+%graph drawing engine offers you to say that a precondition to running
+绘图引擎这时为你提供了一个发言的机会——指明当你的程序正常运行时会输出一张“|树|”图
+%your algorithm is that the graph is a |tree| and instead of the original graph your
+而不是输出……的先决条件。
+%algorithm will be provided with a spanning tree of the graph on
+%which it can work. There are numerous further automatic pre- and
+这其中由相当数量的更自动化的预处理和后续处理包括旋转、固定和成分打包以及命名等。
+%postprocessing steps that include orienting, anchoring, and packing
+%of components, to name a few.
 
-The bottom line is that the graph drawing engine makes it easy
-to try out new graph drawing algorithms for medium sized graphs (up
-to a few hundred nodes) in Lua. For larger graphs, C/C++ code must be
-used.
-
+%The bottom line is that the graph drawing engine makes it easy
+在 Lua 中使用绘图引擎会简化工作的最低图规模要求是中等大小的图（多达几百个节点），
+%to try out new graph drawing algorithms for medium sized graphs (up
+%to a few hundred nodes) in Lua. For larger graphs, C/C++ code must be
+%used.
+而对于更大规模的图则必须要用到C/C++代码。
 
 
 \subsection{The Layers of the Graph Drawing System}
