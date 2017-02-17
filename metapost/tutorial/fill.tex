@@ -1,0 +1,108 @@
+\subsection{The \texttt{fill} command}
+
+Another common command in \MP{} is the |fill| command.  This is used to
+fill closed paths (or cycles).  In order to construct a cycle, |cycle|
+may be appended to the path declaration.  For example,
+
+\begin{lstlisting}[style=MP]
+path p;
+p := z1{right}..z2{dir 45}..{up}z3--cycle;
+fill p withcolor red;
+draw p;
+\end{lstlisting}
+produces \autoref{fig:fill}.  Notice that |p| is essentially the same
+curved path as in \autoref{fig:draw1} with the additional piece that
+connects |z3| back to |z1| with a line segment using |--cycle|.
+
+\begin{figure}
+  \begin{withattachment}{fill.mp}
+    \centering
+    \includegraphics{fill.mps}
+  \end{withattachment}
+  \caption{\texttt{fill} example}
+  \label{fig:fill}
+\end{figure}
+
+Just as it is necessary to fill closed paths, it may also be necessary
+to \textit{unfill} closed paths.  For example, the annulus in
+\autoref{fig:annulus1} can be constructed by
+
+\begin{lstlisting}[style=MP]
+color bbblue;
+bbblue := (3/5,4/5,1);
+path p,q;
+p := fullcircle scaled (2*54);
+q := fullcircle scaled (2*27);
+fill p withcolor bbblue;
+unfill q;
+draw p;
+draw q;
+\end{lstlisting}
+
+The |fullcircle| path is a built-in path that closely
+approximates a circle in \MP{} with diameter 1\,bp traversed
+counter-clockwise.  This path is not exactly a circle since it is
+parameterized by a B\'{e}zier curve and not by trigonometric functions;
+however, visually it is essentially indistinguishable from an exact
+circle.
+
+\begin{figure}
+  \begin{withattachment}{annulus.mp}
+    \centering
+    \includegraphics{annulus-1.mps}
+  \end{withattachment}
+  \caption{\texttt{unfill} example}
+  \label{fig:annulus1}
+\end{figure}
+
+Notice that |p| is a |fullcircle| of radius 54\,bp (3/4\,in) and |q| is
+a |fullcircle| of radius 27\,bp (3/8\,in).  The annulus is constructed
+by filling |p| with the baby blue color |bbblue| and then unfilling |q|.
+The |unfill| command above is equivalent to
+
+\begin{lstlisting}[style=MP]
+fill q withcolor background;
+\end{lstlisting}
+where |background| is a built-in color which is |white| by default.
+
+Often the |unfill| command appears to be the natural method for
+constructing figures like \autoref{fig:annulus1}.  However, the |fill|
+and |unfill| commands in \autoref{fig:annulus1} can be replaced by
+
+\begin{lstlisting}[style=MP]
+fill p--reverse q--cycle withcolor bbblue;
+\end{lstlisting}
+
+\begin{figure}
+  \begin{withattachment}{annulus.mp}
+    \centering
+    \includegraphics{annulus-2.mps}
+  \end{withattachment}
+  \caption{Avoiding an \texttt{unfill}}
+  \label{fig:annulus2}
+\end{figure}
+
+The path |p--reverse q--cycle| travels around |p| in a counter-clockwise
+directions (since this is the direction that |p| traverses) followed by
+a line segment to connect to |q|.  It then traverses clockwise around
+|q| (using the |reverse| operator) and finally returns to the starting
+point along a line segment using |--cycle|.  This path is illustrated in
+\autoref{fig:annulus2}.  One reason for using this method to construct
+the annulus as opposed to the |unfill| command is to ensure
+\textit{proper transparency} when placing the figure in an external
+document with a non-white background.  If the former method is used and
+the annulus is placed on a non-white background, say magenta, then the
+result is \autoref{fig:annulus3}.
+
+\begin{figure}
+  \begin{withattachment}{annulus.mp}
+    \centering
+    \includegraphics{annulus-3.mps}
+  \end{withattachment}
+  \caption{Improper transparency using \texttt{unfill}}
+  \label{fig:annulus3}
+\end{figure}
+
+It may be desired to have the interior of |q| be magenta instead of
+|white|.  This could be accomplished by redefining |background|;
+however, the latter method described above is a much simpler solution.

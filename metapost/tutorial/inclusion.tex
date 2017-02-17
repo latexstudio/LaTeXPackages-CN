@@ -1,0 +1,23 @@
+\section{Including \MP{} figures in \LaTeX}
+\label{sec:latexincl}
+
+In order to include a \MP{} figure in \LaTeX{}, the \File{graphicx}
+package is suggested.  Below is an example of including a \MP{} figure
+(with name \File{foo-1.mps}) in a \LaTeX{} document.
+
+\begin{lstlisting}[style=LaTeX]
+\documentclass{article}
+\usepackage{graphicx}
+\begin{document}
+|\dots|
+\includegraphics{foo-1.mps}
+|\dots|
+\end{document}
+\end{lstlisting}
+
+Having a \File{.mps} file extension on the graphic allows the same
+graphic to be included in both \LaTeX{} and \PDF\LaTeX{} documents.
+When using \PDF\LaTeX, the EPS graphic (with file extension \File{.mps})
+is converted to \PDF{} ``on the fly'' using Hans Hagen's \File{mptopdf}.
+This conversion is necessary since \PDF\LaTeX{} performs no \PS{}
+processing.

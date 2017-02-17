@@ -24,9 +24,9 @@ PGF是用于生成图的宏包。它独立于平台和格式，与最重要的Te
 
 大家若认领其中的内容，填加相应章节题目，勾选其中内容即可。
 
-- [X] Introduction
+- [x] Introduction
 - [ ] Part I Tutorials and Guidelines
-   + [ ] Tutorial: A Picture for Karl’s Students
++ [ ] Tutorial: A Picture for Karl’s Students
      * [ ] Problem Statement
      * [ ] Setting up the Environment 
      * [ ] Straight Path Construction
@@ -35,8 +35,8 @@ PGF是用于生成图的宏包。它独立于平台和格式，与最重要的Te
      * [ ] Rectangle Path Construction
 - [ ] Part II Installation and Configuration
 - [ ] Part III  ik Z ist kein Zeichenprogramm
-- [ ] Part IV Graph Drawing
-- [ ] Part V Libraries
+- [x] Part IV Graph Drawing
+- [x] Part V Libraries
 - [ ] Part VI Data Visualization
 - [ ] Part VII Utilities
 - [ ] Part VIII Mathematical and Object-Oriented Engines
@@ -63,3 +63,5 @@ Till Tantau为我们提供了非常便捷的编译方式——`Makefile`(在每�
 ## 联系人
 
 未尽事宜，请来信垂询：[yangdawei.hit@qq.com](yangdawei.hit@qq.com)
+
+翻译交流QQ群：390651602

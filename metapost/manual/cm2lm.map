@@ -1,0 +1,8 @@
+%%% This map file replaces Computer Modern fonts by Latin Modern.
+cmmi7  CMMI7  < lm-mathit.enc < lmmi7.pfb
+cmmi10 CMMI10 < lm-mathit.enc < lmmi10.pfb
+cmr7   CMR7   < lm-rm.enc < lmr7.pfb
+cmr10  CMR10  < lm-rm.enc < lmr10.pfb
+cmsy7  CMSY7  < lm-mathsy.enc < lmsy7.pfb
+cmsy10 CMSY10 < lm-mathsy.enc < lmsy10.pfb
+cmtt10 CMTT10 < lm-rm.enc < lmtt10.pfb

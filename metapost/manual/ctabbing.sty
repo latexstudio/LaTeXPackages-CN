@@ -1,0 +1,18 @@
+% Public domain.
+% 
+% The ctabbing environment is a centered tabbing environment suitable for
+% displaying program fragments.  The vertical spacing is exactly like that
+% for normal text in a center environment.  This is achieved by setting
+% \@minipagetrue to fool \tabbing into thinking that it starts a minipage
+% and should therefore avoid all vertical space at the top.  (Note that any
+% space at all would defeat the \vtop command in \ctabbing.)  The
+% \vskip-\lastskip and \prevdepth saving commands avoid extra space after
+% \endtabbing
+
+\newdimen\ct@pd
+
+\def\ctabbing{\center\leavevmode\vtop\bgroup\@minipagetrue\begingroup\tabbing}
+
+\def\endctabbing{\endtabbing\endgroup\vskip-\lastskip
+                \global\ct@pd\prevdepth \egroup
+                \endcenter \global\prevdepth\ct@pd}
