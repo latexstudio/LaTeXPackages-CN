@@ -226,79 +226,111 @@ year dozens of new algorithms are proposed.
 而对于更大规模的图则必须要用到C/C++代码。
 
 
-\subsection{The Layers of the Graph Drawing System}
+%\subsection{The Layers of the Graph Drawing System}
+\subsection{绘图系统中的层次}
 
 \label{section-gd-layers}
 
-Even though the graph drawing system presented in the following
-sections was developed as part of \pgfname, it can be used
-independently of \pgfname\ and \tikzname: It was (re)designed so that
-it can be used by arbitrary programs as long as they are able to run
-Lua. To achieve this, the graph drawing system consists of three
-layers:
+%Even though the graph drawing system presented in the following
+尽管下面几节中出现的绘图系统是作为 \pgfname\ 的一部分被开发的，
+%sections was developed as part of \pgfname, it can be used
+它依然能独立于\pgfname\ 和\tikzname 之外运行：
+%independently of \pgfname\ and \tikzname: It was (re)designed so that
+%it can be used by arbitrary programs as long as they are able to run
+只要你的计算机环境能运行 Lua，就能使用绘图系统中的任意程序。
+%Lua. To achieve this, the graph drawing system consists of three
+%layers:
+为了达到这一目的，绘图系统被设计成由三个层次组成：
 
 \begin{enumerate}
-\item At the ``bottom'' we have the \emph{algorithmic layer}. This
-  layer, written in Lua, contains all graph drawing
-  algorithms. Interestingly, options must also be declared on this
-  layer, so an algorithm together with all options it uses can and
-  must be specified entirely on this layer.
-  If you intend to implement a new graph drawing algorithm, you will
-  only be interested in the functionality of this layer.
+%\item At the ``bottom'' we have the \emph{algorithmic layer}. This
+\item 处于最“底层”的是\emph{算法层}。这一层是通过 Lua写成的，包括所有的绘图算法。
+%  layer, written in Lua, contains all graph drawing
+%  algorithms. Interestingly, options must also be declared on this
+不得不提的是，绘图参数也必须在这一层声明，这就意味着绘图算法
+%  layer, so an algorithm together with all options it uses can and
+以及所有的绘图参数都必须在这一层完全而明确地写出。
+%  must be specified entirely on this layer.
+%  If you intend to implement a new graph drawing algorithm, you will
+%  only be interested in the functionality of this layer.
+如果读者想写一个自定义的绘图算法，你可能只会对这一层的实用性感兴趣。
 
-  Algorithm ``communicate'' with the graph drawing system through
-  a well-defined interface, encapsulated in the class
-  |InterfaceToAlgorithms|.
-\item At the ``top'' we have the \emph{display layer}. This layer is
-  not actually part of the graph drawing system. Rather, it is a piece
-  of software that ``displays'' graphs and \tikzname\ is just one
-  example of such a software. Another example might be a graph
-  editor that uses the graph drawing system to lay out the graph it
-  displays. Yet another example might be a command line tool for
-  drawing graphs described in a file. Finally, you may also wish to
-  use the graph drawing system as a simple subroutine for rendering
-  graphs produced in a larger program.
+%  Algorithm ``communicate'' with the graph drawing system through
+算法与绘图系统之间的“通信”是通过一个精心设计过的封装在|InterfaceToAlgorithm|类
+%  a well-defined interface, encapsulated in the class
+%  |InterfaceToAlgorithms|.
+中的交互界面中进行的。
+%\item At the ``top'' we have the \emph{display layer}. This layer is
+\item 处于“顶层”的是\emph{显示层}。严格意义上，这一层不属于绘图系统，相反地，
+%  not actually part of the graph drawing system. Rather, it is a piece
+%  of software that ``displays'' graphs and \tikzname\ is just one
+它是一段“显示”图像的程序，\tikzname\ 就是这种程序的例子；
+%  example of such a software. Another example might be a graph
+%  editor that uses the graph drawing system to lay out the graph it
+另一个例子就是图像编辑器使用绘图系统来输出并显示图；
+%  displays. Yet another example might be a command line tool for
+%  drawing graphs described in a file. Finally, you may also wish to
+还有一个例子就是在命令行中编辑一个文件来实现画图了。
+%  use the graph drawing system as a simple subroutine for rendering
+%  graphs produced in a larger program.
+最后读者可能也会在一个大型绘图算法中使用绘图系统作为小的子例程来实现总体上的绘图目的。
 
-  Since the different possible instantiations of the display layer are
-  quite heterogeneous, all display layers must communicate with the
-  graph drawing system through a special interface, encapsulated in
-  the class |InterfaceToDisplay|.
+%  Since the different possible instantiations of the display layer are
+因为不同的图形显示终端各式各样，所有的层次之间必须与绘图系统之间有信息传递（参数传递）
+%  quite heterogeneous, all display layers must communicate with the
+这种传递是通过一个由封装在|InterfaceToDisplay|类（class）中的终端完成的。
+%  graph drawing system through a special interface, encapsulated in
+%  the class |InterfaceToDisplay|.
 
-  The main job of this class is to provide a set of methods for
-  specifying that a graph has certain nodes and edges and that certain
-  options have been set for them. However, this interface also allows
-  you to query all options that have been declared by algorithms,
-  including their documentation. This
-  way, an editor or a command line tool can display a list of all
-  graph drawing algorithms and how they can be configured.
+%  The main job of this class is to provide a set of methods for
+这个类的主要作用就是提供一个方法集合，这个集合包含了图中被确定的节点、边以及被设定的参数
+%  specifying that a graph has certain nodes and edges and that certain
+%  options have been set for them. However, this interface also allows
+并且这个交互界面也允许读者去查询系统和文档中所有已声明的绘图参数。
+%  you to query all options that have been declared by algorithms,
+%  including their documentation. This
+%  way, an editor or a command line tool can display a list of all
+%  graph drawing algorithms and how they can be configured.
+这样，仅仅一个命令行工具就可以写出一个画图所需要的所有算法和配置参数。
 \item
-  The algorithm layer and the display layer are ``bound together''
-  through the \emph{binding layer}. Most of the bookkeeping concerning
-  the to-be-drawn graphs is done by the graph drawing system
-  independently of which algorithm is used and also independently of
-  which display layer is used, but some things are still specific to
-  each display layer. For instance, some algorithms may create new
-  nodes and the algorithms may then need to know how large these nodes
-  will be. For this, the display layer must be ``queried'' during a
-  run of the algorithm -- and it is the job of the binding layer to
-  achieve this callback.
+%  The algorithm layer and the display layer are ``bound together''
+算法层和显示层是通过\emph{过渡层}而捆绑在一起的。
+%  through the \emph{binding layer}. Most of the bookkeeping concerning
+在 bookkeeping 中涉及到的图由绘图系统输出，这个系统不关心读者使用何种算法也不在意使用了何种图层，
+%  the to-be-drawn graphs is done by the graph drawing system
+%  independently of which algorithm is used and also independently of
+%  which display layer is used, but some things are still specific to
+只在乎每个显示层中特有的东西。
+%  each display layer. For instance, some algorithms may create new
+比如，有些算法可能会添加新的节点，并且指定节点的大小，这种情况下，系统在执行算法时
+%  nodes and the algorithms may then need to know how large these nodes
+%  will be. For this, the display layer must be ``queried'' during a
+必须对显示层进行“读取”——而这个工作恰好就是过渡层通过响应完成的。
+%  run of the algorithm -- and it is the job of the binding layer to
+%  achieve this callback.
   
-  As a rule, the binding layer implements the ``backward''
-  communication from the graph drawing system back to the display
-  layer, while the display layer's interface class provides only
-  functions that are called from the display layer but which will not
-  ``talk back''.
+%  As a rule, the binding layer implements the ``backward''
+根据规定，过渡层完成了从显示层到绘图系统之间的信息传递（与正常方向相反），这其中
+%  communication from the graph drawing system back to the display
+%  layer, while the display layer's interface class provides only
+显示层中的交互类的函数仅在显示层中被调用，并不会“回调”。
+%  functions that are called from the display layer but which will not
+%  ``talk back''.
 \end{enumerate}
 
-All of the files concerned with graph drawing reside in the
-|graphdrawing| subdirectory of |generic/pgf|. 
+%All of the files concerned with graph drawing reside in the
+所有关于绘图的文件都被放在|generic/pgf|的子目录|graphdrawing|下。
+%|graphdrawing| subdirectory of |generic/pgf|. 
 
-\subsection{Organisation of the Graph Drawing Documentation}
+%\subsection{Organisation of the Graph Drawing Documentation}
+\subsection{绘图文档的组织}
 
-The documentation of the graph drawing engine is structured as
-follows:
+%The documentation of the graph drawing engine is structured as
+%follows:
+绘图引擎的文档结构如下：
 \begin{enumerate}
-\item Following this overview section, the next section documents
+%\item Following this overview section, the next section documents
+\item 在这篇导论之后
   the graph drawing engine from ``the \tikzname\ user's point of
   view''. No knowledge of Lua or algorithmic graph drawing is needed
   for this section, everyone who intends to use algorithmic graph
