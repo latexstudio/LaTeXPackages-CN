@@ -1,6 +1,7 @@
 % Copyright 2010 by Renée Ahrens, Olof Frahm, Jens Kluttig, Matthias Schulz, Stephan Schuster
 % Copyright 2011 by Till Tantau
 % Copyright 2011 by Jannis Pohlmann
+% Translated 2017 by Ionizing Radiation
 %
 % This file may be distributed and/or modified
 %
@@ -12,7 +13,7 @@
 
 
 %\section{Introduction to Algorithmic Graph Drawing}
-\section{算法式绘图导论}
+\section{程序式绘图导论}
 \label{section-intro-gd}
 
 \emph{by Till Tantau}
@@ -21,11 +22,11 @@
 
 
 %\subsection{What Is Algorithmic Graph Drawing?}
-\subsection{什么是算法式绘图？}
+\subsection{什么是程序式绘图？}
 
 
 %\emph{Algorithmic graph drawing} (or just \emph{graph drawing} in the
-\emph{算法式绘图}（下文也称\emph{绘图}）
+\emph{程序式绘图}（下文也称\emph{绘图}）
 %following) is the process of computing algorithmically where the nodes of
 是一个程序式计算图上节点位置以达到输出“好看的”绘图效果的过程。
 %a graph are positioned on a page so that the graph ``looks nice.'' The
@@ -330,70 +331,104 @@ year dozens of new algorithms are proposed.
 绘图引擎的文档结构如下：
 \begin{enumerate}
 %\item Following this overview section, the next section documents
-\item 在这篇导论之后
-  the graph drawing engine from ``the \tikzname\ user's point of
-  view''. No knowledge of Lua or algorithmic graph drawing is needed
-  for this section, everyone who intends to use algorithmic graph
-  drawing in \tikzname\ may be interested in reading it.
-\item You will normally only use \tikzname's keys and
-  commands in order to use the graph drawing system, but, internally,
-  these keys call more basic \pgfname\ commands that do the ``hard
-  work'' of binding the world of \TeX\ boxes and macros to the
-  object-oriented world of Lua. Section~\ref{section-gd-pgf} explains
-  how this works and which commands are available for authors of
-  packages that directly need to use the graph drawing system inside
-  \pgfname, avoiding the overhead incurred by \tikzname.
+\item 在这篇导论之后的部分记录了"\tikzname\ 用户的心得"。这一部分
+%  the graph drawing engine from ``the \tikzname\ user's point of
+%  view''. No knowledge of Lua or algorithmic graph drawing is needed
+不需要读者已经了解Lua 或程序式绘图，只要读者想要掌握程序式绘图
+%  for this section, everyone who intends to use algorithmic graph
+%  drawing in \tikzname\ may be interested in reading it.
+都会对这一部分感兴趣。
+%\item You will normally only use \tikzname's keys and
+\item 通常情况下读者在使用绘图系统时只需要使用\tikzname\ 中的关键字，
+%  commands in order to use the graph drawing system, but, internally,
+但是在更深层次上，这些关键字会调用更加底层的\pgfname\ 命令来实现
+%  these keys call more basic \pgfname\ commands that do the ``hard
+%  work'' of binding the world of \TeX\ boxes and macros to the
+将\TeX\ 系统的“盒子”（boxes）及宏（macros）与面向对象领域中的 Lua结合
+%  object-oriented world of Lua. Section~\ref{section-gd-pgf} explains
+起来的艰巨任务。这一小节\ref{section-gd-pgf}解释了这是如何实现的，
+%  how this works and which commands are available for authors of
+以及那些命令是宏包开发者在使用\pgfname\ 中的绘图系统需要使用的，
+%  packages that directly need to use the graph drawing system inside
+%  \pgfname, avoiding the overhead incurred by \tikzname.
+从而避免了由\tikzname\ 导致的越界行为。
 
-  Most readers can safely skip this section.
-\item The next sections detail which graph drawing algorithms are
-  currently implemented as part of the \tikzname\ distribution, see
-  Sections~\ref{section-first-graphdrawing-library-in-manual}
-  to~\ref{section-last-graphdrawing-library-in-manual}.
+%  Most readers can safely skip this section.
+大部分读者可以跳过这一部分。
+%\item The next sections detail which graph drawing algorithms are
+\item 下面几个小节将深入阐明有哪些绘图算法已经作为\tikzname\ 发行版
+%  currently implemented as part of the \tikzname\ distribution, see
+的一部分而被发表，这一部分包括第\ref{section-first-graphdrawing-library-in-manual}小节
+%  Sections~\ref{section-first-graphdrawing-library-in-manual}
+%  to~\ref{section-last-graphdrawing-library-in-manual}.
+至\ref{section-last-graphdrawing-library-in-manual}小节。
 \item
-  Section~\ref{section-gd-algorithm-layer} is addressed at readers
-  who wish to implement their own graph drawing
-  algorithms. For this, \emph{no knowledge at all} of \TeX\
-  programming is needed. The section explains the graph model used in
-  Lua, the available libraries, the graph drawing pipeline, and everything
-  else that is part of the Lua side of the engine.
+%  Section~\ref{section-gd-algorithm-layer} is addressed at readers
+第\ref{section-gd-algorithm-layer}小节会来解答哪些想要自己动手写绘图算法的读者们，
+%  who wish to implement their own graph drawing
+%  algorithms. For this, \emph{no knowledge at all} of \TeX\
+%  programming is needed. The section explains the graph model used in
+在读这一小节时，\emph{完全不需要}\TeX\ 编程知识。
+%  Lua, the available libraries, the graph drawing pipeline, and everything
+本节解释了 Lua 中用到的图模型，可用的库，绘图的路径以及所有在绘图引擎中用到的
+%  else that is part of the Lua side of the engine.
+Lua 知识。
 \item
-  Section~\ref{section-gd-display-layer} details the
-  display layer of the graph drawing system.  You should read this 
-  section if you wish to implement a new display system (that is, a
-  non-\TeX-based program) that intends to use the graph drawing system.
+%  Section~\ref{section-gd-display-layer} details the
+第\ref{section-gd-display-layer}小节详细介绍了图像显示系统。
+%  display layer of the graph drawing system.  You should read this 
+%  section if you wish to implement a new display system (that is, a
+%  non-\TeX-based program) that intends to use the graph drawing system.
+如果读者想要亲自使用绘图系统实现一个显示系统（不基于\TeX\ 的程序），这一小节对读者是很必要的。
 \item
-  Section~\ref{section-gd-binding-layer} explains how binding layers
-  can be implemented. This section, too, is of interest only to
-  readers who wish to write new display systems. 
+%  Section~\ref{section-gd-binding-layer} explains how binding layers
+第\ref{section-gd-binding-layer}小节解释了过渡层是如何实现的。同样地
+%  can be implemented. This section, too, is of interest only to
+%  readers who wish to write new display systems. 
+只有那些想要亲自写出新的显示系统的大佬们会对这一小节感兴趣。
 \end{enumerate}
 
 
 
-\subsection{Acknowledgements}
+%\subsection{Acknowledgements}
+\subsection{鸣谢}
 
-Graph drawing in \tikzname\ began as a student's project under my
-supervision. Ren\'ee Ahrens, Olof-Joachim Frahm, Jens
-Kluttig, Matthias Schulz, and Stephan Schuster wrote the first
-prototype of a graph drawing system inside \tikzname\ that uses
-Lua\TeX\ for the implementation of graph drawing algorithms.
+%Graph drawing in \tikzname\ began as a student's project under my
+\tikzname\ 中的绘图系统是我的学生在我的指导下完成的。
+%supervision. Ren\'ee Ahrens, Olof-Joachim Frahm, Jens
+%Kluttig, Matthias Schulz, and Stephan Schuster wrote the first
+其中 Ren\'ee Ahrens、Olof-Joachim Frahm、Jens Kluttig、Matthias Schulz 
+和 Stephan Schuster 使用Lua\TeX 实现了\tikzname\ 中绘图系统的雏形。
+%prototype of a graph drawing system inside \tikzname\ that uses
+%Lua\TeX\ for the implementation of graph drawing algorithms.
 
-This first, early version was greatly extended on the algorithmic side
-by Jannis Pohlmann who wrote his Diploma thesis on graph drawing under
-my supervision. He implemented, in particular, the Sugiyama method
-(|layered layout|) and force based algorithms. Also, he rewrote some
-of the code of the prototype.
+%This first, early version was greatly extended on the algorithmic side
+第一，（本系统的）早期版本由 Jannis Pohlmann 进行了算法层面的巨大拓展（这厮曾
+%by Jannis Pohlmann who wrote his Diploma thesis on graph drawing under
+%my supervision. He implemented, in particular, the Sugiyama method
+在我的指导下完成了关于绘图的毕业论文），尤其是在“杉山法”（|层序输出|）以及
+%(|layered layout|) and force based algorithms. Also, he rewrote some
+%of the code of the prototype.
+基于原力的算法方面，而且他也重写了系统雏形中的一些代码。
 
-At some point it became apparent that the first implementation had a
-number of deficiencies, both concerning the structure, the interfaces,
-and (in particular) the performance. Because of this, I rewrote 
-the code of the graph drawing system, both on the \TeX\ side
-and on the Lua side in its current form. However, I would like to
-stress that without the work of the people mentioned above graph
-drawing in \tikzname\ would not exist.
+%At some point it became apparent that the first implementation had a
+%number of deficiencies, both concerning the structure, the interfaces,
+从某种意义上讲，这个系统的第一个版本明显存在着大量的缺陷，比如在结构上、交互界面上
+%and (in particular) the performance. Because of this, I rewrote 
+（尤其是）性能上。鉴于此，我重写了绘图系统的代码，包括现在系统中的 \TeX\ 部分和 Lua
+%the code of the graph drawing system, both on the \TeX\ side
+%and on the Lua side in its current form. However, I would like to
+部分。然而，我还是要说明如果没有前面提到同志们的工作，\tikzname\ 中的
+%stress that without the work of the people mentioned above graph
+%drawing in \tikzname\ would not exist.
+绘图系统是不会出世的。
 
-The documentation was written almost entirely by myself, though I did
-copy some paragraphs from Jannis's Diploma thesis, which I can highly
-recommend everyone to read. 
+%The documentation was written almost entirely by myself, though I did
+%copy some paragraphs from Jannis's Diploma thesis, which I can highly
+%recommend everyone to read. 
+这份文档几乎完全是由我自己写出来的，除了从 Jannis's 的毕业论文中复制（Ctrl + v）了
+几个段落，我还是极力推荐大家来读这份文档的。
 
-In the future, I hope that other people will contribute algorithms,
-which will be available as libraries.
+%In the future, I hope that other people will contribute algorithms,
+%which will be available as libraries.
+在将来，我希望其他人也能为绘图算法做出一些贡献，将自己的算法纳入库中。
