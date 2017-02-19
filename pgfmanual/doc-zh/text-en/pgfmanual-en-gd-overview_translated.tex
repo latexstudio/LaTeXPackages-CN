@@ -1,0 +1,434 @@
+% Copyright 2010 by Renée Ahrens, Olof Frahm, Jens Kluttig, Matthias Schulz, Stephan Schuster
+% Copyright 2011 by Till Tantau
+% Copyright 2011 by Jannis Pohlmann
+% Translated 2017 by Ionizing Radiation
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Free Documentation License.
+%
+% See the file doc/generic/pgf/licenses/LICENSE for more details.
+
+
+
+%\section{Introduction to Algorithmic Graph Drawing}
+\section{程序式绘图导论}
+\label{section-intro-gd}
+
+\emph{by Till Tantau}
+
+\ifluatex\else This section of the manual can only be typeset using Lua\TeX.\expandafter\endinput\fi
+
+
+%\subsection{What Is Algorithmic Graph Drawing?}
+\subsection{什么是程序式绘图？}
+
+
+%\emph{Algorithmic graph drawing} (or just \emph{graph drawing} in the
+\emph{程序式绘图}（下文也称\emph{绘图}）
+%following) is the process of computing algorithmically where the nodes of
+是一个程序式计算图上节点位置以达到输出“好看的”绘图效果的过程。
+%a graph are positioned on a page so that the graph ``looks nice.'' The
+%idea is that you, as human (or you, as a machine, if you happen to be
+这个方法就是读者，作为人类（亦或恰巧在读这个文档的机器），
+%a machine and happen to be reading this document) just specify which
+给出将要绘制的图上存在的点、边（余下的工作就由计算机完成了）。
+%nodes are present in a graph and which edges are
+%present. Additionally, you may add some ``hints'' like ``this node
+除此之外，读者还可能需要添加一些“提示”比如 ``this node should be near the center''
+%should be near the center'' or ``this edge is pretty important.'' You
+或者 ``this edge is pretty important.'' 之类的。
+%do \emph{not} specify where, exactly, the nodes and edges should
+你\emph{并不}需要明确给出点和边的位置。
+%be. This is something you leave to a \emph{graph drawing
+这些就是你需要交给\emph{绘图}的东西。
+%  algorithm}. The algorithm gets your description of the graph as an
+绘图算法会解释出你对图的描述并决定节点在页面上的位置。
+%input and then decides where the nodes should go on the page.
+
+\begin{codeexample}[]
+\tikz \graph [binary tree layout, level distance=5mm] {
+  4 -- {
+    3 -- 0 -- 1[second],
+    10 -- {
+      8 -- {
+        6 -- {5,7},
+        9
+  } } }
+};
+\end{codeexample}
+
+\begin{codeexample}[]
+\tikz \graph [spring layout,
+  edge quotes mid,
+  edges={nodes={font=\scriptsize, fill=white, sloped, inner sep=1pt}}]
+{
+  1 ->["Das"] 2 ->["ist"] 3 ->["das"] 4 ->["Haus"]
+  2 ->["vom" near start] 5 ->["Ni"] 4 ->["ko" near start]
+  1 ->["laus", orient=right] 5;
+};  
+\end{codeexample}
+
+%Naturally, graph drawing is a bit of a (black?) art. There is no
+很自然地，绘图看上去多少有些（酷）优美。
+%``perfect'' way of drawing a graph, rather, depending on the
+世上不存在“完美”的绘图方法，绘制同样的一张图，有很多不同途径
+%circumstances there are several different ways of drawing the same
+%graph and often it will just depend on the aesthetic sense of the
+而且绘制的方法仅仅取决于读者的美感并输出读者所喜欢的图。
+%reader which layout he or she would prefer. For this reason, there are
+出于这个原因，现有相当数量的绘图算法“存在于世上”
+a huge number of graph drawing algorithms ``out there'' and there are
+scientific conference devoted to such algorithms, where each
+并且有科学界的会议致力于研究这些算法，每隔几年都有新的算法被发表。
+year dozens of new algorithms are proposed.
+
+%Unlike the rest of \pgfname\ and \tikzname, which is implemented
+因为被转换成\TeX 的过程十分复杂，绘图算法不像 \pgfname 和 \tikzname 那样
+%purely in \TeX, the graph drawing algorithms are simply too complex to
+纯粹地由 \TeX 写成，
+%be implemented directly in \TeX. Instead, the programming language Lua is used
+取而代之的是，它的绘图库使用了 Lua —— 一个已经被集成到\TeX 版本中的编程语言，
+%by the graph drawing library -- a programming language that has been
+%integrated into recent versions of \TeX. This means that (a) as a user
+这意味\ (a)\ 着通常情况下当你在文档中使用 \TeX\ 的绘图引擎时
+%of the graph drawing engine you run \TeX\ on your documents
+%in the usual way, no external programs are called since Lua is already
+不需要调用外部程序（Lua已经被集成到\TeX\ 中）
+%integrated into \TeX, and (b) it is pretty easy to implement new graph
+并且\ (b)\ 在\tikzname\ 中使用新的绘图算法变得十分轻松
+%drawing algorithms for \tikzname\ since Lua can be used and no \TeX\
+%programming knowledge is needed. 
+因为你可以使用 Lua 而不需要了解 \TeX\ 编程知识。
+
+
+%\subsection{Using the Graph Drawing System}
+\subsection{开始使用绘图系统}
+
+%``Users'' of the graph drawing engine can invoke the graph
+绘图引擎的用户通常仅需在绘图时加上参数就可以调用绘图算法（引擎）。
+%drawing algorithms often by just adding a single option to their
+%picture. Here is a typical example, where the |layered layout| option
+下面是一个典型的例子——其中 |分层布局| 选项告诉了 \tikzname\ 它应使用
+%tells \tikzname\ that the graph should be drawn (``should be layed
+被称为“分层绘图”的算法（后文将会介绍）并“输出图像”(``should be layed out``)：。
+%out'') using a so-called ``layered graph drawing algorithm'' (what
+%these are will be explained later):
+\begin{codeexample}[]
+\tikz [>=spaced stealth']
+  \graph [layered layout, components go right top aligned, nodes=draw, edges=rounded corners]
+  {
+    first root -> {1 -> {2, 3, 7} -> {4, 5}, 6 }, 4 -- 5;
+    second root -> x -> {a -> {u,v}, b, c -> d -> {w,z} };
+    third root -> child -> grandchild -> youngster -> third root;    
+  };
+\end{codeexample}
+%Here is another example, where a different layout method is used
+下面是另一个例子，它实现了另一种更适合绘制“树”的输出效果。
+%that is more appropriate for trees:
+\begin{codeexample}[]
+\tikz [grow'=up, binary tree layout, nodes={circle,draw}]
+  \node {1}
+  child { node {2}
+    child { node {3} }
+    child { node {4}
+      child { node {5} }
+      child { node {6} }
+    }
+  }
+  child { node {7}
+    child { node {8}
+      child[missing]
+      child { node {9} }
+    }
+  };
+\end{codeexample}
+%A final example, this time using a ``spring electrical layout''
+在这一小节的最后，是时候用“spring electrical layout”（无所谓是什么啦……）装个逼啦\^\_\^：
+%(whatever that might be\dots):
+\begin{codeexample}[]
+\tikz [spring electrical layout, node distance=1.3cm,
+       every edge/.style={
+         decoration={coil, aspect=-.5, post length=1mm,
+                     segment length=1mm, pre length=2mm},
+         decorate, draw}]
+{
+  \foreach \i in {1,...,6}
+    \node (node \i) [fill=blue!50, text=white, circle] {\i};
+    
+  \draw (node 1) edge (node 2)
+        (node 2) edge (node 3)
+                 edge (node 4)
+        (node 3) edge (node 4)
+                 edge (node 5)
+                 edge (node 6);
+}
+\end{codeexample}
+%In all of the example, the positions of the nodes have only been
+在之前所有的例子中，图像中节点的位置都是在节点和边的明确定义\emph{之后}被
+%computed \emph{after} all nodes have been created and the edges have
+计算出来的。
+%been specified. For instance, in the last example, without the
+比如在最后一个例子中，在没有 |spring electrical layout| 选项时，
+%option |spring electrical layout|, all of the nodes would have been
+%placed on top of each other.
+所有的节点都在页面顶端挤在了一起\ (>\_<)\ 。
+
+
+%\subsection{Extending the Graph Drawing System}
+\subsection{绘图系统使用拓展}
+
+%The graph drawing engine is also intended to make is
+图像绘制引擎同样可以用来实现显得绘图算法
+%(relatively) easy to implement new graph drawing algorithms. These
+%algorithms can either be implemented in the Lua programming
+这些（自定义的）绘图算法既可以使用 Lua 语言（这可比\TeX\ 语言编程\emph{简单多了}），
+%language (which is \emph{much} easier to program than \TeX\
+%itself) or in C/C++ (but at a great cost regarding portability). The
+也可以使用 C/C++ （但在可移植性上需要付出很多精力）。
+%Lua code for a graph drawing algorithm gets an 
+%object-oriented model of the input graph as an input and must just
+对于一个图，绘图算法中的 Lua 代码使用面向对象的模型来描述，
+%compute the desired new positions of the nodes. The complete
+而其仅需要做的（微小的）工作就是计算节点的位置。
+%handling of passing options and configurations back-and-forth
+在整个计算过程中，不同 \tikzname\ 和 \pgfname\ 图层之间参数及选项的来回传递
+%between the different \tikzname\ and \pgfname\ layers is handled by
+%the graph drawing engine. 
+经由绘图引擎完成。
+
+%As a caveat, the graph drawing engine comes with a library of
+需要提醒读者的是，绘图引擎来源于一个可以简化编写新绘图算法
+%functions and methods that simplify the writing of new
+的代码库（由多个函数和method组成）。
+%graph drawing algorithms. As a typical example, when you implement a 
+一个典型的例子是，当你使用算法来绘制一张描述“树”的图时，读者自己会很自然地
+%graph drawing algorithm for trees, you typically require that your
+%input is a tree; but you can bet that users will feed all sorts of
+输入一个“树”的相应数据；但是必须要指出的是，不同的用户在使用你写的算法时
+%graphs to your algorithm, including disjoint unions of cliques. The
+会输入各式各样（活久见）的“树”，其中难免会有包含不相交集的团（图论术语）。
+%graph drawing engine offers you to say that a precondition to running
+绘图引擎这时为你提供了一个发言的机会——指明当你的程序正常运行时会输出一张“|树|”图
+%your algorithm is that the graph is a |tree| and instead of the original graph your
+而不是输出……的先决条件。
+%algorithm will be provided with a spanning tree of the graph on
+%which it can work. There are numerous further automatic pre- and
+这其中由相当数量的更自动化的预处理和后续处理包括旋转、固定和成分打包以及命名等。
+%postprocessing steps that include orienting, anchoring, and packing
+%of components, to name a few.
+
+%The bottom line is that the graph drawing engine makes it easy
+在 Lua 中使用绘图引擎会简化工作的最低图规模要求是中等大小的图（多达几百个节点），
+%to try out new graph drawing algorithms for medium sized graphs (up
+%to a few hundred nodes) in Lua. For larger graphs, C/C++ code must be
+%used.
+而对于更大规模的图则必须要用到C/C++代码。
+
+
+%\subsection{The Layers of the Graph Drawing System}
+\subsection{绘图系统中的层次}
+
+\label{section-gd-layers}
+
+%Even though the graph drawing system presented in the following
+尽管下面几节中出现的绘图系统是作为 \pgfname\ 的一部分被开发的，
+%sections was developed as part of \pgfname, it can be used
+它依然能独立于\pgfname\ 和\tikzname 之外运行：
+%independently of \pgfname\ and \tikzname: It was (re)designed so that
+%it can be used by arbitrary programs as long as they are able to run
+只要你的计算机环境能运行 Lua，就能使用绘图系统中的任意程序。
+%Lua. To achieve this, the graph drawing system consists of three
+%layers:
+为了达到这一目的，绘图系统被设计成由三个层次组成：
+
+\begin{enumerate}
+%\item At the ``bottom'' we have the \emph{algorithmic layer}. This
+\item 处于最“底层”的是\emph{算法层}。这一层是通过 Lua写成的，包括所有的绘图算法。
+%  layer, written in Lua, contains all graph drawing
+%  algorithms. Interestingly, options must also be declared on this
+不得不提的是，绘图参数也必须在这一层声明，这就意味着绘图算法
+%  layer, so an algorithm together with all options it uses can and
+以及所有的绘图参数都必须在这一层完全而明确地写出。
+%  must be specified entirely on this layer.
+%  If you intend to implement a new graph drawing algorithm, you will
+%  only be interested in the functionality of this layer.
+如果读者想写一个自定义的绘图算法，你可能只会对这一层的实用性感兴趣。
+
+%  Algorithm ``communicate'' with the graph drawing system through
+算法与绘图系统之间的“通信”是通过一个精心设计过的封装在|InterfaceToAlgorithm|类
+%  a well-defined interface, encapsulated in the class
+%  |InterfaceToAlgorithms|.
+中的交互界面中进行的。
+%\item At the ``top'' we have the \emph{display layer}. This layer is
+\item 处于“顶层”的是\emph{显示层}。严格意义上，这一层不属于绘图系统，相反地，
+%  not actually part of the graph drawing system. Rather, it is a piece
+%  of software that ``displays'' graphs and \tikzname\ is just one
+它是一段“显示”图像的程序，\tikzname\ 就是这种程序的例子；
+%  example of such a software. Another example might be a graph
+%  editor that uses the graph drawing system to lay out the graph it
+另一个例子就是图像编辑器使用绘图系统来输出并显示图；
+%  displays. Yet another example might be a command line tool for
+%  drawing graphs described in a file. Finally, you may also wish to
+还有一个例子就是在命令行中编辑一个文件来实现画图了。
+%  use the graph drawing system as a simple subroutine for rendering
+%  graphs produced in a larger program.
+最后读者可能也会在一个大型绘图算法中使用绘图系统作为小的子例程来实现总体上的绘图目的。
+
+%  Since the different possible instantiations of the display layer are
+因为不同的图形显示终端各式各样，所有的层次之间必须与绘图系统之间有信息传递（参数传递）
+%  quite heterogeneous, all display layers must communicate with the
+这种传递是通过一个由封装在|InterfaceToDisplay|类（class）中的终端完成的。
+%  graph drawing system through a special interface, encapsulated in
+%  the class |InterfaceToDisplay|.
+
+%  The main job of this class is to provide a set of methods for
+这个类的主要作用就是提供一个方法集合，这个集合包含了图中被确定的节点、边以及被设定的参数
+%  specifying that a graph has certain nodes and edges and that certain
+%  options have been set for them. However, this interface also allows
+并且这个交互界面也允许读者去查询系统和文档中所有已声明的绘图参数。
+%  you to query all options that have been declared by algorithms,
+%  including their documentation. This
+%  way, an editor or a command line tool can display a list of all
+%  graph drawing algorithms and how they can be configured.
+这样，仅仅一个命令行工具就可以写出一个画图所需要的所有算法和配置参数。
+\item
+%  The algorithm layer and the display layer are ``bound together''
+算法层和显示层是通过\emph{过渡层}而捆绑在一起的。
+%  through the \emph{binding layer}. Most of the bookkeeping concerning
+在 bookkeeping 中涉及到的图由绘图系统输出，这个系统不关心读者使用何种算法也不在意使用了何种图层，
+%  the to-be-drawn graphs is done by the graph drawing system
+%  independently of which algorithm is used and also independently of
+%  which display layer is used, but some things are still specific to
+只在乎每个显示层中特有的东西。
+%  each display layer. For instance, some algorithms may create new
+比如，有些算法可能会添加新的节点，并且指定节点的大小，这种情况下，系统在执行算法时
+%  nodes and the algorithms may then need to know how large these nodes
+%  will be. For this, the display layer must be ``queried'' during a
+必须对显示层进行“读取”——而这个工作恰好就是过渡层通过响应完成的。
+%  run of the algorithm -- and it is the job of the binding layer to
+%  achieve this callback.
+  
+%  As a rule, the binding layer implements the ``backward''
+根据规定，过渡层完成了从显示层到绘图系统之间的信息传递（与正常方向相反），这其中
+%  communication from the graph drawing system back to the display
+%  layer, while the display layer's interface class provides only
+显示层中的交互类的函数仅在显示层中被调用，并不会“回调”。
+%  functions that are called from the display layer but which will not
+%  ``talk back''.
+\end{enumerate}
+
+%All of the files concerned with graph drawing reside in the
+所有关于绘图的文件都被放在|generic/pgf|的子目录|graphdrawing|下。
+%|graphdrawing| subdirectory of |generic/pgf|. 
+
+%\subsection{Organisation of the Graph Drawing Documentation}
+\subsection{绘图文档的组织}
+
+%The documentation of the graph drawing engine is structured as
+%follows:
+绘图引擎的文档结构如下：
+\begin{enumerate}
+%\item Following this overview section, the next section documents
+\item 在这篇导论之后的部分记录了"\tikzname\ 用户的心得"。这一部分
+%  the graph drawing engine from ``the \tikzname\ user's point of
+%  view''. No knowledge of Lua or algorithmic graph drawing is needed
+不需要读者已经了解Lua 或程序式绘图，只要读者想要掌握程序式绘图
+%  for this section, everyone who intends to use algorithmic graph
+%  drawing in \tikzname\ may be interested in reading it.
+都会对这一部分感兴趣。
+%\item You will normally only use \tikzname's keys and
+\item 通常情况下读者在使用绘图系统时只需要使用\tikzname\ 中的关键字，
+%  commands in order to use the graph drawing system, but, internally,
+但是在更深层次上，这些关键字会调用更加底层的\pgfname\ 命令来实现
+%  these keys call more basic \pgfname\ commands that do the ``hard
+%  work'' of binding the world of \TeX\ boxes and macros to the
+将\TeX\ 系统的“盒子”（boxes）及宏（macros）与面向对象领域中的 Lua结合
+%  object-oriented world of Lua. Section~\ref{section-gd-pgf} explains
+起来的艰巨任务。这一小节\ref{section-gd-pgf}解释了这是如何实现的，
+%  how this works and which commands are available for authors of
+以及那些命令是宏包开发者在使用\pgfname\ 中的绘图系统需要使用的，
+%  packages that directly need to use the graph drawing system inside
+%  \pgfname, avoiding the overhead incurred by \tikzname.
+从而避免了由\tikzname\ 导致的越界行为。
+
+%  Most readers can safely skip this section.
+大部分读者可以跳过这一部分。
+%\item The next sections detail which graph drawing algorithms are
+\item 下面几个小节将深入阐明有哪些绘图算法已经作为\tikzname\ 发行版
+%  currently implemented as part of the \tikzname\ distribution, see
+的一部分而被发表，这一部分包括第\ref{section-first-graphdrawing-library-in-manual}小节
+%  Sections~\ref{section-first-graphdrawing-library-in-manual}
+%  to~\ref{section-last-graphdrawing-library-in-manual}.
+至\ref{section-last-graphdrawing-library-in-manual}小节。
+\item
+%  Section~\ref{section-gd-algorithm-layer} is addressed at readers
+第\ref{section-gd-algorithm-layer}小节会来解答哪些想要自己动手写绘图算法的读者们，
+%  who wish to implement their own graph drawing
+%  algorithms. For this, \emph{no knowledge at all} of \TeX\
+%  programming is needed. The section explains the graph model used in
+在读这一小节时，\emph{完全不需要}\TeX\ 编程知识。
+%  Lua, the available libraries, the graph drawing pipeline, and everything
+本节解释了 Lua 中用到的图模型，可用的库，绘图的路径以及所有在绘图引擎中用到的
+%  else that is part of the Lua side of the engine.
+Lua 知识。
+\item
+%  Section~\ref{section-gd-display-layer} details the
+第\ref{section-gd-display-layer}小节详细介绍了图像显示系统。
+%  display layer of the graph drawing system.  You should read this 
+%  section if you wish to implement a new display system (that is, a
+%  non-\TeX-based program) that intends to use the graph drawing system.
+如果读者想要亲自使用绘图系统实现一个显示系统（不基于\TeX\ 的程序），这一小节对读者是很必要的。
+\item
+%  Section~\ref{section-gd-binding-layer} explains how binding layers
+第\ref{section-gd-binding-layer}小节解释了过渡层是如何实现的。同样地
+%  can be implemented. This section, too, is of interest only to
+%  readers who wish to write new display systems. 
+只有那些想要亲自写出新的显示系统的大佬们会对这一小节感兴趣。
+\end{enumerate}
+
+
+
+%\subsection{Acknowledgements}
+\subsection{鸣谢}
+
+%Graph drawing in \tikzname\ began as a student's project under my
+\tikzname\ 中的绘图系统是我的学生在我的指导下完成的。
+%supervision. Ren\'ee Ahrens, Olof-Joachim Frahm, Jens
+%Kluttig, Matthias Schulz, and Stephan Schuster wrote the first
+其中 Ren\'ee Ahrens、Olof-Joachim Frahm、Jens Kluttig、Matthias Schulz 
+和 Stephan Schuster 使用Lua\TeX 实现了\tikzname\ 中绘图系统的雏形。
+%prototype of a graph drawing system inside \tikzname\ that uses
+%Lua\TeX\ for the implementation of graph drawing algorithms.
+
+%This first, early version was greatly extended on the algorithmic side
+第一，（本系统的）早期版本由 Jannis Pohlmann 进行了算法层面的巨大拓展（这厮曾
+%by Jannis Pohlmann who wrote his Diploma thesis on graph drawing under
+%my supervision. He implemented, in particular, the Sugiyama method
+在我的指导下完成了关于绘图的毕业论文），尤其是在“杉山法”（|层序输出|）以及
+%(|layered layout|) and force based algorithms. Also, he rewrote some
+%of the code of the prototype.
+基于原力的算法方面，而且他也重写了系统雏形中的一些代码。
+
+%At some point it became apparent that the first implementation had a
+%number of deficiencies, both concerning the structure, the interfaces,
+从某种意义上讲，这个系统的第一个版本明显存在着大量的缺陷，比如在结构上、交互界面上
+%and (in particular) the performance. Because of this, I rewrote 
+（尤其是）性能上。鉴于此，我重写了绘图系统的代码，包括现在系统中的 \TeX\ 部分和 Lua
+%the code of the graph drawing system, both on the \TeX\ side
+%and on the Lua side in its current form. However, I would like to
+部分。然而，我还是要说明如果没有前面提到同志们的工作，\tikzname\ 中的
+%stress that without the work of the people mentioned above graph
+%drawing in \tikzname\ would not exist.
+绘图系统是不会出世的。
+
+%The documentation was written almost entirely by myself, though I did
+%copy some paragraphs from Jannis's Diploma thesis, which I can highly
+%recommend everyone to read. 
+这份文档几乎完全是由我自己写出来的，除了从 Jannis's 的毕业论文中复制（Ctrl + v）了
+几个段落，我还是极力推荐大家来读这份文档的。
+
+%In the future, I hope that other people will contribute algorithms,
+%which will be available as libraries.
+在将来，我希望其他人也能为绘图算法做出一些贡献，将自己的算法纳入库中。
