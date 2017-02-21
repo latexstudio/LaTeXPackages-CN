@@ -149,42 +149,61 @@ pdf\LaTeX\ 和其它典型的（基于PostScript）\LaTeX\ 驱动中。换言之
 
 \end{description}  
 
-In theory, \tikzname itself is just one of several possible
-``frontends,'' which are sets of commands or a special syntax that
-makes using the basic layer easier. A problem with directly using the
-basic layer is that code written for this layer is often too
-``verbose.'' For example, to draw a simple 
-triangle, you may need as many as five commands when using the basic
-layer: One for beginning a path at the first corner of the triangle,
-one for extending the path to the second corner, one for going to
-the third, one for closing the path, and one for actually painting
-the triangle (as opposed to filling it). With the \tikzname\ frontend
-all this boils down to a single simple \textsc{metafont}-like
-command:
+% In theory, \tikzname itself is just one of several possible
+% ``frontends,'' which are sets of commands or a special syntax that
+% makes using the basic layer easier. A problem with directly using the
+% basic layer is that code written for this layer is often too
+% ``verbose.'' For example, to draw a simple 
+% triangle, you may need as many as five commands when using the basic
+% layer: One for beginning a path at the first corner of the triangle,
+% one for extending the path to the second corner, one for going to
+% the third, one for closing the path, and one for actually painting
+% the triangle (as opposed to filling it). With the \tikzname\ frontend
+% all this boils down to a single simple \textsc{metafont}-like
+% command:
+
+理论上，\tikzname 本身只是“前端”中的一种，所谓“前端”是若干命令或特
+殊语法的组合，它使得基础层用起来更加容易。直接使用基础层会使得代码过于
+冗长。举例来说，要画一个简单的三角形，使用基础层的话你得用5条命令：第
+一条是在三角形第一个角处开始画一条路径，然后向第二个角延伸，再转向第三
+个，再闭合这条路径，最后才能实际绘制这个三角形（而非填充它）。而使用
+\tikzname\ 前端，这些烦杂动作将简化为类似于\textsc{metafont}的命令：
+
 \begin{verbatim}
 \draw (0,0) -- (1,0) -- (1,1) -- cycle;
 \end{verbatim}
 
-In practice, \tikzname\ is the only ``serious'' frontend for \pgfname. It
-gives you access to all features of \pgfname, but it is intended to be
-easy to use. The syntax is a mixture of \textsc{metafont} and
-\textsc{pstricks} and some ideas of myself. There are other frontends
-besides \tikzname, but they are more intended as ``technology
-studies'' and less as serious alternatives to \tikzname. In
-particular, the |pgfpict2e| frontend   reimplements the standard
-\LaTeX\ |{picture}|  environment and 
-commands like |\line| or |\vector| 
-using the \pgfname\ basic layer. This layer is not really ``necessary''
-since the |pict2e.sty| package does at least as good a job at
-reimplementing the |{picture}| environment. Rather, the idea
-behind this package is to have a simple demonstration of how a
-frontend can be implemented. 
+% In practice, \tikzname\ is the only ``serious'' frontend for \pgfname. It
+% gives you access to all features of \pgfname, but it is intended to be
+% easy to use. The syntax is a mixture of \textsc{metafont} and
+% \textsc{pstricks} and some ideas of myself. There are other frontends
+% besides \tikzname, but they are more intended as ``technology
+% studies'' and less as serious alternatives to \tikzname. In
+% particular, the |pgfpict2e| frontend   reimplements the standard
+% \LaTeX\ |{picture}|  environment and 
+% commands like |\line| or |\vector| 
+% using the \pgfname\ basic layer. This layer is not really ``necessary''
+% since the |pict2e.sty| package does at least as good a job at
+% reimplementing the |{picture}| environment. Rather, the idea
+% behind this package is to have a simple demonstration of how a
+% frontend can be implemented. 
 
-Since most users will only use \tikzname\ and almost no one will use
-the system layer directly, this manual is mainly about \tikzname\ in
-the first parts; the basic layer and the system layer are explained at
-the end.
+\tikzname\ 其实是\pgfname\ 唯一“真正的”前端。它可以使你使用\pgfname\
+所有功能，却非常易用。它的语法是\textsc{metafont}和\textsc{pstricks}的
+混合体，其中还有我自己的一些想法。在\tikzname\ 之外还有些前端，但更类
+似于“技术研究”，而不是有意作为\tikzname\ 的替代品。|pgfpic2e| 前端重
+新实现了标准\LaTeX\ |{picture}| 环境和类似\pgfname\ 基础层中|\line|和
+|\vector|的命令。这一层并非真正“必需”，因为至少|pict2e.sty| 宏包可以
+和重实现的|{picture}|环境同样出色地完成工作。该宏包其实是想证明实现前
+端是一件很容易的事。
 
+% Since most users will only use \tikzname\ and almost no one will use
+% the system layer directly, this manual is mainly about \tikzname\ in
+% the first parts; the basic layer and the system layer are explained at
+% the end.
+
+由于大多数用户只使用\tikzname\ 而没人直接用系统层，本手册首先介绍
+\tikzname\ ；基础层和系统层在后面再作介绍。
 
 % \subsection{Comparison with Other Graphics Packages}
 \subsection{同其它图形宏包比较}
@@ -195,6 +214,7 @@ the end.
 \tikzname\ is not the only graphics package for \TeX. In the following,
 I try to give a reasonably fair comparison of \tikzname\ and
 other packages.
+
 \tikzname\ 不是\TeX\ 中惟一的图形宏包。下面我试着对\tikzname\ 和其它
 宏包作一个理性公平的比较。
 
@@ -300,59 +320,86 @@ in green is optional and can be left out.
 \subsection{作者和致谢}
 \label{section-authors}
 
-The bulk of the \pgfname\ system and its documentation was written by
-Till Tantau. A further member of the main team is Mark Wibrow, who
-is responsible, for example, for the \pgfname\ mathematical engine,
-many shapes, the decoration engine, and matrices. The third member is
-Christian Feuers\"anger who contributed the floating point library,
-image externalization, extended key processing, and automatic hyperlinks
-in the manual.
+% The bulk of the \pgfname\ system and its documentation was written by
+% Till Tantau. A further member of the main team is Mark Wibrow, who
+% is responsible, for example, for the \pgfname\ mathematical engine,
+% many shapes, the decoration engine, and matrices. The third member is
+% Christian Feuers\"anger who contributed the floating point library,
+% image externalization, extended key processing, and automatic hyperlinks
+% in the manual.
 
-Furthermore, occasional contributions have been made by Christophe
-Jorssen, Jin-Hwan Cho, Olivier Binda, Matthias Schulz, Ren\'ee Ahrens,
-Stephan Schuster, and Thomas Neumann.
+\pgfname\ 系统的主体和文档由Till Tantau创作。团队的另一名成员是Mark
+Wibrow，它负责的工作包括，\pgfname\ 的数学引擎、许多形状、装饰引擎、和
+矩阵。第三位成员是Christian Feuers\"anger，他贡献了浮点库、图形外部化、
+扩展键处理、和手册中的自动链接。
 
-Additionally, numerous people have contributed to the \pgfname\ system
-by writing emails, spotting bugs, or sending libraries and patches.
-Many thanks to all these people, who are too numerous to name them
-all!
+% Furthermore, occasional contributions have been made by Christophe
+% Jorssen, Jin-Hwan Cho, Olivier Binda, Matthias Schulz, Ren\'ee Ahrens,
+% Stephan Schuster, and Thomas Neumann.
 
+其它贡献来自于Christophe Jorssen、Jin-Hwan Cho、Olivier Binda、
+Matthias Schulz、Ren\'ee Ahrens、Stephan Schuster、和Thomas Neumann。
+
+% Additionally, numerous people have contributed to the \pgfname\ system
+% by writing emails, spotting bugs, or sending libraries and patches.
+% Many thanks to all these people, who are too numerous to name them
+% all!
+
+另外，很多人通过写信、发现bugs、或发送库和补丁等对\pgfname\ 系统做出了
+贡献。感谢他们所有人，因为人员很多，这里不一一列出。
 
 
 % \subsection{Getting Help}
 \subsection{获取帮助}
 
-When you need help with \pgfname\ and \tikzname, please do the
+% When you need help with \pgfname\ and \tikzname, please do the
+% following:
 following:
+
+在你使用\pgfname\ 和\tikzname\ 需要帮助时，请尝试如下方法：
 
 \begin{enumerate}
 \item
-  Read the manual, at least the part that has to do with your problem.
+  % Read the manual, at least the part that has to do with your problem.
+  阅读本手册，至少阅读问题涉及的部分。
 \item
-  If that does not solve the problem, try having a look at the
-  sourceforge development page for \pgfname\ and \tikzname\ (see the
-  title of this document). Perhaps someone has already reported a
-  similar problem and someone has found a solution.
+  % If that does not solve the problem, try having a look at the
+  % sourceforge development page for \pgfname\ and \tikzname\ (see the
+  % title of this document). Perhaps someone has already reported a
+  % similar problem and someone has found a solution.
+  如未能解决问题，就去看看\pgfname\ 和\tikzname\ 的开发页（参见本文档
+标题）。也许有人已经报告了同样的问题，而某些人已经找到了解决办法。
 \item
-  On the website you will find numerous forums for getting
-  help. There, you can write to help forums, file bug reports, join
-  mailing lists, and so on.
+  % On the website you will find numerous forums for getting
+  % help. There, you can write to help forums, file bug reports, join
+  % mailing lists, and so on.
+  在网上你可以找到很多论坛，从中获得帮助。在那里你可以获得帮助，报告
+bug，加入邮件列表，等等。
 \item
-  Before you file a bug report, especially a bug report concerning the
-  installation, make sure that this is really a bug. In particular,
-  have a look at the |.log| file that results when you \TeX\ your
-  files. This |.log| file should show that all the right files are
-  loaded from the right directories. Nearly all installation problems
-  can be resolved by looking at the |.log| file.
+  % Before you file a bug report, especially a bug report concerning the
+  % installation, make sure that this is really a bug. In particular,
+  % have a look at the |.log| file that results when you \TeX\ your
+  % files. This |.log| file should show that all the right files are
+  % loaded from the right directories. Nearly all installation problems
+  % can be resolved by looking at the |.log| file.
+  在你提交一个bug报告特别是一个关于安装的bug报告之前，请确认确实存在这
+个bug。尤其要看看在\TeX\ 编译文件时|.log|文件中的结果。|.log|文件会表
+明所有在正确目录中加载的正确文件。几乎所有的安装问题都可以通过观察
+|.log|文件得以解决。
 \item
-  \emph{As a last resort} you can try to email me (Till Tantau) or, if
-  the problem concerns the mathematical engine, Mark Wibrow. I do
-  not mind getting emails, I simply get way too many of them. Because
-  of this, I cannot guarantee that your emails will be answered timely
-  or even at all. Your chances that your problem will be fixed are
-  somewhat higher if you mail to the \pgfname\ mailing list
-  (naturally, I read this list and answer questions when I have the
-  time).
+  % \emph{As a last resort} you can try to email me (Till Tantau) or, if
+  % the problem concerns the mathematical engine, Mark Wibrow. I do
+  % not mind getting emails, I simply get way too many of them. Because
+  % of this, I cannot guarantee that your emails will be answered timely
+  % or even at all. Your chances that your problem will be fixed are
+  % somewhat higher if you mail to the \pgfname\ mailing list
+  % (naturally, I read this list and answer questions when I have the
+  % time).
+  \emph{最后一招}就是给我写信了(Till Tantau)，或者关于数据引擎的问题
+写给Mark Wibrow。因为数量太多，我其实不太关注收到的邮件。我因此不能保
+证你的邮箱会被及时回复，有可能根本得不到回复。如果你写信发给\pgfname\
+邮件列表中，解决问题的机会将会多少增加一些。（一般我在有时间时会阅读列
+表并回答问题。）
 \end{enumerate}
 
 %%% Local Variables:

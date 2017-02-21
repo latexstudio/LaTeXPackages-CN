@@ -1,0 +1,33 @@
+\begin{theindex}
+
+  \item Data formats, \hyperindexformat{\see{Formats}}{1}
+
+  \indexspace
+
+  \item File, \hyperindexformat{\see{Packages and files}}{1}
+
+  \indexspace
+
+  \item Handlers for keys, \hyperindexformat{\see{Key handlers}}{1}
+
+  \indexspace
+
+  \item Layout, \hyperindexformat{\see{Page layout}}{1}
+
+  \indexspace
+
+  \item Node, \hyperindexformat{\see{Predefined node}}{1}
+
+  \indexspace
+
+  \item Options for graphics, 
+		\hyperindexformat{\see{Graphic options and styles}}{1}
+  \item Options for packages, 
+		\hyperindexformat{\see{Package options}}{1}
+
+  \indexspace
+
+  \item Styles for graphics, 
+		\hyperindexformat{\see{Graphic options and styles}}{1}
+
+\end{theindex}
