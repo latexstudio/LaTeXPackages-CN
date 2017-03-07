@@ -1,0 +1,14 @@
+import palette;
+import graph3;
+size3(200,IgnoreAspect);
+currentprojection=orthographic(-2,-2,4);
+file in=input("data-1.txt").line();
+real[] x=in;
+real[] y=in;
+real[][] z=in.dimension(0,0);
+surface s=surface(z,x,y,Spline);
+s.colors(palette(s.map(zpart), Rainbow()));
+draw(s,nolight,meshpen=thick());
+limits((0,0,0),(1.1*max(x),1.1*max(y),1.1*max(z)));
+xaxis3("$x$",OutTicks(),Arrow3(),above=true);
+yaxis3("$y$",OutTicks(),Arrow3(),above=true);

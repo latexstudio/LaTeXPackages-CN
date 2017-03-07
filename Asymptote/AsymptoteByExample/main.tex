@@ -1,0 +1,133 @@
+%# -*- coding: utf-8 -*-
+\documentclass[cs4size,oneside,openany,nofonts,UTF8,CJKnormalspaces]
+  {ctexbook}[2009/05/20]
+\linespread{1.0}
+
+%\includeonly{automata}
+
+\usepackage{amsmath}
+
+\usepackage{makeidx}
+\makeindex
+
+\usepackage{geometry}
+\geometry{screen,left=0.5cm,right=0.5cm,top=0.5cm,bottom=0.5cm,
+  headheight=15pt,includeheadfoot}
+
+\usepackage{fancyhdr}
+\renewcommand{\headrulewidth}{0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\rmfamily\mdseries\itshape\rightmark}
+\rhead{\rmfamily\mdseries\itshape\thepage}
+\fancypagestyle{plain}{\fancyhf{}}
+
+\usepackage{float}
+\floatplacement{htbp}
+\AtBeginDocument{
+  \renewcommand{\topfraction}{0.9} % default 0.7
+  \renewcommand{\bottomfraction}{0.5} % default 0.3
+  \renewcommand{\textfraction}{0.1} % default 0.2
+  \renewcommand{\floatpagefraction}{0.8} % default 0.5
+  \setlength{\floatsep}{3pt plus 1pt minus 1pt} % default 12pt plus2pt minus2pt
+  \setlength{\textfloatsep}{6pt plus 1pt minus 1pt} % default 20pt plus2pt minus4pt
+  \setlength{\intextsep}{3pt plus 1pt minus 1pt} % default 12pt plus2pt minus2pt
+}
+
+\usepackage{caption}
+\captionsetup{skip=6pt} % default 10pt
+
+\usepackage{amssymb}
+\usepackage{upgreek}
+\usepackage{xltxtra}
+\usepackage{mflogo}
+\usepackage{myfonts}
+
+\usepackage{multicol}
+
+\usepackage{xcolor}
+\pagecolor{lightgray!50}
+
+\usepackage{everypage}
+\AddEverypageHook{%
+  \special{pdf: put @thispage << /Group << /S /Transparency /I true %
+  /CS /DeviceRGB >> >>}} % 处理插入透明图形时变色的问题
+\usepackage{asymptote}
+\usepackage{graphicx}
+
+\usepackage{hyperref}
+\hypersetup{
+  bookmarksopen=false,
+  pdfpagemode=FullScreen,
+  colorlinks=false,
+  pdfborder=0 0 0,
+  pdftitle={Asymptote 范例教程},
+  pdfauthor={刘海洋},
+  pdfsubject={Asymptote 教程},
+  pdfkeywords={Asymptote, LaTeX, 绘图, 示例},
+  pdfcreator={XeLaTeX},
+}
+\renewcommand\figureautorefname{图}
+\renewcommand\sectionautorefname{\S}
+
+\usepackage{asysyntex}
+\usepackage{listings}
+\lstloadlanguages{C}
+\def\cinline{\expandafter\lstinline[language=C]}
+
+\newcommand*\prgname[1]{\textsf{#1}}
+\newcommand*\Asy{\textsf{Asymptote}}
+\newcommand*\asyversion{1.91}
+\begin{document}
+
+\frontmatter
+
+% 标题页
+\begin{titlepage}
+\vspace*{\stretch{1}}
+\begin{center}
+  {\zihao{2}\bfseries
+  \Asy\ 范例教程}
+\bigskip
+
+  {\zihao{3}\rmfamily\itshape
+  刘海洋}
+\bigskip
+
+  {\today}
+\end{center}
+\vspace*{\stretch{3}}
+\end{titlepage}
+
+% 版权页
+\begingroup
+\setlength{\parindent}{0pt}
+\vspace*{\stretch{1}}
+本文是基于 \Asy\ \asyversion{} 的一组教程。
+
+\url{http://asy4cn.googlecode.com/}
+\medskip
+
+版权所有\copyright\ 2009 刘海洋，\nolinkurl{leoliu.pku@gmail.com}
+
+{\setlength{\leftskip}{2em}
+在 GNU General Public License（GNU 通用公共许可证）的条款下授予复制、发布和/或修改此文档的许可。许可证条款见附录 \ref{chap:license}。\par}
+\endgroup
+\newpage
+
+\tableofcontents
+
+\mainmatter
+\include{xiantu}
+\include{tiling}
+\include{stars}
+\include{automata}
+
+\appendix
+\include{gpl-3.0}
+
+\printindex
+
+\bibliographystyle{plain}
+\bibliography{asy}
+\end{document}

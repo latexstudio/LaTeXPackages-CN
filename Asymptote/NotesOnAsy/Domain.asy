@@ -1,0 +1,14 @@
+size(200);
+import graph;
+pair A=(-3,-2),B=(3,-2),C=(3,2),D=(-3,2);
+fill(A--B--C--D--cycle,lightgray);
+label("$(-3,-2)$",A,SW);
+label("$(3,2)$",C,NE);
+xtick("$-3$",-3);
+xtick("$3$",3);
+ytick("$-2$",-2);
+ytick("$2$",2);
+dot(A,red);
+dot(C,red);
+xaxis("$x$",Arrow,above=true);
+yaxis("$y$",Arrow,above=true);

@@ -1,0 +1,12 @@
+size(200);
+import patterns;
+draw(unitsquare,linewidth(1));
+real l=0.85;
+add("hatch",hatch(5));
+filldraw((l,0)--(1,0)--(1,l)--(l,l)--cycle,pattern("hatch"),drawpen=linewidth(1));
+filldraw((0,l)--(0,1)--(l,1)--(l,l)--cycle,pattern("hatch"),drawpen=linewidth(1));
+label("$x$",0.5,S);
+label("$x$",(0,0.5),W);
+real c=(1+l)/2;
+label("$\Delta x$",c,S);
+label("$\Delta x$",(0,c),W);

@@ -1,0 +1,12 @@
+size(200);
+import geometry;
+real a=3;
+real b=4;
+point A=(0,0);
+point B=(a,b);
+point C=(a,0);
+markangle("$t$",C,A,B,radius=30);
+real angle=aCos(a/abs(B));
+draw(rotate(angle)*Label("$\sqrt{a^2+x^2}$",align=2I*dir(angle)),A--B,linewidth(1));
+draw(Label("$x$"),C--B,linewidth(1));
+draw(Label("$a$"),A--C,linewidth(1));

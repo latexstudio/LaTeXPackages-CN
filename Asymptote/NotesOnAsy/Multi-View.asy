@@ -1,0 +1,12 @@
+settings.prc=false;
+import three;
+currentlight.background=lightgreen;
+defaultpen(fontsize(20)+linewidth(1pt));
+picture pic;
+size(pic,100);
+draw(pic,unitbox);
+label(pic,"$A$",(1,1,1),align=(1,1,1),red);
+add(pic.fit(orthographic(2,1,1)),(0,0),NE);
+add(pic.fit(orthographic(-2,3,5)),(0,0),SE);
+add(pic.fit(orthographic(-3,2,6)),(0,0),NW);
+add(pic.fit(orthographic(6,-3,8)),(0,0),SW);

@@ -1,0 +1,12 @@
+import geometry;
+size(200);
+pair O=(0,0);
+pair P=(3,1);
+pair V=(2,2);
+pair A=P+V;
+pair B=rotate(60,P)*A;
+draw(O--P);
+dot("$P$",P,S);
+draw(Label("$A$",EndPoint),P--A,Arrow);
+draw(Label("$B$",EndPoint),P--B,Arrow);
+draw(Label("$60^{\circ}$",blue),arc(A,P,B,1.2),red,Arrow);

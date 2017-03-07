@@ -1,0 +1,17 @@
+settings.tex="xelatex";
+settings.prc=false;
+texpreamble("\usepackage{xeCJK}");
+texpreamble("\setCJKmainfont{SimSun}");
+import solids;
+viewportmargin=(10,10);
+size(200);
+revolution sphere=sphere(0.75);
+surface s=surface(sphere);
+string C60="庆祝国庆60周年";
+real uoffset=-0.8;
+real voffset=7.5;
+real h=0.05;
+draw(surface(xscale(0.35)*yscale(0.08)*C60,s,uoffset,voffset,h),yellow);
+draw(s.uequals(uoffset),red+dashed);
+draw(s.vequals(voffset),blue+dashed);
+draw(surface(s),palegray);

@@ -1,0 +1,12 @@
+import three;
+size(200);
+path p=(1,0)..(0,1)..(-1,0)..(0,-1)..cycle;
+path3 pXY=path3(p,XYplane);
+path3 pYZ=path3(p,YZplane);
+path3 pZX=path3(p,ZXplane);
+draw(pXY,cyan);
+draw(pYZ,green);
+draw(pZX,magenta);
+dot(pXY);
+dot(pYZ);
+dot(pZX);

@@ -1,0 +1,10 @@
+import obj;
+import graph3;
+size(0,200);
+defaultrender=render(compression=Zero,merge=true);
+currentprojection=perspective(6.8,5.6,10.6);
+draw(obj("sf1.obj",yellow));
+draw(obj("sf2.obj",blue));
+limits((-2,-2,0),(2,2,9));
+axes3("$x$","$y$","$z$",Arrow3());
+shipout(bbox(0,blue));

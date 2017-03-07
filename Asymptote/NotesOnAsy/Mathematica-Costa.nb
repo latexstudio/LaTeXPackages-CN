@@ -1,0 +1,16 @@
+c = WeierstrassInvariants[{1/2, 0.5 I}][[1]];
+P[z_] = WeierstrassP[z, {c, 0}];
+Z[z_] = WeierstrassZeta[z, {c, 0}];
+e = P[1/2];
+Costa[u_, v_] := {
+   (1/2)*Re[-Z[u + I*v] + Pi*u + Pi^2/(4 e) +
+      Pi/(2 e)*(Z[u + I*v - 1/2] - Z[u + I*v - I/2])],
+   (1/2)*Re[-I*Z[u + I*v] + Pi*v + Pi^2/(4 e) -
+      Pi*I/(2 e)*(Z[u + I*v - 1/2] - Z[u + I*v - I/2])],
+   (1/4)*Sqrt[2 Pi]*Log[Abs[(P[u + I*v] - e)/(P[u + I*v] + e)]]
+   };
+sf = ParametricPlot3D[Costa[u, v], {u, 0, 1}, {v, 0, 1},
+  Boxed -> False, Axes -> False]
+Export["Costa.pdf", sf, ImageResolution -> 200,
+ ImageSize -> {200, 200}]
+Import["Costa.pdf"]

@@ -1,0 +1,12 @@
+import graph3;
+size(200);
+real c=(1+sqrt(5))/2;
+triple[] z={(c,1,0),(-c,1,0),(-c,-1,0),(c,-1,0)};
+triple[] x={(0,c,1),(0,-c,1),(0,-c,-1),(0,c,-1)};
+triple[] y={(1,0,c),(1,0,-c),(-1,0,-c),(-1,0,c)};
+draw(surface(z[0]--z[1]--z[2]--z[3]--cycle),lightred,nolight);
+draw(surface(x[0]--x[1]--x[2]--x[3]--cycle),lightgreen,nolight);
+draw(surface(y[0]--y[1]--y[2]--y[3]--cycle),lightblue,nolight);
+dot(z);
+dot(x);
+dot(y);

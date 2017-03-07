@@ -1,0 +1,14 @@
+settings.tex="context";
+texpreamble("\usetypescriptfile[zhfonts]");
+texpreamble("\usetypescript[myfont]");
+defaultpen(font("myfont")+linewidth(1pt));
+import labelpath3;
+import graph3;
+size(200);
+path3 g=(1,0,0)..(0,1,1)..(-1,0,0)..(0,-1,1)..cycle;
+path3 g2=shift(-Z)*reverse(unitcircle3);
+string txt1="\tt{ 庆祝六一国际儿童节 }";
+string txt2="\ss{ 庆祝六一国际儿童节 }";
+draw(surface(g),paleblue+opacity(0.5));
+draw(labelpath(txt1,subpath(g,-0.5,reltime(g,0.3)),angle=-90),orange);
+draw(labelpath(txt2,subpath(g2,0,3.9),angle=180,optional=rotate(-70,X)*Z),red);

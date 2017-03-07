@@ -1,0 +1,2 @@
+cd $(CURRENT_DIRECTORY)
+asy.exe $(NAME_PART).asy

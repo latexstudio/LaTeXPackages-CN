@@ -1,0 +1,10 @@
+size(7cm,0);
+import solids;
+currentprojection = orthographic(50,20,25);
+real r=4, h=7;
+revolution Con=cone(O,r,h,axis=Z,n=4);
+draw(surface(Con),lightblue+opacity(.2));
+skeleton s;
+Con.transverse(s,reltime(Con.g,1/3));
+draw(s.transverse.back,dashed);
+draw(s.transverse.front,red);
