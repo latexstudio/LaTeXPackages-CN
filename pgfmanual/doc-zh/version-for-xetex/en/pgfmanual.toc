@@ -1,7 +1,0 @@
-\contentsline {section}{\numberline {1}介绍}{4}{section.1}
-\contentsline {subsection}{\numberline {1.1}Ti\emph {k}Z的下层}{4}{subsection.1.1}
-\contentsline {subsection}{\numberline {1.2}同其它图形宏包比较}{5}{subsection.1.2}
-\contentsline {subsection}{\numberline {1.3}工具包}{6}{subsection.1.3}
-\contentsline {subsection}{\numberline {1.4}如何阅读本手册}{6}{subsection.1.4}
-\contentsline {subsection}{\numberline {1.5}作者和致谢}{6}{subsection.1.5}
-\contentsline {subsection}{\numberline {1.6}获取帮助}{7}{subsection.1.6}

@@ -30,4 +30,5 @@ clean:
 		pgfmanual.blg \
 		pgfmanual.ps \
 		pgfmanual.dvi \
+		pgfmanual.xdv \
 		pgfmanual*.aux 
