@@ -1,0 +1,658 @@
+% Copyright 2012 by Till Tantau
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU Free Documentation License.
+%
+% See the file doc/generic/pgf/licenses/LICENSE for more details.
+
+% Translated by Ionizing Radiation
+
+%\section{Using Graph Drawing in \tikzname}
+\section{在\tikzname\ 中使用绘图}
+
+{\noindent {\emph{by Till Tantau}}}
+
+\begin{tikzlibrary}{graphdrawing}
+%  This package provides capabilities for automatic graph drawing. It
+本宏包提供自动化的绘图功能，
+%  requires that the document is typeset using Lua\TeX. This package
+它需要使用 Lua\TeX\ 排版（编译）且Lua\TeX\ 的版本须高于或等于0.54。
+%  should work with Lua\TeX\ 0.54 or higher.
+\end{tikzlibrary}
+
+%\ifluatex\else This section of the manual can only be typeset using Lua\TeX.\expandafter\endinput\fi
+\ifluatex\else 本文档的这个小节只能使用 Lua\TeX\ 进行排版.\expandafter\endinput\fi
+
+
+%\subsection{Choosing a Layout and a Library}
+\subsection{选择一个库和输出}
+
+%The graph drawing engine is initialized when you load the library
+当读者载入|graphdrawing|库时，其绘图引擎已经初始化了。
+%|graphdrawing|. This library provides the basic framework for graph
+这个库提供了一些基本的绘图框架，包括前一小节中提到的所有的绘图参数和
+%drawing, including all options and keys described in the present
+绘图关键字。 但是，这个库\emph{并没有}加载任何实质上的绘图算法（程序），
+%section. However, this library does \emph{not} load any actual
+%algorithms for drawing graphs. For this, you need to use the following
+%command, which is defined by the |graphdrawing| library:
+鉴于此，读者需要使用以下在|graphdrawing|库中已定义的命令：
+
+\begin{command}{\usegdlibrary\marg{list of libraries}}
+%  This command is used to load the special graph drawing libraries
+本命令是用来载入特定绘图库（|gd|在命令中代表“graph drawing”），
+%  (the |gd| in the name of the command stands for ``graph
+%  drawing''). The \meta{list of libraries} is a comma-separated list
+其中\meta{list of libraryies}是一个或多个库名称组成的参数，多个库名称
+%  of library written in the Lua programming language (which is why a
+%  special command is needed).
+之间用逗号隔开。这些库是通过 Lua 编程语言写成的（这也是要使用本命令的原因）。
+
+%  In detail, this command does the following. For each \meta{name} in
+%  the \meta{list of libraries} we do:
+若更深层地的探究，在接受\meta{list of libraries}中每一个\meta{name}时，
+这个命令执行了以下几个步骤：
+  \begin{enumerate}
+  \item
+%  	Check whether Lua\TeX\ can call |require| on the library file
+%    |pgf.gd.|\meta{name}|.library|. Lua\TeX's usual file search 
+检查Lua\TeX\ 是否能够调用库文件 |pgf.gd.|\meta{name}|.library|。
+%    mechanism  will search the texmf-trees in the usual manner and the
+%    dots in the file name get converted into directory slashes.
+这一步 Lua\TeX\ 中的文件搜索机制将会去预设好的路径中搜索库文件，并将文件名中的
+点（.）转换为连字符（-）。
+  \item
+%   If the above failed, try to |require| the string
+%    |pgf.gd.|\meta{name}.
+如果上一步失败，系统将尝试搜索名为|pgf.gd.|\meta{name}的文件。
+  \item
+%   If this fails, try to |require| the string
+%    \meta{name}|.library|.
+如果这仍然失败，系统将尝试继续搜索名为\meta{name}|.library|的文件。
+  \item 
+%  If this fails, try to |require| the string \meta{name}. If
+%    this fails, print an error message.
+如果上一步依然失败，系统最后尝试搜索 \meta{name}，若还是失败，将提示错误信息。
+  \end{enumerate}
+%  The net effect of the above is the following: Authors of graph
+以上几步的实际效果如下：
+%  drawing algorithms can bundle together multiple algorithms in a
+%  library by creating a |...xyz/library.lua| file that internally just
+绘图算法的作者可以把多个算法打包在一个库内，并保存在|...xyz/library.lua|
+%  calls |require| for all files containing declarations. On the other
+文件内，此文件被放置在预设好的目录内以便 Lua\TeX\ 能够找到。
+%  hand, if a graph drawing algorithm completely fits inside a single
+%  file, it can also be read directly using |\usegdlibrary|.
+此外，如果一个绘图算法被完整地放在单个文件内，我们也可以使用|\usegdlibrary|
+来直接读取其内容。
+\begin{codeexample}[code only]
+\usetikzlibrary{graphdrawing}
+\usegdlibrary{trees,force}    
+\end{codeexample}
+
+%  The different graph drawing libraries are documented in the following
+%  Sections~\ref{section-first-graphdrawing-library-in-manual} to
+%  \ref{section-last-graphdrawing-library-in-manual}.
+本文档在第~\ref{section-first-graphdrawing-library-in-manual}节至
+第~\ref{section-first-graphdrawing-library-in-manual}节将介绍更多的绘图库。
+\end{command}
+
+%Note that in addition to the graph \emph{drawing} libraries, you may
+需要注意的是，除了\emph{绘图}库，读者可能还需要加载常用的\tikzname\ 库|graphs|，
+%also wish to load the normal \tikzname\ library |graphs|. It provides
+%the powerful |graph| path command with its easy-to-use syntax for
+它提供了强大的|graph|路径命令，且有着语法简单易于使用的特点.除此之外
+%specifying graphs, but you can use the graph drawing engine
+%independently of the |graphs| library, for instance in conjunction
+读者仍可以孤立地使用|graph|库，比如结合|child|或|edge|语法，下面是一个典型的设置
+%with the |child| or the |edge| syntax. Here is a typical setup:
+
+\begin{codeexample}[code only]
+\usetikzlibrary{graphs, graphdrawing}
+\usegdlibrary{trees, layered}  
+\end{codeexample}
+
+%Having set things up, you must then specify for which scopes the
+%graph drawing engine should apply a layout algorithm to the nodes in
+当完成了这些设置后，读者必须马上指定绘图引擎输出图形的范围（作图区域），
+%the scope. Typically, you just add an option ending with |... layout|
+%to the |graph| path operation and then let the graph drawing do its
+%magic:
+通常情况下，读者仅需在 |graph| 路径操作中添加一个以|... layout|为结尾的参数即可，
+下面来看一下这个黑魔法的实例：
+
+\begin{codeexample}[]
+\tikz [rounded corners]
+  \graph [layered layout, sibling distance=8mm, level distance=8mm]
+  {
+    a -> {
+      b,
+      c -> { d, e }
+    } ->
+    f -> 
+    a
+  };    
+\end{codeexample}
+
+Whenever you use such an option, you can:
+无论何时当读者加入这个参数时，您将：
+\begin{itemize}
+\item 
+%  Create nodes in the usual way. The nodes will be created
+以默认方式添加节点。这些节点会被完整地添加进图层，并马上被保存在内部表中
+%  completely, but then tucked away in an internal table. This means
+%  that all of \tikzname's options for nodes can be applied. You can
+这意味着所有\tikzname\ 的节点参数都可以使用，读者还可以对一个节点进行命名
+%  also name a node and reference it later.
+并在后面引用它。
+\item
+%  Create edges using either the syntax of the |graph| command
+既可以使用|graph|命令的语法添加边（使用|--|、|<-|、|->|、或 |<->|）
+%  (using |--|, |<-|, |->|, or |<->|), or using the |edge| command,
+也可以使用|edge|命令，或者直接使用|child|命令完成同样的工作。但是这些“边”
+%  or using the |child| command. These edges will, however, not be
+%  created immediately. Instead, the basic layer's command
+并不是立刻就被添加进图层的，而是先调用储存了所有关于“边”信息的|\pgfgdege|，
+%  |\pgfgdedge| will be called, which stores ``all the information
+%  concerning the edge.'' The actual drawing of the edge will only
+%  happen after all nodes have been positioned.
+实际上对“边”绘制的操作只有等到所有的节点位置被确定时才会进行。
+\item
+%  Most of the keys that can be passed to an edge will work as
+%  expected. In particular, you can add labels to edges using the
+%  usual |node| syntax for edges.
+通常对“边”的参数设定大部分都会如愿实现，尤其是读者可以使用
+|node| 语法来为“边”添加标签（label）。
+\item
+%  The |label| and |pin| options can be used in the usual manner
+%  with nodes inside a graph drawing scope. Only, the labels and
+可以按照通常习惯使用|label|和|pin|来为节点设定参数，只是这些标签对
+%  nodes will play no role in the positioning of the nodes and they
+%  are added when the nodes are finally positioned.
+确定节点的位置没有任何影响，而且它们是在节点的位置被确定后才被添加到节点上的。
+\item
+%  Similarly, nodes that are placed ``on an edge'' using the
+%  implicit positioning syntax can be used in the usual manner. 
+可以使用通常习惯上的对“边”的含蓄表达方式（即只描述边与节点间的相连关系，
+而不指定节点和边的位置）。
+\end{itemize}
+%Here are some things that will \emph{not} work:
+下面是一些\emph{不会}起作用的命令：
+\begin{itemize}
+\item
+%  Only edges created using the graph syntax, the |edge| command,
+%  or the |child| command will correctly pass their connection
+仅仅当使用|graph|语法、|edge|命令或者|child|命令添加边时它们的才会被
+%  information to the basic layer. When you write |\draw (a)--(b);|
+准确地传递给基本绘图层。当读者在一个绘图区域内写入|\draw (a)--(b);|，
+%  inside a graph drawing scope, where |a| and |b| are nodes that
+且|a|和|b|都是在绘图区域内已经创建过的节点时，系统将报错或
+%  have been created inside the scope, you will get an error
+%  message / things will look wrong. The reason is that the usual
+输出不符合预期的结果。这其中的原因是通常|--|不被绘图引擎所识别，
+%  |--| is not ``caught'' by the graph drawing engine and, thus,
+%  tries to immediately connect two nodes that do not yet exist
+%  (except inside some internal table).
+因此系统会尝试将两个并不存在的节点立刻连接起来（除非在某些内部表中）。
+\item
+%  The options of edges are executed twice: Once when the edge is
+“边”的参数被执行的两次：第一次在 |\pgfgdedge| 命令检查“边”时（此时
+%  ``examined'' by the |\pgfgdedge| command (using some magic to shield
+%  against the side effects) and then once more when the edge is
+它使用某些膜法来抵消掉副作用）；另一次是在“边”在真实地被添加入图层时。
+%  actually created. Fortunately, in almost all cases, this will not be
+%  a problem; but if you do very evil magic inside your edge options,
+幸运的是，在大部分情形下，这都不会成为一个问题，但如果读者在“边”的参数中
+%  you must roll a D100 to see what strange things will happen. (Do no
+%  evil, by the way.)
+暴力地使用膜法，您务必去摇个D100骰子去看看会发生哪些奇怪的现象。
+（Roll a D100 是指游戏《以撒》中通过掷骰子来更新角色装备及技能的行为，
+D100则表示骰子具有100个面，译者注。）
+\end{itemize}
+
+%If you are really interested in the ``fine print'' of what happens,
+%please see Section~\ref{section-gd-pgf}.
+如果读者真的很想知道以上到底会输出怎样的效果，请看第\ref{section-gd-pgf}节。
+
+
+%\subsection{Graph Drawing Parameters}
+\subsection{绘图参数}
+%Graph drawing algorithms can typically be configured in some way. For
+绘图算法可以通过不同方式进行标准化配置。
+%instance, for a graph drawing algorithm that visualizes its nodes as a
+%tree, it will typically be useful when the user can change the
+例如，在一个绘制树的算法中，如果用户懂得设置所谓的\emph{level distance}和
+%so-called \emph{level distance} and the \emph{sibling distance}. For
+%other algorithms, like force-based algorithms, a large number of
+\emph{sibling distance}，那么这些参数对于用户编写代码是非常有帮助的。
+对于其他算法，比如"Force-based 算法"，它们会提供大量的可调参数来调校算法的输出。
+%parameters influence the way the algorithms work.
+%Options that influence graph drawing algorithms will be called
+%\emph{(graph drawing) parameters} in the following. From the user's
+至此以及后文所说的\emph{（绘图）参数}都（将）指代影响绘图算法运行的选项。
+%point of view, these parameters look like normal \tikzname\ keys and
+%you set them in the usual way. Internally, they are treated a bit
+从用户的角度来看，这些参数看起来很像正常的 \tikzname\ 关键字并且用户可以
+按照平常的方式来调整参数，但从实现方式（底层角度）来看，绘图算法处理这些参数
+%differently from normal keys since their ``effect'' becomes apparent
+%only later on, namely during the run of the graph drawing algorithm.
+时经历的流程与平常的关键字有些许差异，因为它们是在绘图算法运行后才起作用的。
+
+%A graph drawing algorithm may or may not take different graph 
+某些绘图算法可能会也可能不会接受不同绘图参数，毕竟它们之间可能会严重冲突，
+%parameters into account. After all, these options may even outright
+%contradict each other, so an algorithm can only try to ``do its
+%best''. While many graph parameters are very specific to a single
+因此，这个算法只能试着“尽力而为”。 有些绘图参数只能针对一个独立算法使用，
+%algorithm, a number of graph parameters will be important for many
+%algorithms and they are documented in the course of the present
+%section. Here is an example of an option the ``always works'':
+而有些参数却可以出现在很多算法中并且它们将会被保存在当前编辑部分中。下面是一个
+“万用参数”的实例：
+
+\begin{codeexample}[]
+\tikz \graph [spring layout, vertical=1 to 2] { 1--2--3--1 };  
+\end{codeexample}
+
+
+\includeluadocumentationof{pgf.gd.control.Distances}
+\includeluadocumentationof{pgf.gd.control.Anchoring}
+\includeluadocumentationof{pgf.gd.control.Orientation}
+
+
+
+\includeluadocumentationof{pgf.gd.control.FineTune}
+
+\includeluadocumentationof{pgf.gd.control.Components}
+\includeluadocumentationof{pgf.gd.control.ComponentOrder}
+\includeluadocumentationof{pgf.gd.control.ComponentDirection}
+\includeluadocumentationof{pgf.gd.control.ComponentAlign}
+\includeluadocumentationof{pgf.gd.control.ComponentDistance}
+
+\includeluadocumentationof{pgf.gd.control.NodeAnchors}
+
+\includeluadocumentationof{pgf.gd.model.Hyperedge}
+
+
+%\subsection{Using Several Different Layouts to Draw a Single Graph}
+\subsection{使用多个不同输出参数来画一张单独图}
+
+\label{section-gd-sublayouts}
+
+%Inside each graph drawing scope, a main algorithm is used to perform
+每个绘图空间内部都有一个主绘图算法，
+%the graph drawing. However, parts of the graph may be drawn using
+然而该图的各个部分却可能使用不同算法来绘制：
+%different algorithms: For instance, a graph might consist of
+比如，一张图可能由多个，或者说，像树一样聚集在一起的团组成，
+%several, say, cliques that are arranged in a tree-like fashion. In
+%this case, it might be useful to layout each clique using a circular
+这种情况下，使用循环排布每个团的方法会更加有效率，
+%layout, but then lay out all laid out cliques using a tree drawing
+%algorithm.
+然后使用绘制树的算法来排布所有团的位置。
+
+%In order to lay out a graph using multiple algorithms, we need two
+为了使用多种算法来绘制图，我们需要做两件事：
+%things: First, we must be able to \emph{specify} which algorithms
+首先，我们必须能够\emph{确定}使用哪些算法；
+%should be used where and, second, we must be able to \emph{resolve}
+其次，我们必须能够\emph{解析}不同算法间可能存在的，对如何放置节点有``不同想法''的冲突。
+%conflicts that may result from different algorithms ``having different
+%ideas'' concerning where nodes should be placed.
+
+
+%\subsubsection{Sublayouts}
+\subsubsection{次级布局}
+
+%Specifying different layouts for a graph is easy: Inside a graph
+指定图的不同布局是很简单的：
+%drawing scope, simply open scopes, in which you use an option like
+在一个绘图空间内，新建新的绘图空间并指定绘图选项为|树形布局|来处理该空间内
+%|tree layout| for the nodes mentioned in this scope. Inside these
+所含有的节点即可。在这些新的绘图空间内，你甚至可以为次级布局新建次级绘图空间
+%scopes, you can open even subscopes for sublayouts, and so
+或者更多。
+%on. Furthermore, the |graphs| library has special support for
+此外，|graph|库对次级布局有特殊的支持。
+%sublayouts.
+
+%Let us start with the ``plain'' syntax for opening sublayouts: You
+%pass a key for creating layouts to a |scope|:
+让我们从``平常''的语法新建次级布局开始:
+
+
+\begin{codeexample}[]
+\tikz [spring layout] {
+  \begin{scope}[tree layout]    
+    \node (a) {a};
+    \node (b) {b};
+    \node (c) {c};
+    \draw (a) edge (b) edge (c);
+  \end{scope}
+  
+  \begin{scope}[tree layout]    
+    \node (1) {1};
+    \node (2) {2};
+    \draw (1) edge (2);
+  \end{scope}
+
+  \draw (a) edge (1);
+}
+\end{codeexample}
+
+%Let us see, what is going on here. The main layout (|spring layout|)
+在上面，我们看到了发生的一切。主要布局(|spring layout|)
+%contains two sublayouts (the two |tree layouts|). Both of them are
+包含了两个次级布局(两个|tree layouts|)。
+%laid out independently (more on the details in a moment). Then, from
+它们都是独立输出的(同时表现出更多细节)。
+%the main layout's point of view, the sublayouts behave like ``large
+从主要布局的角度来看，次级布局的行为类似于``大型节点''，并且|a|和|1|之间的边
+%nodes'' and, thus, the edge between |a| and |1| is actually the only
+%edge that is used by the |spring layout| -- resulting in a simple
+事实上成为了|spring layout|中唯一的边 -- 结果就是在最终输出图中一个大型节点
+%layout consisting of one big node at the top and a big node at the
+%bottom.
+放在顶部，另一个则放在底部。
+
+%The |graphs| library has a special support for sublayouts: The syntax
+%is as follows: wherever a normal node would go, you can write
+|graphs|库对次级布局有着特殊的支持：它的语法如下：无论一个普通的节点在哪，读者都可以
+向下面这样写
+
+
+\begin{quote}
+  |//| \opt{\oarg{layout options}} |{|\meta{sublayout}|}|
+\end{quote}
+
+%Following the double slash, you may provide
+%\meta{layout options} in square brackets. However, you \emph{must}
+在两个斜线之后，读者可以选择在方括号中开启\meta{排布选项}。
+%provide a sublayout in braces. The contents of \meta{sublayout} will
+%be parsed using the usual |graph| syntax, but will form a sublayout.
+然而，读者\emph{必须}在一对花括号中编写次级布局。\meta{次级排布}中的内容
+将使用默认|graph|语法来解析，但输出次级排布。
+
+\begin{codeexample}[]
+\tikz \graph [spring layout] {
+  // [tree layout] { a -- {b, c} };
+  // [tree layout] { 1 -- 2 };
+  a -- 1;
+};
+\end{codeexample}
+
+
+In the above example, there is no node before the double slash, which
+means that the two sublayouts will be part of the main graph, but will
+not be indicated otherwise.
+
+\begin{codeexample}[] 
+\tikz \graph [simple necklace layout] {
+ // [simple necklace layout] { a -> b -> c -> d -> e -> f -> a };
+  
+ // [tree layout] { % first tentacle
+   a -> {1, 2}; 
+ };
+
+ // [tree layout] {% second tentacle
+   d -> {3, 4 -> {5, 6}}
+ };
+};
+\end{codeexample}
+
+In the above example, the first sublayout is the one for the nodes
+with letter names. These nodes are arranged using a simple necklace layout
+as the sublayout inherits this option from the main layout. The two
+small trees (|a -> {1, 2}| and the tree starting at the |d| node)
+are also sublayouts, triggered by the |tree layout| option. They are
+also arranged. Then, all of the layouts are merged (as described
+later). The result is actually a single node, so the main layout
+does nothing here.
+
+Compare the above to the following code:
+  
+\begin{codeexample}[] 
+\tikz \graph [simple necklace layout] {
+  // [tree layout] { % first ``giant node''
+    a -> {1, 2}; 
+  };
+  
+  a -> b -> c -> d;   
+
+  // [tree layout] {% second ``giant node''
+    d -> {3, 4 -> {5, 6}}
+  },
+
+  d -> e -> f -> a;
+};
+\end{codeexample}  
+
+Here, only the two trees are laid out first. They are then
+contracted into ``giant nodes'' and these are then part of the set
+of nodes that are arranged by the |simple necklace layout|. For details of
+how this contracting works, see below.
+
+
+\subsubsection{Subgraph Nodes}
+
+A \emph{subgraph node} is a special kind of node that ``surrounds''
+the vertices of a subgraph. The special property of a subgraph node
+opposed to a normal node is that it is created only after the subgraph
+has been laid out. However, the difference to a collection like
+|hyper| is that the node is available immediately as a normal node in
+the sense that you can connect edges to it.
+
+The syntax used to declare a subgraph node in a |graph| specification
+is as follows:
+
+\begin{quote}
+  \opt{|"|}\meta{node
+    name}\opt{|"|}\opt{|/|\opt{|"|}\meta{text}\opt{|"|}}
+  \opt{\oarg{node options}}
+  |//| \opt{\oarg{layout options}} |{|\meta{subgraph}|}|
+\end{quote}
+
+The idea ist that a subgraph node is declared like a normal node
+specification, but is followed by a double slash and a subgraph:
+
+\begin{codeexample}[width=5cm] 
+\tikz \graph [simple necklace layout] {
+     tree 1[draw, circle] // [tree layout] { a -> {1, 2}; }
+  -> b
+  -> c
+  -> tree 2[draw] // [tree layout] { d -> {3, 4 -> {5, 6} } }
+  -> e
+  -> f
+  -> tree 1;
+};
+\end{codeexample}  
+
+Note how the two subgraph nodes |tree 1| and |tree 2| surround the two
+smaller trees. In the example, both had trees as contents and these
+trees were rendered using a sublayout. However, a subgraph layout does
+not need to have its own layout: If you do \emph{not} provide a layout
+name after the double slash, the subgraph node will simply surround
+all nodes that were placed by the main layout wherever they were
+placed:
+
+\begin{codeexample}[] 
+\tikz [subgraph text bottom=text centered,
+       subgraph nodes={font=\itshape}]
+  \graph [tree layout] {
+    a -> { b -> {c, d}, e -> {f, g -> h} };
+    
+    left [draw]  // { b, c, d };
+    right [draw] // { e, f, g, h};
+    
+    left <-> right;
+  };
+\end{codeexample}  
+
+
+
+Every time a subgraph node is created, the  following style is execute: 
+
+\begin{key}{/tikz/every subgraph node}
+  Set a subgraph node style.
+\end{key}
+
+\begin{key}{/tikz/subgraph nodes=\meta{style}}
+  Sets the |every subgraph node| style to \meta{style}.
+\begin{codeexample}[] 
+\tikz [subgraph text bottom=text centered,
+       subgraph nodes=red]
+  \graph [tree layout] {
+    a -> { b -> {c, d}, e -> {f, g -> h} };
+    
+    left [draw]  // { b, c, d };
+    right [draw] // { e, f, g, h};
+    
+    left <-> right;
+  };
+\end{codeexample}  
+\end{key}
+
+\begin{key}{/tikz/subgraph text none}
+  When this option is used, the text of a subgraph node is not
+  shown. Adding a slash after the node name achieves roughly the same
+  effect, but this option is useful in situations when subgraph nodes
+  generally should not have any text inside them.
+\begin{codeexample}[] 
+\tikz [subgraph text none]
+  \graph [tree layout] {
+    a -> { b -> {c, d}, e -> {f, g -> h} };
+    
+    left [draw]  // { b, c, d };
+    right [draw] // { e, f, g, h};
+    
+    left <-> right;
+  };
+\end{codeexample}  
+
+\end{key}
+
+\begin{key}{/tikz/subgraph text top=\meta{text alignment
+      options} (default text ragged right)}
+  Specifies that the text of a subgraph node should be placed at the
+  top of the subgraph node: Still inside the node, but above all nodes
+  inside the subgraph node.
+\begin{codeexample}[] 
+\tikz [subgraph text top=text ragged left]
+  \graph [tree layout] {
+    a -> { b -> {c, d}, e -> {f, g -> h} };
+    
+    left [draw]  // { b, c, d };
+    right [draw] // { e, f, g, h};
+    
+    left <-> right;
+  };
+\end{codeexample}  
+  You can pass any of the \meta{text alignment options} understood by
+  \tikzname, such as |text centered|:
+\begin{codeexample}[width=5cm] 
+\tikz [subgraph text top=text centered]
+  \graph [tree layout] {
+    a -> { b -> {c, d}, e -> {f, g -> h} };
+    
+    left [draw, circle] // { b, c, d };
+  };
+\end{codeexample}   
+  To place a label \emph{outside} the subgraph node, use a label,
+  typically defined using the |quotes| library:
+\begin{codeexample}[] 
+\tikz \graph [tree layout] {
+    a -> { b -> {c, d}, e -> {f, g -> h} };
+    
+    / ["left", draw]  // { b, c, d } <->
+    / ["right", draw] // { e, f, g, h};
+  };
+\end{codeexample}  
+\end{key}
+
+
+\begin{key}{/tikz/subgraph text bottom=\meta{text alignment
+      options} (default ragged right)}
+  Works like |subgraph text top|, only the text placed at the bottom. 
+\end{key}
+
+Note that there are no keys |subgraph text left| or |... right|,
+for somewhat technical reasons.
+
+\begin{key}{/tikz/subgraph text sep=\meta{dimension} (initially .1em)}
+  Some space added between the inner nodes of a subgraph node and the
+  text labels.
+\end{key}
+
+
+\subsubsection{Overlapping Sublayouts}
+
+\label{section-gd-layout-resolve}
+
+Nodes and edges can be part of several layouts. This
+will inevitably lead to conflicts because algorithm will disagree on
+where a node should be placed on the canvas. For this reason, there
+are some rules governing how such conflicts are resolved: Given a
+layout, starting with the main layout, the graph drawing system does
+the following: 
+
+\begin{enumerate} 
+\item We start by first processing the (direct) sublayouts of the
+  current layout (recursively). Sublayouts may overlap (they may share
+  one or more nodes), but we run the specified layout algorithm for
+  each sublayout independently on a ``fresh copy'' of all the nodes
+  making up the sublayout. In particular, different, conflicting
+  positions may be computed for nodes when they are present in several
+  sublayouts. 
+\item Once all nodes in the sublayouts have been laid out in this way,
+  we \emph{join} overlapping elements. The idea is that if two layouts
+  share exactly one vertex, we can shift them around so that his
+  vertex is at the same position in both layouts. In more detail, the
+  following happens:
+
+  We build a (conceptual) graph whose nodes are the sublayouts and in
+  which there is an edge between two nodes if the sublayouts
+  represented by these elements have a node in common.
+  Inside the resulting graph, we treat each connected component
+  separately. Each component has the property that the sublayouts
+  represented by the nodes in the component overlap by at least one
+  node. We now \emph{join} them as follows: We start with the first
+  sublayout in the component (``first'' with respect to the order in
+  which they appear in the input graph) and ``mark'' this
+  sublayout. We loop the following instructions as long as possible:
+  Search for the first sublayout (again, with respect to the order in
+  which they appear in the input) that is connect by an edge to a
+  marked sublayout. The sublayout will now have at least one node in
+  common with the marked sublayouts (possibly, even more). We
+  consider the first such node (again, first respect to the input
+  ordering) and shift the whole sublayout is such a way that this
+  particular node is at the position is has in the marked
+  sublayouts. Note that after the shift, other nodes that are also
+  present in the marked sublayouts may lie at a different position in
+  the current sublayout. In this case, the position in the marked
+  sublayouts ``wins.'' We then mark the sublayout.
+\item When the above algorithm has run, we will have computed
+  positions for all nodes in all sublayouts of each of the
+  components. For each component, we contract all
+  nodes of the component to a single node. This new 
+  node will be ``large'' in the sense that its convex hull is the
+  convex hull of all the nodes in the component. All nodes that used
+  to be part of the component are removed and the new large node is
+  added (with arcs adjusted appropriately). 
+\item We now run the layout's algorithm on the resulting nodes
+  (the remaining original nodes and the contracted nodes).
+\item In a last step, once the graph has been laid out, we expand the
+  nodes that were previously contracted. For this, the 
+  nodes that were deleted earlier get reinserted, but shifted by
+  whatever amount the contraction node got shifted.
+\end{enumerate}
+
+
+\subsection{Miscellaneous Options}
+
+\includeluadocumentationof{pgf.gd.control.library}
+
+\endinput
+
