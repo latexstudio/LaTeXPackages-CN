@@ -1,0 +1,2302 @@
+\appendix
+\section*{附录}%Appendix
+\addcontentsline{toc}{section}{附录}
+
+\section{驱动层的默认数据源映射}%默认的驱动源映射
+%\section{Default Driver Source Mappings}
+\label{apx:maps}
+
+下面是驱动层的默认数据源映射。
+%These are the driver default source mappings.
+
+\subsection{\opt{bibtex}}
+\opt{bibtex}驱动自然是应用最广，\biblatex/\biber 支持最成熟的数据格式。\secref{bib:typ:als}和\secref{bib:fld:als}节的别名通过这些默认数据源映射实现。
+%The \opt{bibtex} driver is of course the most comprehensive and mature of the \biblatex/\biber supported data formats. These source mapping defaults are how the aliases from sections \secref{bib:typ:als} and \secref{bib:fld:als} are implemented.
+
+\begin{ltxexample}
+\DeclareDriverSourcemap[datatype=bibtex]{
+  \map{
+    \step[typesource=conference, typetarget=inproceedings]
+    \step[typesource=electronic, typetarget=online]
+    \step[typesource=www,        typetarget=online]
+  }
+  \map{
+    \step[typesource=mastersthesis, typetarget=thesis, final]
+    \step[fieldset=type,            fieldvalue=mathesis]
+  }
+  \map{
+    \step[typesource=phdthesis, typetarget=thesis, final]
+    \step[fieldset=type,        fieldvalue=phdthesis]
+  }
+  \map{
+    \step[typesource=techreport, typetarget=report, final]
+    \step[fieldset=type,         fieldvalue=techreport]
+  }
+  \map{
+    \step[fieldsource=address,       fieldtarget=location]
+    \step[fieldsource=school,        fieldtarget=institution]
+    \step[fieldsource=annote,        fieldtarget=annotation]
+    \step[fieldsource=archiveprefix, fieldtarget=eprinttype]
+    \step[fieldsource=journal,       fieldtarget=journaltitle]
+    \step[fieldsource=primaryclass,  fieldtarget=eprintclass]
+    \step[fieldsource=key,           fieldtarget=sortkey]
+    \step[fieldsource=pdf,           fieldtarget=file]
+  }
+}
+\end{ltxexample}
+
+\section{默认继承设置}%Default Inheritance Setup
+\label{apx:ref}
+
+下表给出了默认的\biber 交叉引用规则。更多解释见\secref{bib:cav:ref, aut:ctm:ref}节。
+%The following table shows the \biber cross-referencing rules defined by default. Please refer to \secref{bib:cav:ref, aut:ctm:ref} for explanation.
+
+\begingroup
+\tablesetup
+\def\sep{\textrm{, }}
+\def\skip{\textrm{--}}
+\def\note#1{\textrm{#1}}
+\begin{longtable}[l]{%
+	@{}V{0.2\textwidth}%
+	@{}V{0.4\textwidth}%
+	@{}V{0.3\textwidth}%
+	@{}V{0.3\textwidth}@{}}
+\toprule
+\multicolumn{2}{@{}H}{Types} & \multicolumn{2}{@{}H}{Fields} \\
+\cmidrule(r){1-2}\cmidrule{3-4}
+\multicolumn{1}{@{}H}{Source} & \multicolumn{1}{@{}H}{Target} &
+\multicolumn{1}{@{}H}{Source} & \multicolumn{1}{@{}H}{Target} \\
+\cmidrule(r){1-1}\cmidrule(r){2-2}\cmidrule(r){3-3}\cmidrule{4-4}
+\endhead
+\bottomrule
+\endfoot
+\textasteriskcentered & \textasteriskcentered &
+  ids\par
+	crossref\par
+	xref\par
+	entryset\par
+	entrysubtype\par
+	execute\par
+	label\par
+	options\par
+	presort\par
+	related\par
+	relatedoptions\par
+	relatedstring\par
+	relatedtype\par
+	shorthand\par
+	shorthandintro\par
+	sortkey &
+	\skip\par \skip\par \skip\par \skip\par
+	\skip\par \skip\par \skip\par \skip\par
+	\skip\par \skip\par \skip\par \skip\par
+	\skip\par \skip \\
+mvbook\sep book &
+	inbook\sep bookinbook\sep suppbook &
+	author\par author &
+	author\par bookauthor \\
+mvbook &
+	book\sep inbook\sep bookinbook\sep suppbook &
+	title\par subtitle\par titleaddon\par
+        shorttitle\par sorttitle\par indextitle\par indexsorttitle &
+	maintitle\par mainsubtitle\par maintitleaddon\par
+	\skip\par \skip\par \skip\par \skip \\
+mvcollection\sep mvreference &
+	collection\sep reference\sep incollection\sep inreference\sep suppcollection &
+	title\par subtitle\par titleaddon\par
+        shorttitle\par sorttitle\par indextitle\par indexsorttitle &
+	maintitle\par mainsubtitle\par maintitleaddon\par
+	\skip\par \skip\par \skip\par \skip \\
+mvproceedings	&
+	proceedings\sep inproceedings &
+	title\par subtitle\par titleaddon\par
+        shorttitle\par sorttitle\par indextitle\par indexsorttitle &
+	maintitle\par mainsubtitle\par maintitleaddon\par
+	\skip\par \skip\par \skip\par \skip \\
+book &
+	inbook\sep bookinbook\sep suppbook &
+	title\par subtitle\par titleaddon\par
+        shorttitle\par sorttitle\par indextitle\par indexsorttitle &
+	booktitle\par booksubtitle\par booktitleaddon\par
+	\skip\par \skip\par \skip\par \skip \\
+collection\sep reference &
+	incollection\sep inreference\sep suppcollection &
+	title\par subtitle\par titleaddon\par
+        shorttitle\par sorttitle\par indextitle\par indexsorttitle &
+	booktitle\par booksubtitle\par booktitleaddon\par
+	\skip\par \skip\par \skip\par \skip \\
+proceedings &
+	inproceedings &
+	title\par subtitle\par titleaddon\par
+        shorttitle\par sorttitle\par indextitle\par indexsorttitle &
+	booktitle\par booksubtitle\par booktitleaddon\par
+	\skip\par \skip\par \skip\par \skip \\
+periodical &
+	article\sep suppperiodical &
+	title\par subtitle\par
+        shorttitle\par sorttitle\par indextitle\par indexsorttitle &
+	journaltitle\par journalsubtitle\par
+	\skip\par \skip\par \skip\par \skip \\
+\end{longtable}
+\endgroup
+
+\section{默认的排序方式}
+%\section{Default Sorting Schemes}
+\label{apx:srt}
+
+\subsection[字母表顺序1]{字母表顺序格式1}%Alphabetic Schemes 1
+\label{apx:srt:a1}
+
+下表给出了默认的标准字母表顺序排序格式。更多解释见\secref{use:srt}节。
+%The following table shows the standard alphabetic sorting schemes defined by default. Please refer to \secref{use:srt} for explanation.
+
+\begingroup
+\sorttablesetup
+\begin{longtable}[l]{@{}%
+	V{0.100\textwidth}@{}%
+	L{0.100\textwidth}@{}%
+	L{0.175\textwidth}@{}%
+	L{0.175\textwidth}@{}%
+	L{0.150\textwidth}@{}%
+	L{0.300\textwidth}@{}}
+\toprule
+\multicolumn{1}{@{}H}{Option} & \multicolumn{5}{@{}H}{Sorting scheme} \\
+\cmidrule(r){1-1}\cmidrule{2-6}
+\endhead
+\bottomrule
+\endfoot
+nty &	presort\alt mm &
+	\new sortname\alt author\alt editor\alt translator\alt sorttitle\alt title &
+	\new sorttitle\alt title &
+	\new sortyear\alt year &
+	\new volume\\
+nyt &	presort\alt mm &
+	\new sortname\alt author\alt editor\alt translator\alt sorttitle\alt title &
+	\new sortyear\alt year &
+	\new sorttitle\alt title &
+	\new volume\\
+nyvt &	presort\alt mm &
+	\new sortname\alt author\alt editor\alt translator\alt sorttitle\alt title &
+	\new sortyear\alt year &
+	\new volume &
+	\new sorttitle\alt title \\
+\textrm{all} & presort\alt mm &
+	\new sortkey \\
+\end{longtable}
+\endgroup
+
+\subsection[字母表顺序2]{字母表顺序格式2}%Alphabetic Schemes 2
+\label{apx:srt:a2}
+
+下表是为\texttt{alphabetic}样式定义的默认字母表顺序排序格式。更多解释见\secref{use:srt}节。
+%The following table shows the alphabetic sorting schemes for \texttt{alphabetic} styles defined by default. Please refer to \secref{use:srt} for explanation.
+
+\begingroup
+\sorttablesetup
+\begin{longtable}[l]{@{}%
+	V{0.100\textwidth}@{}%
+	L{0.100\textwidth}@{}%
+	L{0.175\textwidth}@{}%
+	L{0.175\textwidth}@{}%
+	L{0.150\textwidth}@{}%
+	L{0.150\textwidth}@{}%
+	L{0.150\textwidth}@{}}
+\toprule
+\multicolumn{1}{@{}H}{Option} & \multicolumn{6}{@{}H}{Sorting scheme} \\
+\cmidrule(r){1-1}\cmidrule{2-7}
+\endhead
+\bottomrule
+\endfoot
+anyt &	presort\alt mm &
+	\new labelalpha &
+	\new sortname\alt author\alt editor\alt translator\alt sorttitle\alt title &
+	\new sortyear\alt year &
+	\new sorttitle\alt title &
+	\new volume\\
+anyvt &	presort\alt mm &
+	\new labelalpha &
+	\new sortname\alt author\alt editor\alt translator\alt sorttitle\alt title &
+	\new sortyear\alt year &
+	\new volume &
+	\new sorttitle\alt title \\
+\textrm{all} & presort\alt mm &
+	\new labelalpha &
+	\new sortkey \\
+\end{longtable}
+\endgroup
+
+\subsection[纪年顺序]{纪年格式}%Chronological Schemes
+\label{apx:srt:chr}
+
+下表给出了默认定义的纪年排序格式。更多解释见\secref{use:srt}节。
+%The following table shows the chronological sorting schemes defined by default. Please refer to \secref{use:srt} for explanation.
+
+\begingroup
+\sorttablesetup
+\begin{longtable}[l]{@{}%
+	V{0.100\textwidth}@{}%
+	L{0.100\textwidth}@{}%
+	L{0.225\textwidth}@{}%
+	L{0.175\textwidth}@{}%
+	L{0.400\textwidth}@{}}
+\toprule
+\multicolumn{1}{@{}H}{Option} & \multicolumn{4}{@{}H}{Sorting scheme} \\
+\cmidrule(r){1-1}\cmidrule{2-5}
+\endhead
+\bottomrule
+\endfoot
+ynt &	presort\alt mm &
+	\new sortyear\alt year \alt 9999 &
+	\new sortname\alt author\alt editor\alt translator\alt sorttitle\alt title &
+	\new sorttitle\alt title \\
+ydnt &	presort\alt mm &
+	\new sortyear\note{ (desc.)}\alt year\note{ (desc.)} \alt 9999 &
+	\new sortname\alt author\alt editor\alt translator\alt sorttitle\alt title &
+	\new sorttitle\alt title \\
+\textrm{all} & presort\alt mm &
+	\new sortkey \\
+\end{longtable}
+\endgroup
+
+\section{biblatex XML 数据源格式(\biblatexml)}%\biblatexml
+\label{apx:biblatexml}
+
+\biblatexml\ XML数据源格式是为\biblatex\ 用户设计的一个可扩展的现代数据源格式。\bibtex\ 格式\file{.bib}文件存在一些局限，特别是涉及到支持UTF-8和姓名格式问题时。\biber\ 通过使用采用修改的\texttt{btparse} C库以多种方式处理UTF-8方面的限制。但是\bibtex\ 的相当古老的姓名解析规则是根据简单的西方人姓名硬编码的。
+%The \biblatexml\ XML datasource format is designed to be an extensible and modern data source format for \biblatex\ users. There are limitations with \bibtex\ format \file{.bib} files, in particular one might mention UTF-8 support and name formats. \biber\ goes some way to addressing the UTF-8 limitations by using a modified version of the \texttt{btparse} C library but the rather archaic name parsing rules for \bibtex\ are hard-coded and specific to simple Western names.
+
+\biblatexml 是为参考文献数据提供的一种XML格式。当\biber\ 读写\biblatexml\ 格式数据源时，它自动为数据源输出一个RelaXNG XML纲要，这一概要由活动的\biblatex\ 数据模型动态生成。\biblatexml\ 数据源因为可用的域依赖于数据模型所以不存在静态的纲要。\biblatexml\ 数据源格式具有相当高的自解析性---它常常仅需要从已有的\bibtex\ 格式数据源(为理解其格式，使用\biber 的 <tool> 模式)生成一个\biblatexml\ 数据源。\biber 也允许用户根据数据模型生成纲要验证\biblatexml\ 数据源。
+%\biblatexml is an XML format for bibliographic data. When \biber\ either reads or writes \biblatexml\ format datasources, it automatically writes a RelaXNG XML schema for the datasources which is dynamically generated from the active \biblatex\ datamodel. There is no static schema for \biblatexml\ datasources because the allowable fields etc. depend on the data model. The format of \biblatexml\ datasources is relatively self-explanatory---it is usually only necessary to generate a \biblatexml\ datasource from existing \bibtex\ format datasources (using \biber's <tool> mode) in order to understand the format. \biber also allows users to validate \biblatexml\ datasources against the data model generated schema.
+
+因为\biblatexml\ 格式是 XML并且依赖于数据模型，且数据模型是用户可扩展的(见\secref{aut:ctm:dm})，\biblatexml\ 格式可以处理\bibtex\ 格式数据源无法处理的一些扩展内容比如新的姓名成分，子条目上的选项等。因为他是一种XML 格式，所以使用标准的XML处理库和工具转换成其他XML格式或HTML也相当简单。
+%Since the \biblatexml\ format is XML and depends on the data model and the data model is extensible by the user (see \secref{aut:ctm:dm}), the \biblatexml\ format can deal with extensions that \bibtex\ format data sources cannot, e.g. new nameparts, options at sub-entry scope. Since it is an XML format, it is relatively easy to transform it into other XML formats or HTML using standard XML processing libraries and tools.
+
+下面用示例阐述该格式。习惯上，\biblatexml\ 文件扩展名为\file{.bltxml}，\file{kpsewhich}能识别这一格式。
+%Here is an explanation of the format with examples. By convention, \biblatexml\ files have a \file{.bltxml} extension and \file{kpsewhich} understands this file extension.
+
+\subsection{文件头}%Header
+\biblatexml\ 文件一个标准XML文件头开始:
+%\biblatexml\ files begin with the standard XML header:
+
+\begin{lstlisting}[language=xml]
+<?xml version="1.0" encoding="UTF-8"?>
+\end{lstlisting}
+%
+纲要模型，类型和纲要类型空间为:
+%The schema model, type and schema type namespace are given in the following line:
+
+\begin{lstlisting}[language=xml]
+<?xml-model href="biblatexml.rng"
+            type="application/xml"
+            schematypens="http://relaxng.org/ns/structure/1.0"?>
+\end{lstlisting}
+%
+当\biber\ 生成\biblatexml\ 数据源时，它自动添加添加这一行，并为自动生成的RelaXNG XML纲要指定纲要模型(href)属性以便验证。
+%When \biber\ generates \biblatexml\ data sources, it automatically adds this line and points the schema model (href) attribute at the automatically generated RelaXNG XML schema for ease of validation.
+
+\subsection{正文}%Body
+\biblatexml\ 数据源正文类似于:
+%The body of a \biblatexml\ data source looks like:
+
+\begin{lstlisting}[language=xml]
+<bltx:entries
+  xmlns:bltx="http://biblatex-biber.sourceforge.net/biblatexml">
+
+  <bltx:entry id="" entrytype="">
+  </bltx:entry>
+       .
+       .
+       .
+  <bltx:entry id="" entrytype="">
+  </bltx:entry>
+
+</bltx:entries>
+\end{lstlisting}
+%
+正文是一个或多个\bibfield{entry}元素存在与顶层的\bibfield{entries}元素中，并且所有都处于\bibfield{bltx}命名空间内。一个条目具有一个\bibfield{id}属性对应于\bibtex\ 条目关键词，具有一个\bibfield{entrytype}属性对应于\bibtex\ 条目类型。例如:
+%The body is one or more \bibfield{entry} elements inside the top-level \bibfield{entries} element and everything is in the \bibfield{bltx} namespace. An entry has an \bibfield{id} attribute corresponding to a \bibtex\ entry key and a \bibfield{entrytype} attribute corresponding to a \bibtex\ entrytype. For example, the \biblatexml\
+
+\begin{lstlisting}[language=xml]
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="biblatexml.rng"
+            type="application/xml"
+            schematypens="http://relaxng.org/ns/structure/1.0"?>
+<bltx:entries
+  xmlns:bltx="http://biblatex-biber.sourceforge.net/biblatexml">
+  <bltx:entry id="key1" entrytype="book">
+  </bltx:entry>
+</bltx:entries>
+\end{lstlisting}
+%
+对应的bib文件为:
+%Corresponds to the \bibtex\ \file{.bib}
+
+\begin{lstlisting}[style=bibtex]{}
+@book{key1,
+}
+\end{lstlisting}
+%
+一般来说，\biblatexml\ 格式数据源中的XML元素具有与数据模型中的域对应的名称，如同\bibtex\ 格式数据源一般。所以，当\bibtex\ 数据源是:
+%In general, the XML elements in a \biblatexml\ format datasource file have names corresponding to the fields in the datamodel, just like \bibtex\ format datasources. So for example, the \bibtex\ format source
+
+\begin{lstlisting}[style=bibtex]{}
+@book{key1,
+  TITLE = {...},
+  ISSUE = {...},
+  NOTE = {...}
+}
+\end{lstlisting}
+%
+\biblatexml 中将是:
+%would be, in \biblatexml
+
+\begin{lstlisting}[language=xml]
+  <bltx:entry id="key1" entrytype="book">
+    <bltx:title>...</bltx:title>
+    <bltx:issue>...</bltx:issue>
+    <bltx:note>...</bltx:note>
+  </bltx:entry>
+\end{lstlisting}
+%
+这种简单映射下的一些例外需要注意。
+%The following exceptions to this simple mapping are to be noted
+
+\subsubsection{关键词别名}%Key aliases
+标注关键词别名设置如下:
+%Citation key aliases are specified like this:
+
+\begin{lstlisting}[language=xml]
+    <bltx:ids>
+      <bltx:key>alias1</bltx:key>
+      <bltx:key>alias2</bltx:key>
+    </bltx:ids>
+\end{lstlisting}
+%
+对应于\bibtex\ 格式为:
+%this corresponds to the \bibtex\ format
+
+\begin{lstlisting}[style=bibtex]{}
+@book{key1,
+  IDS = {alias1,alias2}
+}
+\end{lstlisting}
+
+\subsubsection{姓名}%Names
+
+为了规范\biblatex 的姓名处理能力，\biblatexml\ 中的姓名配置更为复杂。用户需要更了解姓名成分，从而可以在更大范围上处理不同类型的姓名和姓名成分。\biblatexml\ 格式中的姓名类似于:
+%Name specifications in \biblatexml\ are somewhat more complex in order to generalise the name handling abilities of \biblatex. The user has to be more explicit about the name parts and this allows a much great scope for the handling of different types of names and name parts. A name in \biblatexml\ format looks like this
+
+\begin{lstlisting}[language=xml]
+    <bltx:names type="author" morenames="1" useprefix="true">
+      <bltx:name gender="sm">
+        <bltx:namepart type="given">
+          <bltx:namepart initial="J">John</bltx:namepart>
+          <bltx:namepart initial="A">Arthur</bltx:namepart>
+        </bltx:namepart>
+        <bltx:namepart type="family">Smith</bltx:namepart>
+        <bltx:namepart type="prefix" initial="v">von</bltx:namepart>
+      </bltx:name>
+      <bltx:name useprefix="false">
+        <bltx:namepart type="given">
+          <bltx:namepart>Raymond</bltx:namepart>
+        </bltx:namepart>
+        <bltx:namepart type="family">Brown</bltx:namepart>
+      </bltx:name>
+    </bltx:names>
+\end{lstlisting}
+%
+姓名列表域包含在\bibfield{names}元素中，该元素具有\bibfield{type}属性给出姓名列表的名称。需要注意:
+%A name list field is contained in the \bibfield{names} element with the mandatory \bibfield{type} attribute giving the name of the name list. Things to note:
+
+\begin{itemize}
+  \item \bibfield{morenames}可选属性的作用类似于\bibtex\ 数据源格式中姓名列表末尾的<and others> 字符串。
+  %The optional \bibfield{morenames} attribute performs the same task as the \bibtex\ datasource format <and others> string at the end of a name.
+  \item 注意\opt{useprefix}可选参数可以在姓名列表或者单个的姓名层级设置。这在\bibtex\ 数据源中是不可能的。
+  %Note that optional \opt{useprefix} option can be specified can be specified at the level of a name list or an individual name in the name list. This is impossible with \bibtex\ datasources.
+  \item 单个姓名可以具有可选的\bibfield{gender}属性，但必须是在数据模型<gender>常量列表中定义的值。目前标准样式并不使用，但在需要的时候可以在\biblatex 姓名格式中使用。
+  %Individual names may have an optional \bibfield{gender} attribute which must be one of those defined in the datamodel <gender> constant list. This is currently not used by standard styles but is available in \biblatex name formats if necessary.
+  \item 一个姓名列表由一个或多个\bibfield{name}元素构成。
+  %A name list is composed of one or more \bibfield{name} elements.
+  \item 每个姓名都由具有数据模型<nameparts>常量定义的\bibfield{type}的姓名成分构成。
+  %Each name is composed of name parts of a \bibfield{type} defined by the data model <nameparts> constant.
+  \item 每个姓名成分可能具有可选的\bibfield{initial}属性，用于显式的指定姓名成分的首字母。如果不给出该选项，\biber\ 将尝试自动确定姓名成分的首字母。
+  %Each name part may have an option \bibfield{initial} attribute which makes explicit the initial of the name part. If this is not present, \biber\ attempts to automatically determine the initial from the name part.
+  \item 姓名成分可以有姓名成分，所以可以处理混合姓名。\footnote{译者:不是很清楚，有没有例子？}
+  %Name parts may have name parts so that compound names can be handled.
+\end{itemize}
+%
+不考虑\biblatexml 独有的功能，对应的\bibtex\ 的数据格式类似于:
+%Ignoring the \biblatexml-only features, a corresponding \bibtex\ format datasource would look like this:
+
+\begin{lstlisting}[style=bibtex]{}
+  AUTHOR = {von Smith, John Arthur and Brown, Raymond and others}
+\end{lstlisting}
+
+\subsubsection{列表}%Lists
+数据源可以根据域内列表中元素是否超过一个，采用两种方式将域(见\secref{bib:fld:typ})列出。
+%Datasource list fields (see \secref{bib:fld:typ}) can be represented in two ways, depending on whether there is more than one element in the list:
+
+\begin{lstlisting}[language=xml]
+    <bltx:publisher>London</bltx:publisher>
+    <bltx:location>
+      <bltx:item>London</bltx:item>
+      <bltx:item>Moscow</bltx:item>
+    </bltx:location>
+\end{lstlisting}
+
+\subsubsection{范围}%Ranges
+数据源范围域(见\secref{bib:fld:typ})可以表示为:
+%Datasource range fields (see \secref{bib:fld:typ}) are represented like this:
+
+\begin{lstlisting}[language=xml]
+    <bltx:pages>
+      <bltx:item>
+        <bltx:start>1</bltx:start>
+        <bltx:end>10</bltx:end>
+      </bltx:item>
+      <bltx:item>
+        <bltx:start>30</bltx:start>
+        <bltx:end>34</bltx:end>
+      </bltx:item>
+    </bltx:pages>
+\end{lstlisting}
+%
+一个范围域是各范围的列表，每个范围都有自身的\bibfield{item}。一个范围项都有一个\bibfield{start}元素和一个可选的\bibfield{end}元素，因为范围可以无终点。
+%A range field is a list of ranges, each with its own \bibfield{item}. A range item has a \bibfield{start} element and an optional \bibfield{end} element, since ranges can be open-ended.
+
+\subsubsection{日期}%Dates
+数据源日期域(见\secref{bib:fld:typ})可以根据是否构成一个日期范围采用两种方式显示:
+%Datasource date fields (see \secref{bib:fld:typ}) can be represented in two ways, depending on whether they constitute a date range:
+
+\begin{lstlisting}[language=xml]
+    <bltx:date>1985-04-02</bltx:date>
+    <bltx:date type="event">
+      <bltx:start>1990-05-16</bltx:start>
+      <bltx:end>1990-05-17</bltx:end>
+    </bltx:date>
+\end{lstlisting}
+%
+一个日期元素的\bibfield{type}属性对应于数据模型中定义的日期的某一特定类型。
+%The \bibfield{type} attribute on a date element corresponds to a particular type of date defined in the data model.
+
+\subsubsection{关联条目}%Related Entries
+关联条目定义如下:
+%Related entries are specified as follows:
+\begin{lstlisting}[language=xml]
+    <bltx:related>
+      <bltx:item type="reprint"
+                 ids="rel1,rel2"
+                 string="Somestring"
+                 options="skipbiblist"/>
+    </bltx:related>
+\end{lstlisting}
+%
+这对应于\bibtex\ 格式:
+%This corresponds to the \bibtex\ format:
+
+\begin{lstlisting}[style=bibtex]{}
+@book{key1,
+  RELATED         = {rel2,rel2},
+  RELATEDTYPE     = {reprint},
+  RELATEDSTRING   = {Somestring},
+  RELATEDOPTIONS  = {skipbiblist}
+}
+\end{lstlisting}
+%
+如同\secref{aut:ctm:rel}，\bibfield{string}和\bibfield{options}和属性是可选的。
+%As per \secref{aut:ctm:rel}, the \bibfield{string} and \bibfield{options} attributes are optional.
+
+\section{选项的作用范围}%Option Scope
+\label{apx:opt}
+
+下表概括了各种包选项的作用范围(全局或者具体类型或者具体条目):
+%The following table provides an overview of the scope (global\slash per-type\slash per-entry) of various package options.
+
+\begingroup
+\tablesetup
+\let\+\tickmarkyes
+\let\_\tickmarkno
+\begin{longtable}[l]{@{}%
+	V{0.4\textwidth}@{}%
+	C{0.15\textwidth}@{}%
+	C{0.15\textwidth}@{}%
+	C{0.15\textwidth}@{}%
+	C{0.15\textwidth}@{}}
+\toprule
+\multicolumn{1}{@{}H}{Option} &
+\multicolumn{4}{@{}H}{Scope} \\
+\cmidrule{2-5}
+& \multicolumn{1}{@{}H}{Load-time} &
+\multicolumn{1}{@{}H}{Global} &
+\multicolumn{1}{@{}H}{Per-type} &
+\multicolumn{1}{@{}H}{Per-entry} \\
+\cmidrule(r){1-1}\cmidrule(r){2-2}\cmidrule(r){3-3}\cmidrule(r){4-4}\cmidrule{5-5}
+\endhead
+\bottomrule
+\endfoot
+abbreviate	&\+&\+&\_&\_\\
+alldates	&\+&\+&\_&\_\\
+alldatesusetime	&\+&\+&\_&\_\\
+alltimes	&\+&\+&\_&\_\\
+arxiv		&\+&\+&\_&\_\\
+autocite	&\+&\+&\_&\_\\
+autopunct	&\+&\+&\_&\_\\
+autolang		&\+&\+&\_&\_\\
+backend		&\+&\_&\_&\_\\
+backref		&\+&\+&\_&\_\\
+backrefsetstyle	&\+&\+&\_&\_\\
+backrefstyle	&\+&\+&\_&\_\\
+bibencoding	&\+&\+&\_&\_\\
+bibstyle	&\+&\_&\_&\_\\
+bibwarn		&\+&\+&\_&\_\\
+block		&\+&\+&\_&\_\\
+citecounter	&\+&\+&\_&\_\\
+citereset	&\+&\+&\_&\_\\
+citestyle	&\+&\_&\_&\_\\
+citetracker	&\+&\+&\_&\_\\
+clearlang	&\+&\+&\_&\_\\
+datamodel &\+&\_&\_&\_\\
+dataonly	&\_&\_&\+&\+\\
+date		&\+&\+&\_&\_\\
+labeldate		&\+&\+&\_&\_\\
+$<$datetype$>$date		&\+&\+&\_&\_\\
+dateabbrev	&\+&\+&\_&\_\\
+datecirca &\+&\+&\_&\_\\
+dateera &\+&\+&\_&\_\\
+dateerauto &\+&\+&\_&\_\\
+dateuncertain &\+&\+&\_&\_\\
+datezeros	&\+&\+&\_&\_\\
+defernumbers	&\+&\+&\_&\_\\
+doi		&\+&\+&\_&\_\\ % style
+eprint		&\+&\+&\_&\_\\ % style
+$<$namepart$>$inits	&\+&\+&\_&\_\\
+gregorianstart &\+&\+&\_&\_\\
+hyperref	&\+&\+&\_&\_\\
+ibidtracker	&\+&\+&\_&\_\\
+idemtracker	&\+&\+&\_&\_\\
+indexing	&\+&\+&\+&\+\\
+isbn		&\+&\+&\_&\_\\ % style
+julian &\+&\+&\_&\_\\
+labelalpha	&\+&\+&\+&\_\\
+labelnamefield  &\_&\_&\_&\+\\
+labelnumber	&\+&\+&\+&\_\\
+labeltitle	&\+&\+&\+&\_\\
+labeltitlefield &\_&\_&\_&\+\\
+labeltitleyear	&\+&\+&\+&\_\\
+labeldateparts	&\+&\+&\+&\_\\
+labeltime	&\+&\+&\_&\_\\
+labeldateusetime	&\+&\+&\_&\_\\
+$<$datetype$>$time	&\+&\+&\_&\_\\
+$<$datetype$>$dateusetime	&\+&\+&\_&\_\\
+language	&\+&\+&\_&\_\\
+loadfiles	&\+&\+&\_&\_\\
+loccittracker	&\+&\+&\_&\_\\
+maxalphanames	&\+&\+&\+&\+\\
+maxbibnames	&\+&\+&\+&\+\\
+maxcitenames	&\+&\+&\+&\+\\
+maxitems	&\+&\+&\+&\+\\
+maxnames	&\+&\+&\+&\+\\
+maxparens	&\+&\+&\_&\_\\
+mcite		&\+&\_&\_&\_\\
+minalphanames	&\+&\+&\+&\+\\
+minbibnames	&\+&\+&\+&\+\\
+mincitenames	&\+&\+&\+&\+\\
+mincrossrefs	&\+&\+&\_&\_\\
+minxrefs	&\+&\+&\_&\_\\
+minitems	&\+&\+&\+&\+\\
+minnames	&\+&\+&\+&\+\\
+natbib		&\+&\_&\_&\_\\
+noinherit		&\_&\_&\_&\+\\
+notetype	&\+&\+&\_&\_\\
+opcittracker	&\+&\+&\_&\_\\
+openbib		&\+&\+&\_&\_\\
+pagetracker	&\+&\+&\_&\_\\
+parentracker	&\+&\+&\_&\_\\
+punctfont	&\+&\+&\_&\_\\
+refsection	&\+&\+&\_&\_\\
+refsegment	&\+&\+&\_&\_\\
+safeinputenc	&\+&\+&\_&\_\\
+seconds	&\+&\+&\_&\_\\
+singletitle	&\+&\+&\+&\_\\
+skipbib		&\_&\_&\+&\+\\
+skipbiblist	&\_&\_&\+&\+\\
+skiplab		&\_&\_&\+&\+\\
+sortcase	&\+&\+&\_&\_\\
+sortcites	&\+&\+&\_&\_\\
+sorting		&\+&\+&\_&\_\\
+sortnamekeyscheme 	&\_&\_&\_&\+\\
+sortlocale	&\+&\+&\_&\_\\
+sortlos		&\+&\+&\_&\_\\
+sortupper	&\+&\+&\_&\_\\
+style		&\+&\_&\_&\_\\
+terseinits	&\+&\+&\_&\_\\
+texencoding	&\+&\+&\_&\_\\
+timezeros	&\+&\+&\_&\_\\
+timezones	&\+&\+&\_&\_\\
+uniquelist	&\+&\+&\+&\+\\
+uniquename	&\+&\+&\+&\+\\
+uniquetitle	&\+&\+&\+&\_\\
+uniquebaretitle	&\+&\+&\+&\_\\
+uniquework	&\+&\+&\+&\_\\
+uniqueprimaryauthor	&\+&\+&\_&\_\\
+url		&\+&\+&\_&\_\\
+useprefix	&\+&\+&\+&\+\\
+use$<$name$>$	&\+&\+&\+&\+\\
+\end{longtable}
+\endgroup
+
+\section{更新历史}
+%\section{Revision History}
+\label{apx:log}
+
+更新历史是与宏包用户相关的一些更新列表。不影响用户接口或者宏包行为的更技术性的更新并未在列。更多的技术细节可以参考\file{CHANGES.org}文件。右侧的数字表示本手册中的相关的节号。
+%This revision history is a list of changes relevant to users of this package. Changes of a more technical nature which do not affect the user interface or the behavior of the package are not included in the list. More technical details are to be found in the \file{CHANGES.org} file. The numbers on the right indicate the relevant section of this manual.
+
+\begin{changelog}
+
+\begin{release}{3.7}{2016-12-08}
+\item 修正了\cmd{bibdateeraprefix}的默认设置，\see{aut:fmt:lng}
+%Corrected default for \cmd{bibdateeraprefix}\see{aut:fmt:lng}
+\item Added \cmd{DeclareSortInclusion}\see{aut:ctm:srt}
+%\cmd{DeclareSortInclusion}\see{aut:ctm:srt}
+\item Added \cmd{relateddelim$<$relatedtype$>$}\see{use:fmt:fmt}
+\end{release}
+
+\begin{release}{3.6}{2016-09-15}
+\item 修正了文档的一些内容，修复了labeldate本地化字符串先关的一个错误
+%Corrected some documentation and fixed a bug with labeldate localisation strings.
+\end{release}
+
+\begin{release}{3.5}{2016-09-10}
+\item 增加\cmd{ifuniquebaretitle}判断\see{aut:aux:tst}
+%Added \cmd{ifuniquebaretitle} test\see{aut:aux:tst}
+\item 为\cmd{labelnamesource}和\cmd{labeltitlesource}增加说明\see{aut:bbx:fld:gen}
+%Documented \cmd{labelnamesource} and \cmd{labeltitlesource}\see{aut:bbx:fld:gen}
+\item 增加\cmd{bibdaterangesep}\see{use:fmt:lng}
+%Added \cmd{bibdaterangesep}\see{use:fmt:lng}
+\item 为\cmd{DeclareSourcemap}增加\opt{refsection}选项\see{aut:ctm:map}
+%Added \opt{refsection} option to \cmd{DeclareSourcemap}\see{aut:ctm:map}
+\item 为继承设置增加\opt{suppress}选项，\see{aut:ctm:ref}
+%Added \opt{suppress} option to inheritance specifications\see{aut:ctm:ref}
+\item 增加\cmd{ifuniquework}\see{aut:aux:tst}
+%Added \cmd{ifuniquework}\see{aut:aux:tst}
+\item 修改\cmd{DeclareStyleSourcemap}，用于多个时间\see{aut:ctm:map}
+%Changed \cmd{DeclareStyleSourcemap} so that it can be used multiple times\see{aut:ctm:map}
+\item 增加\cmd{forcezerosy} 和 \cmd{forcezerosmdt}\see{aut:fmt:ich}
+%Added \cmd{forcezerosy} and \cmd{forcezerosmdt}\see{aut:fmt:ich}
+\item 修改\cmd{mkdatezeros}为\cmd{mkyearzeros}, \cmd{mkmonthszeros} 和\cmd{mkdayzeros}\see{aut:fmt:ich}
+%Changed \cmd{mkdatezeros} to \cmd{mkyearzeros}, \cmd{mkmonthszeros}  and \cmd{mkdayzeros}\see{aut:fmt:ich}
+\item 为所有姓名列表域增加\bibfield{namehash}和\bibfield{fullhash}\see{aut:bbx:fld:gen}
+%Added \bibfield{namehash} and \bibfield{fullhash} for all name list fields\see{aut:bbx:fld:gen}
+\item 为所有姓名成分推广\opt{giveninits}选项，\see{use:opt:pre:int}
+%Generalised \opt{giveninits} option to all nameparts\see{use:opt:pre:int}
+\item 为\cmd{DeclareSortingNamekeyScheme}增加\opt{inits}选项\see{aut:ctm:srt}
+%Added \opt{inits} option to \cmd{DeclareSortingNamekeyScheme}\see{aut:ctm:srt}
+\item 增加\cmd{DeclareLabelalphaNameTemplate}\see{aut:ctm:lab}
+%Added \cmd{DeclareLabelalphaNameTemplate}\see{aut:ctm:lab}
+\item 增加完整的\acr{EDTF}的0层次和1层次的规则用于解析和打印时间\see{bib:use:dat}
+%Added full \acr{EDTF} Levels 0 and 1 compliance for parsing and printing times\see{bib:use:dat}
+\item 修改日期完全符合\acr{EDTF}0层次和1层次的相关判断和本地化字符串\footnote{译注:句子有点疑惑?}\see{bib:use:dat}
+%Changed dates to be fully \acr{EDTF} Levels 0 and 1 compliant. Associated tests and localisation strings\see{bib:use:dat}
+\item 增加\opt{timezeros}\see{use:opt:pre:gen}
+%Added \opt{timezeros}\see{use:opt:pre:gen}
+\item 增加\opt{mktimezeros}\see{aut:fmt:ich}
+%Added \opt{mktimezeros}\see{aut:fmt:ich}
+\item 修改\opt{iso8601}为\opt{edtf}\see{use:opt:pre:gen}
+%Changed \opt{iso8601} to \opt{edtf}\see{use:opt:pre:gen}
+\item 增加\cmd{DeclareUniquenameTemplate}\see{aut:cav:amb}
+%Added \cmd{DeclareUniquenameTemplate}\see{aut:cav:amb}
+\item 移除尝试RIS支持的内容
+%Removed experimental RIS support
+\item 在\bibtex 数据源中\opt{sortnamekeyscheme} 和 \opt{useprefix}现在可以根据具体姓名列表和具体姓名设置。
+%\opt{sortnamekeyscheme} and \opt{useprefix} can be now be set per-namelist and per-name for \bibtex datasources\see{aut:ctm:srt}
+\item 增加\cmd{DeclareDelimcontextAlias}\see{use:fmt:csd}
+%Added \cmd{DeclareDelimcontextAlias}\see{use:fmt:csd}
+\item 增加爱沙尼亚本地化字符串(Benson Muite)
+%Added Estonian localisation (Benson Muite)
+\item 命名了参考文献环境\see{use:bib:context}
+%Reference contexts may now be named
+\item 在源映射中增加\opt{notfield}映射步\see{aut:ctm:map}
+%Added \opt{notfield} step in Sourcemaps\see{aut:ctm:map}
+\end{release}
+
+\begin{release}{3.4}{2016-05-10}
+\item 增加\cmd{ifcrossrefsource}和\cmd{ifxrefsource}\see{aut:aux:tst}
+%Added \cmd{ifcrossrefsource} and \cmd{ifxrefsource}\see{aut:aux:tst}
+\item 增加数据注释功能\see{use:annote}
+%Added data annotation feature\see{use:annote}
+\item 增加包选项\opt{minxrefs}\see{use:opt:pre:gen}
+%Added package option \opt{minxrefs}\see{use:opt:pre:gen}
+\item 增加\cmd{ifuniqueprimaryauthor}和相关全局选项\see{aut:aux:tst}
+%Added \cmd{ifuniqueprimaryauthor} and associated global option\see{aut:aux:tst}
+\item 增加\cmd{DeprecateField}, \cmd{DeprecateList}和\cmd{DeprecateName}\see{aut:bib:dat}
+%Added \cmd{DeprecateField}, \cmd{DeprecateList} and \cmd{DeprecateName}\see{aut:bib:dat}
+\item 增加\cmd{ifcaselang}\see{aut:aux:tst}
+%Added \cmd{ifcaselang}\see{aut:aux:tst}
+\item 增加\cmd{DeclareSortTranslit}\see{aut:ctm:srt}
+%Added \cmd{DeclareSortTranslit}\see{aut:ctm:srt}
+\item 增加\opt{uniquetitle} test\see{aut:aux:tst}
+%Added \opt{uniquetitle} test\see{aut:aux:tst}
+\item 增加\cmd{namelabeldelim}\see{use:fmt:fmt}
+%Added \cmd{namelabeldelim}\see{use:fmt:fmt}
+\item 为\cmd{assignrefcontext*}宏增加带星号的版本\see{use:bib:context}
+%New starred variants of the \cmd{assignrefcontext*} macros\see{use:bib:context}
+\item 文本敏感的新分隔符接口\footnote{译注:context-sensitive？}\see{use:fmt:csd}
+%New context-sensitive delimiter interface\see{use:fmt:csd}
+\item 将\opt{prefixnumbers}选项移到\cmd{newrefcontext}并重命名为\opt{labelprefix}\see{use:bib:context}
+%Moved \opt{prefixnumbers} option to \cmd{newrefcontext} and renamed to \opt{labelprefix}\see{use:bib:context}
+\item 增加\cmd{DeclareDatafieldSet}\see{aut:ctm:dsets}
+%Added \cmd{DeclareDatafieldSet}\see{aut:ctm:dsets}
+\end{release}
+
+\begin{release}{3.3}{2016-03-01}
+\item 增加参考文献环境的自动分配的新宏\footnote{译注:refcontext？}\see{use:bib:context}
+%New macros for auto-assignment of refcontexts\see{use:bib:context}
+\item 增加了\biblatexml 格式的说明\see{apx:biblatexml}
+%Schema documentation for \biblatexml\see{apx:biblatexml}
+\item 增加了\biblatexml 格式的源映射说明和示例\see{aut:ctm:map}
+%Sourcemapping documentation and examples for \biblatexml\see{aut:ctm:map}
+\item 修改姓名格式用于规范姓名成分\see{aut:bib:fmt}
+%Changes for name formats to generalise available name parts\see{aut:bib:fmt}
+\item \opt{useprefix}可以在\biblatexml 数据源中根据具体姓名列表和姓名进行设置
+%\opt{useprefix} can now be specified per-namelist and per-name in \biblatexml datasources
+\item 增加数据源映射选项用于动态创建新条目并遍历映射步\see{aut:ctm:map}
+%New sourcemapping options for creating new entries dynamically and looping over map steps\see{aut:ctm:map}
+\item 增加\opt{noalphaothers}并增强了\cmd{DeclareLabelalphaTemplate}中的姓名范围选择\see{aut:ctm:lab}
+%Added \opt{noalphaothers} and enhanced name range selection in \cmd{DeclareLabelalphaTemplate}\see{aut:ctm:lab}
+\item 增加\cmd{DeclareDatamodelConstant}\see{aut:ctm:dm}
+%Added \cmd{DeclareDatamodelConstant}\see{aut:ctm:dm}
+\item 重命名了\opt{firstinits} and \opt{sortfirstinits}
+%Renamed \opt{firstinits} and \opt{sortfirstinits}
+\item 增加\cmd{DeclareSortingNamekeyScheme}\see{aut:ctm:srt}
+%Added \cmd{DeclareSortingNamekeyScheme}\see{aut:ctm:srt}
+\item 移除尝试为\biber 提供对endnote和zoterordf支持的内容
+%Removed messy experimental endnote and zoterordf support for \biber
+\item 增加\cmd{nonameyeardelim}\see{use:fmt:fmt}
+%Added \cmd{nonameyeardelim}\see{use:fmt:fmt}
+\item 增加\cmd{extpostnotedelim}\see{use:fmt:fmt}
+%Added \cmd{extpostnotedelim}\see{use:fmt:fmt}
+\end{release}
+
+\begin{release}{3.2}{2015-12-28}
+\item 为\cmd{DeclareLabelalphaTemplate}增加\opt{pstrwidth}和\opt{pcompound}\see{aut:ctm:lab}
+%Added \opt{pstrwidth} and \opt{pcompound} to \cmd{DeclareLabelalphaTemplate}\see{aut:ctm:lab}
+\item 增加\cmd{AtEachCitekey}\see{aut:fmt:hok}
+%Added \cmd{AtEachCitekey}\see{aut:fmt:hok}
+\end{release}
+
+\begin{release}{3.1}{2015-09}
+\item 增加\cmd{DeclareNolabel}\see{aut:ctm:lab}
+%Added \cmd{DeclareNolabel}\see{aut:ctm:lab}
+\item 增加\cmd{DeclareNolabelwidthcount}\see{aut:ctm:lab}
+%Added \cmd{DeclareNolabelwidthcount}\see{aut:ctm:lab}
+\end{release}
+
+\begin{release}{3.0}{2015-04-20}
+\item 完善丹麦语(Jonas Nyrup)和西班牙语(ludenticus)翻译
+%Improved Danish (Jonas Nyrup) and Spanish (ludenticus) translations
+\item 由\biblatex 代替\biber 来实现\bibfield{labelname} and \bibfield{labeltitle}，实现更大灵活性和可扩展性。
+%\bibfield{labelname} and \bibfield{labeltitle} are now resolved by \biblatex instead of \biber for more flexibility and future extensibility
+\item 增加\cmd{entryclone}映射动作用于在数据源映射过程中复制条目\see{aut:ctm:map}
+%New \cmd{entryclone} sourcemap verb for cloning entries during sourcemapping\see{aut:ctm:map}
+\item 增加\cmd{pernottype}否定的具体条目相关的数据源映射动作\see{aut:ctm:map}
+%New \cmd{pernottype} negated per-type sourcemap verb\see{aut:ctm:map}
+\item 增加范围计算命令\cmd{frangelen}\see{aut:aux:msc}
+%New range calculation command \cmd{frangelen}\see{aut:aux:msc}
+\item 增加参考文献环境功能\see{use:bib:context}
+%New bibliography context functionality\see{use:bib:context}
+\item 数据模型中的姓名列表自动为创建\cmd{ifuse$<$name$>$}内部判断和布尔值\see{use:opt:bib:hyb} and \see{aut:aux:tst}
+%Name lists in the data model now automatically create internals for \cmd{ifuse$<$name$>$} tests and booleans\see{use:opt:bib:hyb} and \see{aut:aux:tst}
+\end{release}
+
+%\begin{release}{2.9a}{2014-06-25}
+%\item \texttt{resetnumbers} now allows passing a number to reset to\see{use:bib:bib}
+%\end{release}
+%
+%\begin{release}{2.9}{2014-02-25}
+%\item Generalised shorthands facility\see{use:bib:biblist}
+%\item Sorting locales can now be defined as part of a sorting scheme\see{aut:ctm:srt}
+%\item Added \bibfield{sortinithash}\see{aut:bbx:fld:gen}
+%\item Added Slovene localisation (Tea Tušar and Bogdan Filipič)
+%\item Added \cmd{mkbibitalic}\see{aut:fmt:ich}
+%\item Recommend \texttt{begentry} and \texttt{finentry} bibliography macros\see{aut:bbx:drv}
+%\end{release}
+%
+%\begin{release}{2.8a}{2013-11-25}
+%\item Split option \opt{language=auto} into \opt{language=autocite} and \opt{language=autobib}\see{use:opt:pre:gen}
+%\end{release}
+%
+%\begin{release}{2.8}{2013-10-21}
+%\item New \bibfield{langidopts}\see{bib:fld:spc}
+%\item \bibfield{hyphenation} field renamed to \bibfield{langid}\see{bib:fld:spc}
+%\item \sty{polyglossia} support
+%\item Renamed \opt{babel} option to \opt{autolang}\see{use:opt:pre:gen}
+%\item Corrected Dutch localisation
+%\item Added \opt{datelabel=year} option\see{use:opt:pre:gen}
+%\item Added \bibfield{datelabelsource} field\see{aut:bbx:fld:gen}
+%\end{release}
+%
+%\begin{release}{2.7a}{2013-07-14}
+%\item Bugfix - respect maxnames and uniquelist in \cmd{finalandsemicolon}
+%\item Corrected French localisation
+%\end{release}
+%
+%\begin{release}{2.7}{2013-07-07}
+%\item Added field \bibfield{eventtitleaddon} to default datamodel and styles\see{bib:fld:dat}
+%\item Added \cmd{ifentryinbib}, \cmd{iffirstcitekey} and \cmd{iflastcitekey}\see{aut:aux:tst}
+%\item Added \bibfield{postpunct} special field, documented \bibfield{multiprenote} and \bibfield{multipostnote} special fields\see{aut:cbx:fld}
+%\item Added \cmd{UseBibitemHook}, \cmd{AtEveryMultiCite}, \cmd{AtNextMultiCite}, \cmd{UseEveryCiteHook}, \cmd{UseEveryCitekeyHook}, \cmd{UseEveryMultiCiteHook}, \cmd{UseNextCiteHook}, \cmd{UseNextCitekeyHook}, \cmd{UseNextMultiCiteHook}, \cmd{DeferNextCitekeyHook}\see{aut:fmt:hok}
+%\item Fixed \cmd{textcite} and related commands in the numeric and verbose styles\see{use:cit:cbx}
+%\item Added multicite variants of \cmd{volcite} and related commands\see{use:cit:spc}
+%\item Added \cmd{finalandsemicolon}\see{use:fmt:lng}
+%\item Added citation delimiter \cmd{textcitedelim} for \cmd{textcite} and related commands to styles\see{aut:fmt:fmt}
+%\item Updated Russian localisation (Oleg Domanov)
+%\item Fixed Brazilian and Finnish localisation
+%\end{release}
+%
+%\begin{release}{2.6}{2013-04-30}
+%\item Added \cmd{printunit}\see{aut:pct:new}
+%\item Added field \bibfield{clonesourcekey}\see{aut:bbx:fld:gen}
+%\item New options for \cmd{DeclareLabelalphaTemplate}\see{aut:ctm:lab}
+%\item Added \cmd{DeclareLabeldate} and retired \cmd{DeclareLabelyear}\see{aut:ctm:fld}
+%\item Added \texttt{nodate} localisation string\see{aut:lng:key:msc}
+%\item Added \cmd{rangelen}\see{aut:aux:msc}
+%\item Added starred variants of \cmd{citeauthor} and \cmd{Citeauthor}\see{use:cit:txt}
+%\item Restored original \texttt{url} format. Added \texttt{urlfrom} localisation key\see{aut:lng:key:lab}
+%\item Added \cmd{AtNextBibliography}\see{aut:fmt:hok}
+%\item Fixed related entry processing to allow nested and cyclic related entries
+%\item Added Croatian localisation (Ivo Pletikosić)
+%\item Added Polish localisation (Anastasia Kandulina, Yuriy Chernyshov)
+%\item Fixed Catalan localisation
+%\item Added smart ``of'' for titles to Catalan and French localisation
+%\item Misc bug fixes
+%\end{release}
+%
+%\begin{release}{2.5}{2013-01-10}
+%\item Made \texttt{url} work as a localisation string, defaulting to previously hard-coded value <\textsc{URL}>.
+%\item Changed some \biber\ option names to cohere with \biber\ 1.5.
+%\item New sourcemap step for conditionally removing entire entries\see{aut:ctm:map}
+%\item Updated Catalan localisation (Sebastià Vila-Marta)
+%\end{release}
+%
+%\begin{release}{2.4}{2012-11-28}
+%\item Added \bibfield{relatedoptions} field\see{aut:ctm:rel}
+%\item Added \cmd{DeclareStyleSourcemap}\see{aut:ctm:map}
+%\item Renamed \cmd{DeclareDefaultSourcemap} to \cmd{DeclareDriverSourcemap}\see{aut:ctm:map}
+%\item Documented \cmd{DeclareFieldInputHandler}, \cmd{DeclareListInputHandler} and \cmd{DeclareNameInputHandler}.
+%\item Added Czech localisation (Michal Hoftich)
+%\item Updated Catalan localisation (Sebastià Vila-Marta)
+%\end{release}
+%
+%\begin{release}{2.3}{2012-11-01}
+%\item Better detection of situations which require a \biber\ or \LaTeX\ re-run
+%\item New append mode for \cmd{DeclareSourcemap} so that fields can be combined\see{aut:ctm:map}
+%\item Extended auxiliary indexing macros
+%\item Added support for plural localisation strings with \bibfield{relatedtype}\see{aut:ctm:rel}
+%\item Added \cmd{csfield} and \cmd{usefield}\see{aut:aux:dat}
+%\item Added starred variant of \cmd{usebibmacro}\see{aut:aux:msc}
+%\item Added \cmd{ifbibmacroundef}, \cmd{iffieldformatundef}, \cmd{iflistformatundef}
+%  and \cmd{ifnameformatundef}\see{aut:aux:msc}
+%\item Added Catalan localisation (Sebastià Vila-Marta)
+%\item Misc bug fixes
+%\end{release}
+%
+%\begin{release}{2.2}{2012-08-17}
+%\item Misc bug fixes
+%\item Added \cmd{revsdnamepunct}\see{use:fmt:fmt}
+%\item Added \cmd{ifterseinits}\see{aut:aux:tst}
+%\end{release}
+%
+%\begin{release}{2.1}{2012-08-01}
+%\item Misc bug fixes
+%\item Updated Norwegian localisation (Håkon Malmedal)
+%\item Increased data model auto-loading possibilities\see{aut:ctm:dm}
+%\end{release}
+%
+%\begin{release}{2.0}{2012-07-01}
+%\item Misc bug fixes
+%\item Generalised \opt{singletitle} test a little\see{aut:aux:tst}
+%\item Added new special field \bibfield{extratitleyear}\see{aut:bbx:fld}
+%\item Customisable data model\see{aut:ctm:dm}
+%\item Added \cmd{DeclareDefaultSourcemap}\see{aut:ctm:map}
+%\item Added \opt{labeltitle} option\see{use:opt:pre:int}
+%\item Added new special field \bibfield{extratitle}\see{aut:bbx:fld}
+%\item Made special field \bibfield{labeltitle} customisable\see{aut:bbx:fld}
+%\item Removed field \bibfield{reprinttitle}\see{use:rel}
+%\item Added related entry feature\see{use:rel}
+%\item Added \cmd{DeclareNoinit}\see{aut:ctm:noinit}
+%\item Added \cmd{DeclareNosort}\see{aut:ctm:nosort}
+%\item Added \opt{sorting} option for \cmd{printbibliography} and \cmd{printshorthands}\see{use:bib:bib}
+%\item Added \texttt{ids} field for citekey aliasing\see{bib:fld}
+%\item Added \opt{sortfirstinits} option\see{use:opt:pre:int}
+%\item Added data stream modification feature\see{aut:ctm:map}
+%\item Added customisable labels feature\see{aut:ctm:lab}
+%\item Added \cmd{citeyear*} and \cmd{citedate*}\see{use:cit:txt}
+%\end{release}
+
+% \begin{release}{1.7}{2011-11-13}
+% \item Added \texttt{xdata} containers\see{use:use:xdat}
+% \item Added special entry type \bibfield{xdata}\see{bib:typ:blx}
+% \item Added special field \bibfield{xdata}\see{bib:fld:spc}
+% \item Support \opt{maxnames}/\opt{minnames} globally/per-type/per-entry\see{use:opt:pre:gen}
+% \item Support \opt{maxbibnames}/\opt{minbibnames} globally/per-type/per-entry\see{use:opt:pre:gen}
+% \item Support \opt{maxcitenames}/\opt{mincitenames} globally/per-type/per-entry\see{use:opt:pre:gen}
+% \item Support \opt{maxitems}/\opt{minitems} globally/per-type/per-entry\see{use:opt:pre:gen}
+% \item Support \opt{maxalphanames}/\opt{minalphanames} globally/per-type/per-entry\see{use:opt:pre:int}
+% \item Support \opt{uniquelist} globally/per-type/per-entry\see{use:opt:pre:int}
+% \item Support \opt{uniquename} globally/per-type/per-entry\see{use:opt:pre:int}
+% \item Added \cmd{textcite} and \cmd{textcites} to all \texttt{verbose} citation styles\see{use:xbx:cbx}
+% \item Added special field formats \texttt{date}, \texttt{urldate}, \texttt{origdate}, \texttt{eventdate}\see{aut:fmt:ich}
+% \item Added \cmd{mkcomprange*}\see{aut:aux:msc}
+% \item Added \cmd{mkfirstpage*}\see{aut:aux:msc}
+% \item Added \cmd{volcitedelim}\see{aut:fmt:fmt}
+% \item Added missing documentation for \cmd{ifentrytype}\see{aut:aux:tst}
+% \item Added \cmd{mkbibneutord}\see{use:fmt:lng}
+% \item Added counter \cnt{biburlnumpenalty}\see{aut:fmt:len}
+% \item Added counter \cnt{biburlucpenalty}\see{aut:fmt:len}
+% \item Added counter \cnt{biburllcpenalty}\see{aut:fmt:len}
+% \item Added localisation keys \texttt{book}, \texttt{part}, \texttt{issue}, \texttt{forthcoming}\see{aut:lng:key}
+% \item Added some \texttt{lang...} and \texttt{from...} localisation keys\see{aut:lng:key}
+% \item Expanded documentation\see{apx:opt}
+% \item Added support for Russian (Oleg Domanov)
+% \item Updated support for Dutch (Pieter Belmans)
+% \item Fixed compatibility issue with \sty{textcase} package
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.6}{2011-07-29}
+% \item Added special field \bibfield{sortshorthand}\see{bib:fld:spc}
+% \item Revised options \opt{maxnames}/\opt{minnames}\see{use:opt:pre:gen}
+% \item Options \opt{maxcitenames}/\opt{mincitenames} now supported by backend\see{use:opt:pre:gen}
+% \item Options \opt{maxbibnames}/\opt{minbibnames} now supported by backend\see{use:opt:pre:gen}
+% \item Added options \opt{maxalphanames}/\opt{minalphanames}\see{use:opt:pre:int}
+% \item Removed local options \opt{maxnames}/\opt{minnames} from \cmd{printbibliography}\see{use:bib:bib}
+% \item Removed local options \opt{maxitems}/\opt{minitems} from \cmd{printbibliography}\see{use:bib:bib}
+% \item Removed local options \opt{maxnames}/\opt{minnames} from \cmd{bibbysection}\see{use:bib:bib}
+% \item Removed local options \opt{maxitems}/\opt{minitems} from \cmd{bibbysection}\see{use:bib:bib}
+% \item Removed local options \opt{maxnames}/\opt{minnames} from \cmd{bibbysegment}\see{use:bib:bib}
+% \item Removed local options \opt{maxitems}/\opt{minitems} from \cmd{bibbysegment}\see{use:bib:bib}
+% \item Removed local options \opt{maxnames}/\opt{minnames} from \cmd{bibbycategory}\see{use:bib:bib}
+% \item Removed local options \opt{maxitems}/\opt{minitems} from \cmd{bibbycategory}\see{use:bib:bib}
+% \item Removed local options \opt{maxnames}/\opt{minnames} from \cmd{printshorthands}\see{use:bib:biblist}
+% \item Removed local options \opt{maxitems}/\opt{minitems} from \cmd{printshorthands}\see{use:bib:biblist}
+% \item Added special field format \bibfield{volcitevolume}\see{use:cit:spc}
+% \item Added special field format \bibfield{volcitepages}\see{use:cit:spc}
+% \item Added special field \bibfield{hash}\see{aut:bbx:fld:gen}
+% \item Added \cmd{mkcomprange}\see{aut:aux:msc}
+% \item Added \cmd{mkfirstpage}\see{aut:aux:msc}
+% \item Removed \cmd{mkpagefirst}\see{aut:aux:msc}
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.5a}{2011-06-17}
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.5}{2011-06-08}
+% \item Added option \kvopt{uniquename}{mininit/minfull}\see{use:opt:pre:int}
+% \item Added option \kvopt{uniquelist}{minyear}\see{use:opt:pre:int}
+% \item Updated documentation of \cnt{uniquename} counter\see{aut:aux:tst}
+% \item Updated documentation of \cnt{uniquelist} counter\see{aut:aux:tst}
+% \item Expanded documentation for \opt{uniquename/uniquelist} options\see{aut:cav:amb}
+% \item Added editorial role \texttt{reviser}\see{bib:use:edr}
+% \item Added localisation keys \texttt{reviser}, \texttt{revisers}, \texttt{byreviser}\see{aut:lng:key}
+% \item Added bibliography heading \texttt{none}\see{use:bib:hdg}
+% \item Fixed some \sty{memoir} compatibility issues
+% \end{release}
+
+% \begin{release}{1.4c}{2011-05-12}
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.4b}{2011-04-12}
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.4a}{2011-04-06}
+% \item Enable \opt{uniquename} and \opt{uniquelist} in all \texttt{authortitle} styles\see{use:xbx:cbx}
+% \item Enable \opt{uniquename} and \opt{uniquelist} in all \texttt{authoryear} styles\see{use:xbx:cbx}
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.4}{2011-03-31}
+% \item Added package option \opt{uniquelist}\see{use:opt:pre:int}
+% \item Added special counter \cnt{uniquelist}\see{aut:aux:tst}
+% \item Revised and improved package option \opt{uniquename}\see{use:opt:pre:int}
+% \item Revised and improved special counter \cnt{uniquename}\see{aut:aux:tst}
+% \item Added \cmd{bibnamedelimi}\see{use:fmt:fmt}
+% \item Added \cmd{bibindexnamedelima}\see{use:fmt:fmt}
+% \item Added \cmd{bibindexnamedelimb}\see{use:fmt:fmt}
+% \item Added \cmd{bibindexnamedelimc}\see{use:fmt:fmt}
+% \item Added \cmd{bibindexnamedelimd}\see{use:fmt:fmt}
+% \item Added \cmd{bibindexnamedelimi}\see{use:fmt:fmt}
+% \item Added \cmd{bibindexinitperiod}\see{use:fmt:fmt}
+% \item Added \cmd{bibindexinitdelim}\see{use:fmt:fmt}
+% \item Added \cmd{bibindexinithyphendelim}\see{use:fmt:fmt}
+% \item Fixed conflict with some \acr{AMS} classes
+% \end{release}
+
+% \begin{release}{1.3a}{2011-03-18}
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.3}{2011-03-14}
+% \item Support \bibtype{thesis} with \bibfield{isbn}\see{bib:typ:blx}
+% \item Updated \opt{terseinits} option\see{use:opt:pre:gen}
+% \item Allow macros in argument to \cmd{addbibresource} and friends\see{use:bib:res}
+% \item Allow macros in argument to \cmd{bibliography}\see{use:bib:res}
+% \item Introducing experimental support for Zotero \acr{RDF}/\acr{XML}\see{use:bib:res}
+% \item Introducing experimental support for EndNote \acr{XML}\see{use:bib:res}
+% \item Added option \opt{citecounter}\see{use:opt:pre:int}
+% \item Added \cnt{citecounter}\see{aut:aux:tst}
+% \item Added \cmd{smartcite} and \cmd{Smartcite}\see{use:cit:cbx}
+% \item Added \cmd{smartcites} and \cmd{Smartcites}\see{use:cit:mlt}
+% \item Added \cmd{svolcite} and \cmd{Svolcite}\see{use:cit:spc}
+% \item Added \cmd{bibnamedelima}\see{use:fmt:fmt}
+% \item Added \cmd{bibnamedelimb}\see{use:fmt:fmt}
+% \item Added \cmd{bibnamedelimc}\see{use:fmt:fmt}
+% \item Added \cmd{bibnamedelimd}\see{use:fmt:fmt}
+% \item Added \cmd{bibinitperiod}\see{use:fmt:fmt}
+% \item Added \cmd{bibinitdelim}\see{use:fmt:fmt}
+% \item Added \cmd{bibinithyphendelim}\see{use:fmt:fmt}
+% \item Expanded documentation\see{use:cav:nam}
+% \item Added \prm{position} parameter \texttt{f} to \cmd{DeclareAutoCiteCommand}\see{aut:cbx:cbx}
+% \end{release}
+
+% \begin{release}{1.2a}{2011-02-13}
+% \item Fix in \cmd{mkbibmonth}\see{aut:fmt:ich}
+% \end{release}
+
+% \begin{release}{1.2}{2011-02-12}
+% \item Added entry type \bibtype{mvbook}\see{bib:typ:blx}
+% \item Added entry type \bibtype{mvcollection}\see{bib:typ:blx}
+% \item Added entry type \bibtype{mvproceedings}\see{bib:typ:blx}
+% \item Added entry type \bibtype{mvreference}\see{bib:typ:blx}
+% \item Introducing remote resources\see{use:bib:res}
+% \item Introducing experimental \acr{RIS} support\see{use:bib:res}
+% \item Added \cmd{addbibresource}\see{use:bib:res}
+% \item \cmd{bibliography} now deprecated\see{use:bib:res}
+% \item \cmd{bibliography*} replaced by \cmd{addglobalbib}\see{use:bib:res}
+% \item Added \cmd{addsectionbib}\see{use:bib:res}
+% \item Updated and expanded documentation\see{bib:cav:ref}
+% \item Introducing smart \bibfield{crossref} data inheritance\see{bib:cav:ref:bbr}
+% \item Introducing \bibfield{crossref} configuration interface\see{aut:ctm:ref}
+% \item Added \cmd{DefaultInheritance}\see{aut:ctm:ref}
+% \item Added \cmd{DeclareDataInheritance}\see{aut:ctm:ref}
+% \item Added \cmd{ResetDataInheritance}\see{aut:ctm:ref}
+% \item Added \cmd{ifkeyword}\see{aut:aux:tst}
+% \item Added \cmd{ifentrykeyword}\see{aut:aux:tst}
+% \item Added \cmd{ifcategory}\see{aut:aux:tst}
+% \item Added \cmd{ifentrycategory}\see{aut:aux:tst}
+% \item Added \cmd{ifdriver}\see{aut:aux:tst}
+% \item Added \cmd{forcsvfield}\see{aut:aux:msc}
+% \item Extended \cmd{mkpageprefix}\see{aut:aux:msc}
+% \item Extended \cmd{mkpagetotal}\see{aut:aux:msc}
+% \item Extended \cmd{mkpagefirst}\see{aut:aux:msc}
+% \item Added localisation key \texttt{inpreparation}\see{aut:lng:key}
+% \item Rearranged manual slightly, moving some tables to the appendix
+% \end{release}
+
+% \begin{release}{1.1b}{2011-02-04}
+% \item Added option \opt{texencoding}\see{use:opt:pre:gen}
+% \item Added option \opt{safeinputenc}\see{use:opt:pre:gen}
+% \item Expanded documentation\see{bib:cav:enc:enc}
+% \item Improved \opt{mergedate} option of bibliography style \texttt{authoryear}\see{use:xbx:bbx}
+% \item Removed \opt{pass} option of \cmd{DeclareSortingScheme}\see{aut:ctm:srt}
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.1a}{2011-01-08}
+% \item Added unsupported entry type \bibtype{bibnote}\see{bib:typ:ctm}
+% \item Added \cmd{bibliography*}\see{use:bib:res}
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.1}{2011-01-05}
+% \item Added option \opt{maxbibnames}\see{use:opt:pre:gen}
+% \item Added option \opt{minbibnames}\see{use:opt:pre:gen}
+% \item Added option \opt{maxcitenames}\see{use:opt:pre:gen}
+% \item Added option \opt{mincitenames}\see{use:opt:pre:gen}
+% \item Fixed \kvopt{idemtracker}{strict} and \kvopt{idemtracker}{constrict}\see{use:opt:pre:int}
+% \item Added option \opt{mergedate} to bibliography style \texttt{authoryear}\see{use:xbx:bbx}
+% \item Added support for \opt{prefixnumbers} to bibliography style \texttt{alphabetic}\see{use:xbx:bbx}
+% \item Made option \bibfield{useprefix} settable on a per-type basis\see{use:opt:bib}
+% \item Made option \bibfield{useauthor} settable on a per-type basis\see{use:opt:bib}
+% \item Made option \bibfield{useeditor} settable on a per-type basis\see{use:opt:bib}
+% \item Made option \opt{usetranslator} settable on a per-type basis\see{use:opt:bib}
+% \item Made option \opt{skipbib} settable on a per-type basis\see{use:opt:bib}
+% \item Made option \opt{skiplos} settable on a per-type basis\see{use:opt:bib}
+% \item Made option \opt{skiplab} settable on a per-type basis\see{use:opt:bib}
+% \item Made option \opt{dataonly} settable on a per-type basis\see{use:opt:bib}
+% \item Made option \opt{labelalpha} settable on a per-type basis\see{use:opt:pre:int}
+% \item Made option \opt{labelnumber} settable on a per-type basis\see{use:opt:pre:int}
+% \item Made option \opt{labelyear} settable on a per-type basis\see{use:opt:pre:int}
+% \item Made option \opt{singletitle} settable on a per-type basis\see{use:opt:pre:int}
+% \item Made option \opt{uniquename} settable on a per-type basis\see{use:opt:pre:int}
+% \item Made option \opt{indexing} settable on a per-type basis\see{use:opt:pre:gen}
+% \item Made option \opt{indexing} settable on a per-entry basis\see{use:opt:pre:gen}
+% \item Extended \cmd{ExecuteBibliographyOptions}\see{use:cfg:opt}
+% \item Added \cmd{citedate}\see{use:cit:txt}
+% \item Improved static entry sets\see{use:use:set}
+% \item Introducing dynamic entry sets\see{use:use:set}
+% \item Added \cmd{defbibentryset}\see{use:bib:set}
+% \item Added option \opt{mcite}\see{use:opt:ldt}
+% \item Added \sty{mcite}\slash\sty{mciteplus}-like commands\see{use:cit:mct}
+% \item Added \cmd{sortalphaothers}\see{use:fmt:fmt}
+% \item Extended \cmd{DeclareNameFormat}\see{aut:bib:fmt}
+% \item Extended \cmd{DeclareIndexNameFormat}\see{aut:bib:fmt}
+% \item Extended \cmd{DeclareListFormat}\see{aut:bib:fmt}
+% \item Extended \cmd{DeclareIndexListFormat}\see{aut:bib:fmt}
+% \item Extended \cmd{DeclareFieldFormat}\see{aut:bib:fmt}
+% \item Extended \cmd{DeclareIndexFieldFormat}\see{aut:bib:fmt}
+% \item Added \cmd{DeclareNameFormat*}\see{aut:bib:fmt}
+% \item Added \cmd{DeclareIndexNameFormat*}\see{aut:bib:fmt}
+% \item Added \cmd{DeclareListFormat*}\see{aut:bib:fmt}
+% \item Added \cmd{DeclareIndexListFormat*}\see{aut:bib:fmt}
+% \item Added \cmd{DeclareFieldFormat*}\see{aut:bib:fmt}
+% \item Added \cmd{DeclareIndexFieldFormat*}\see{aut:bib:fmt}
+% \item Introducing configurable sorting schemes
+% \item Added \cmd{DeclareSortingScheme}\see{aut:ctm:srt}
+% \item Added \cmd{DeclarePresort}\see{aut:ctm:srt}
+% \item Added \cmd{DeclareSortExclusion}\see{aut:ctm:srt}
+% \item Added \cmd{DeclareLabelname}\see{aut:ctm:fld}
+% \item Added \cmd{DeclareLabelyear}\see{aut:ctm:fld}
+% \item Improved special field \bibfield{labelname}\see{aut:bbx:fld}
+% \item Improved special field \bibfield{labelyear}\see{aut:bbx:fld}
+% \item Added \cmd{entrydata*}\see{aut:bib:dat}
+% \item Added \cmd{RequireBiber}\see{aut:aux:msc}
+% \item Added option \opt{check} to \cmd{printbibliography}\see{use:bib:bib}
+% \item Added option \opt{check} to \cmd{printshorthands}\see{use:bib:biblist}
+% \item Added \cmd{defbibcheck}\see{use:bib:flt}
+% \item Updated support for Portuguese (José Carlos Santos)
+% \item Fixed conflict with \sty{titletoc}
+% \item Fixed some bugs
+% \end{release}
+
+% \begin{release}{1.0}{2010-11-19}
+% \item First officially stable release
+% \item Renamed option \kvopt{bibencoding}{inputenc} to \kvopt{bibencoding}{auto}\see{use:opt:pre:gen}
+% \item Made \kvopt{bibencoding}{auto} the package default\see{use:opt:pre:gen}
+% \item Added option \kvopt{backend}{bibtexu}\see{use:opt:pre:gen}
+% \item Slightly updated documentation\see{bib:cav:enc}
+% \item Updated support for Dutch (Alexander van Loon)
+% \item Updated support for Italian (Andrea Marchitelli)
+% \end{release}
+
+%\begin{release}{0.9e}{2010-10-09}
+%\item Updated and expanded manual\see{bib:cav:enc}
+%\item Added option \opt{sortupper}\see{use:opt:pre:gen}
+%\item Added option \opt{sortlocale}\see{use:opt:pre:gen}
+%\item Added option \opt{backrefsetstyle}\see{use:opt:pre:gen}
+%\item Added \cmd{bibpagerefpunct}\see{use:fmt:fmt}
+%\item Added \cmd{backtrackertrue} and \cmd{backtrackerfalse}\see{aut:aux:msc}
+%\item Disable back reference tracking in \acr{TOC}/\acr{LOT}/\acr{LOF}\see{aut:cav:flt}
+%\item Improved back reference tracking for \bibtype{set} entries
+%\item Fixed some bugs
+%\end{release}
+%
+%\begin{release}{0.9d}{2010-09-03}
+%\item Added workaround for \sty{hyperref} space factor issue
+%\item Added workaround for \sty{xkeyval}'s flawed class option inheritance
+%\item Added workaround for \sty{fancyvrb}'s flawed brute-force \cmd{VerbatimFootnotes}
+%\item Removed option \kvopt{date}{none}\see{use:opt:pre:gen}
+%\item Removed option \kvopt{urldate}{none}\see{use:opt:pre:gen}
+%\item Removed option \kvopt{origdate}{none}\see{use:opt:pre:gen}
+%\item Removed option \kvopt{eventdate}{none}\see{use:opt:pre:gen}
+%\item Removed option \kvopt{alldates}{none}\see{use:opt:pre:gen}
+%\item Added option \kvopt{date}{iso8601}\see{use:opt:pre:gen}
+%\item Added option \kvopt{urldate}{iso8601}\see{use:opt:pre:gen}
+%\item Added option \kvopt{origdate}{iso8601}\see{use:opt:pre:gen}
+%\item Added option \kvopt{eventdate}{iso8601}\see{use:opt:pre:gen}
+%\item Added option \kvopt{alldates}{iso8601}\see{use:opt:pre:gen}
+%\end{release}
+%
+%\begin{release}{0.9c}{2010-08-29}
+%\item Added field \bibfield{eprintclass}\see{bib:fld:dat}
+%\item Added field alias \bibfield{archiveprefix}\see{bib:fld:als}
+%\item Added field alias \bibfield{primaryclass}\see{bib:fld:als}
+%\item Updated documentation\see{use:use:epr}
+%\item Tweaked package option \kvopt{babel}{other*}\see{use:opt:pre:gen}
+%\item Updated support for Brazilian (Mateus Araújo)
+%\item Fixed some bugs
+%\end{release}
+%
+%\begin{release}{0.9b}{2010-08-04}
+%
+%\item New dependency on \sty{logreq} package\see{int:pre:req}
+%\item Improved separator masking in literal lists\see{bib:use:and}
+%\item Added citation style \texttt{authortitle-ticomp}\see{use:xbx:cbx}
+%\item Added option \opt{citepages} to all \texttt{verbose} citation styles\see{use:xbx:cbx}
+%\item Added support for prefixes to all \texttt{numeric} citation styles\see{use:xbx:cbx}
+%\item Added support for prefixes to all \texttt{numeric} bibliography styles\see{use:xbx:bbx}
+%\item Renamed package option \opt{defernums} to \opt{defernumbers}\see{use:opt:pre:gen}
+%\item Added option \opt{sortcase}\see{use:opt:pre:gen}
+%\item Added option \opt{dateabbrev}\see{use:opt:pre:gen}
+%\item Added option \kvopt{date}{none}\see{use:opt:pre:gen}
+%\item Added option \kvopt{urldate}{none}\see{use:opt:pre:gen}
+%\item Added option \kvopt{origdate}{none}\see{use:opt:pre:gen}
+%\item Added option \kvopt{eventdate}{none}\see{use:opt:pre:gen}
+%\item Added option \kvopt{alldates}{none}\see{use:opt:pre:gen}
+%\item Added option \opt{clearlang}\see{use:opt:pre:gen}
+%\item Added option \opt{prefixnumbers} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added option \opt{resetnumbers} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added option \opt{omitnumbers} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added special field \bibfield{prefixnumber}\see{aut:bbx:fld}
+%\item Added \cmd{DeclareRedundantLanguages}\see{aut:lng:cmd}
+%\item Added support for handles (\acr{HDL}s)\see{use:use:epr}
+%\item Extended \cmd{defbibfilter}\see{use:bib:flt}
+%\item Added \cmd{nametitledelim}\see{use:fmt:fmt}
+%\item Improved \cmd{newbibmacro}\see{aut:aux:msc}
+%\item Improved \cmd{renewbibmacro}\see{aut:aux:msc}
+%\item Added \cmd{biblstring}\see{aut:str}
+%\item Added \cmd{bibsstring}\see{aut:str}
+%\item Added \cmd{bibcplstring}\see{aut:str}
+%\item Added \cmd{bibcpsstring}\see{aut:str}
+%\item Added \cmd{bibuclstring}\see{aut:str}
+%\item Added \cmd{bibucsstring}\see{aut:str}
+%\item Added \cmd{biblclstring}\see{aut:str}
+%\item Added \cmd{biblcsstring}\see{aut:str}
+%\item Added \cmd{bibxlstring}\see{aut:str}
+%\item Added \cmd{bibxsstring}\see{aut:str}
+%\item Added \cmd{mkbibbold}\see{aut:fmt:ich}
+%\item Modified and extended log messages\see{bib:cav:ide}
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.9a}{2010-03-19}
+%
+%\item Modified citation style \texttt{numeric}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{numeric-comp}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{numeric-verb}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{alphabetic}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{alphabetic-verb}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authoryear}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authoryear-comp}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authoryear-ibid}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authoryear-icomp}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authortitle}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authortitle-comp}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authortitle-ibid}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authortitle-icomp}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authortitle-terse}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{authortitle-tcomp}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{draft}\see{use:xbx:cbx}
+%\item Modified citation style \texttt{debug}\see{use:xbx:cbx}
+%\item Added option \opt{bibwarn}\see{use:opt:pre:gen}
+%\item Added \cmd{printbibheading}\see{use:bib:bib}
+%\item Added option \opt{env} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added option \opt{env} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added \cmd{defbibenvironment}\see{use:bib:hdg}
+%\item Removed \env{thebibliography}\see{aut:bbx:bbx}
+%\item Removed \env{theshorthands}\see{aut:bbx:bbx}
+%\item Removed \cmd{thebibitem}\see{aut:bbx:bbx}
+%\item Removed \cmd{thelositem}\see{aut:bbx:bbx}
+%\item Updated documentation\see{aut:bbx:bbx}
+%\item Updated documentation\see{aut:bbx:env}
+%\item Added \cmd{intitlepunct}\see{use:fmt:fmt}
+%\item Added option \opt{parentracker}\see{use:opt:pre:int}
+%\item Added option \opt{maxparens}\see{use:opt:pre:int}
+%\item Added counter \cnt{parenlevel}\see{aut:aux:tst}
+%\item Added \cmd{parentext}\see{use:cit:txt}
+%\item Added \cmd{brackettext}\see{use:cit:txt}
+%\item Improved \cmd{mkbibparens}\see{aut:fmt:ich}
+%\item Improved \cmd{mkbibbrackets}\see{aut:fmt:ich}
+%\item Added \cmd{bibopenparen} and \cmd{bibcloseparen}\see{aut:fmt:ich}
+%\item Added \cmd{bibopenbracket} and \cmd{bibclosebracket}\see{aut:fmt:ich}
+%\item Added special field \bibfield{childentrykey}\see{aut:bbx:fld}
+%\item Added special field \bibfield{childentrytype}\see{aut:bbx:fld}
+%\item Added \cmd{ifnatbibmode}\see{aut:aux:tst}
+%\item Added missing documentation of \cmd{ifbibxstring}\see{aut:aux:tst}
+%\item Added \cmd{providebibmacro}\see{aut:aux:msc}
+%\item Added localisation key \texttt{backrefpage}\see{aut:lng:key}
+%\item Added localisation key \texttt{backrefpages}\see{aut:lng:key}
+%\item Slightly expanded documentation\see{bib:use:dat}
+%\item Slightly expanded documentation\see{aut:bbx:fld:dat}
+%\item Added support for Finnish (translations by Hannu Väisänen)
+%\item Updated support for Greek (translations by Prokopis)
+%
+%\end{release}
+%
+%\begin{release}{0.9}{2010-02-14}
+%
+%\item Added entry type \bibtype{bookinbook}\see{bib:typ:blx}
+%\item Support \bibfield{eventtitle}/\bibfield{eventdate}/\bibfield{venue} in \bibtype{proceedings}\see{bib:typ:blx}
+%\item Support \bibfield{eventtitle}/\bibfield{eventdate}/\bibfield{venue} in \bibtype{inproceedings}\see{bib:typ:blx}
+%\item Added support for multiple editorial roles\see{bib:use:edr}
+%\item Added field \bibfield{editora}\see{bib:fld:dat}
+%\item Added field \bibfield{editorb}\see{bib:fld:dat}
+%\item Added field \bibfield{editorc}\see{bib:fld:dat}
+%\item Added field \bibfield{editoratype}\see{bib:fld:dat}
+%\item Added field \bibfield{editorbtype}\see{bib:fld:dat}
+%\item Added field \bibfield{editorctype}\see{bib:fld:dat}
+%\item Removed field \bibfield{redactor}\see{bib:fld:dat}
+%\item Added field \bibfield{pubstate}\see{bib:fld:dat}
+%\item Support \bibfield{pubstate} in all entry types\see{bib:typ:blx}
+%\item Support full dates in all entry types\see{bib:typ:blx}
+%\item Modified and extended date handling\see{bib:use:dat}
+%\item Updated documentation\see{bib:use:iss}
+%\item Removed field \bibfield{day}\see{bib:fld:dat}
+%\item Modified data type of field \bibfield{year}\see{bib:fld:dat}
+%\item Extended field \bibfield{date}\see{bib:fld:dat}
+%\item Removed field \bibfield{origyear}\see{bib:fld:dat}
+%\item Added field \bibfield{origdate}\see{bib:fld:dat}
+%\item Added field \bibfield{eventdate}\see{bib:fld:dat}
+%\item Removed fields \bibfield{urlday}/\bibfield{urlmonth}/\bibfield{urlyear}\see{bib:fld:dat}
+%\item Updated documentation\see{bib:use:dat}
+%\item Extended option \opt{date}\see{use:opt:pre:gen}
+%\item Extended option \opt{urldate}\see{use:opt:pre:gen}
+%\item Added option \opt{origdate}\see{use:opt:pre:gen}
+%\item Added option \opt{eventdate}\see{use:opt:pre:gen}
+%\item Added option \opt{alldates}\see{use:opt:pre:gen}
+%\item Added option \opt{datezeros}\see{use:opt:pre:gen}
+%\item Added option \opt{language}\see{use:opt:pre:gen}
+%\item Added option \cnt{notetype}\see{use:opt:pre:gen}
+%\item Added option \cnt{backrefstyle}\see{use:opt:pre:gen}
+%\item Modified option \opt{indexing}\see{use:opt:pre:gen}
+%\item Made option \kvopt{hyperref}{auto} the default\see{use:opt:pre:gen}
+%\item Added option \kvopt{backend}{biber}\see{use:opt:pre:gen}
+%\item Updated documentation\see{bib:cav:enc}
+%\item Added option \opt{isbn}\see{use:opt:pre:bbx}
+%\item Added option \opt{url}\see{use:opt:pre:bbx}
+%\item Added option \opt{doi}\see{use:opt:pre:bbx}
+%\item Added option \opt{eprint}\see{use:opt:pre:bbx}
+%\item Improved citation style \texttt{authortitle-comp}\see{use:xbx:cbx}
+%\item Improved citation style \texttt{authortitle-icomp}\see{use:xbx:cbx}
+%\item Improved citation style \texttt{authortitle-tcomp}\see{use:xbx:cbx}
+%\item Improved citation style \texttt{authoryear-comp}\see{use:xbx:cbx}
+%\item Added citation style \texttt{authoryear-icomp}\see{use:xbx:cbx}
+%\item Added citation style \texttt{verbose-trad3}\see{use:xbx:cbx}
+%\item Improved bibliography style \texttt{authortitle}\see{use:xbx:bbx}
+%\item Improved bibliography style \texttt{authoryear}\see{use:xbx:bbx}
+%\item Improved bibliography style \texttt{verbose}\see{use:xbx:bbx}
+%\item Added option \opt{title} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added option \opt{title} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Extended \cmd{defbibheading}\see{use:bib:hdg}
+%\item Added options \opt{subtype}/\opt{notsubtype} to \cmd{printbibliography}\see{use:bib:biblist}
+%\item Added options \opt{subtype}/\opt{notsubtype} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added test \opt{subtype} to \cmd{defbibfilter}\see{use:bib:flt}
+%\item Added option \opt{segment} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added options \opt{type}/\opt{nottype} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added options \opt{keyword}/\opt{notkeyword} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added options \opt{category}/\opt{notcategory} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added option \opt{filter} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added \cmd{footcitetext}\see{use:cit:std}
+%\item Added \cmd{footcitetexts}\see{use:cit:mlt}
+%\item Added \cmd{ftvolcite}\see{use:cit:spc}
+%\item Added \cmd{textcites} and \cmd{Textcites}\see{use:cit:mlt}
+%\item Added \cmd{nohyphenation}\see{use:fmt:aux}
+%\item Added \cmd{textnohyphenation}\see{use:fmt:aux}
+%\item Added \cmd{mkpagefirst}\see{aut:aux:msc}
+%\item Added \cmd{pagenote} support to \cmd{mkbibendnote}\see{aut:fmt:ich}
+%\item Added \cmd{mkbibfootnotetext}\see{aut:fmt:ich}
+%\item Added \cmd{mkbibendnotetext}\see{aut:fmt:ich}
+%\item Added \cmd{bibfootnotewrapper}\see{aut:fmt:ich}
+%\item Added \cmd{bibendnotewrapper}\see{aut:fmt:ich}
+%\item Added \cmd{mkdatezeros}\see{aut:fmt:ich}
+%\item Added \cmd{stripzeros}\see{aut:fmt:ich}
+%\item Added support for \acr{jstor} links\see{use:use:epr}
+%\item Added support for PubMed links\see{use:use:epr}
+%\item Added support for Google Books links\see{use:use:epr}
+%\item Improved \cmd{DeclareBibliographyDriver}\see{aut:bbx:bbx}
+%\item Improved \cmd{DeclareBibliographyAlias}\see{aut:bbx:bbx}
+%\item Added special fields \bibfield{day}/\bibfield{month}/\bibfield{year}\see{aut:bbx:fld}
+%\item Added special fields \bibfield{endday}/\bibfield{endmonth}/\bibfield{endyear}\see{aut:bbx:fld}
+%\item Added special fields \bibfield{origday}/\bibfield{origmonth}/\bibfield{origyear}\see{aut:bbx:fld}
+%\item Added special fields \bibfield{origendday}/\bibfield{origendmonth}/\bibfield{origendyear}\see{aut:bbx:fld}
+%\item Added special fields \bibfield{eventday}/\bibfield{eventmonth}/\bibfield{eventyear}\see{aut:bbx:fld}
+%\item Added special fields \bibfield{eventendday}/\bibfield{eventendmonth}/\bibfield{eventendyear}\see{aut:bbx:fld}
+%\item Added special fields \bibfield{urlday}/\bibfield{urlmonth}/\bibfield{urlyear}\see{aut:bbx:fld}
+%\item Added special fields \bibfield{urlendday}/\bibfield{urlendmonth}/\bibfield{urlendyear}\see{aut:bbx:fld}
+%\item Renamed special field \bibfield{labelyear} to \bibfield{extrayear}\see{aut:bbx:fld}
+%\item Added new special field \bibfield{labelyear}\see{aut:bbx:fld}
+%\item Renamed \cnt{maxlabelyear} to \cnt{maxextrayear}\see{aut:fmt:ilc}
+%\item Renamed \cmd{bibdate} to \cmd{printdate}, modified \cmd{printdate}\see{aut:bib:dat}
+%\item Added \cmd{printdateextra}\see{aut:bib:dat}
+%\item Renamed \cmd{biburldate} to \cmd{printurldate}, modified \cmd{printurldate}\see{aut:bib:dat}
+%\item Added \cmd{printorigdate}\see{aut:bib:dat}
+%\item Added \cmd{printeventdate}\see{aut:bib:dat}
+%\item Added \cmd{bibdatedash}\see{use:fmt:lng}
+%\item Added \cmd{mkbibdatelong} and \cmd{mkbibdateshort}\see{use:fmt:lng}
+%\item Removed \cmd{bibdatelong} and \cmd{bibdateshort}\see{use:fmt:lng}
+%\item Removed \cmd{biburldatelong} and \cmd{biburldateshort}\see{use:fmt:lng}
+%\item Added \cmd{ifciteindex}\see{aut:aux:tst}
+%\item Added \cmd{ifbibindex}\see{aut:aux:tst}
+%\item Added \cmd{iffieldint}\see{aut:aux:tst}
+%\item Added \cmd{iffieldnum}\see{aut:aux:tst}
+%\item Added \cmd{iffieldnums}\see{aut:aux:tst}
+%\item Added \cmd{ifpages}\see{aut:aux:tst}
+%\item Added \cmd{iffieldpages}\see{aut:aux:tst}
+%\item Added \cmd{DeclarePageCommands} and \cmd{DeclarePageCommands*}\see{aut:aux:msc}
+%\item Improved \cmd{NewBibliographyString}\see{aut:lng:cmd}
+%\item Removed localisation key \texttt{editor}\see{aut:lng:key}
+%\item Removed localisation key \texttt{editors}\see{aut:lng:key}
+%\item Renamed localisation key \texttt{typeeditor} to \texttt{editor}\see{aut:lng:key}
+%\item Renamed localisation key \texttt{typeeditors} to \texttt{editors}\see{aut:lng:key}
+%\item Renamed localisation key \texttt{typecompiler} to \texttt{compiler}\see{aut:lng:key}
+%\item Renamed localisation key \texttt{typecompilers} to \texttt{compilers}\see{aut:lng:key}
+%\item Added localisation key \texttt{founder}\see{aut:lng:key}
+%\item Added localisation key \texttt{founders}\see{aut:lng:key}
+%\item Added localisation key \texttt{continuator}\see{aut:lng:key}
+%\item Added localisation key \texttt{continuators}\see{aut:lng:key}
+%\item Added localisation key \texttt{collaborator}\see{aut:lng:key}
+%\item Added localisation key \texttt{collaborators}\see{aut:lng:key}
+%\item Removed localisation key \texttt{byauthor}\see{aut:lng:key}
+%\item Renamed localisation key \texttt{bytypeauthor} to \texttt{byauthor}\see{aut:lng:key}
+%\item Removed localisation key \texttt{byeditor}\see{aut:lng:key}
+%\item Renamed localisation key \texttt{bytypeeditor} to \texttt{byeditor}\see{aut:lng:key}
+%\item Renamed localisation key \texttt{bytypecompiler} to \texttt{bycompiler}\see{aut:lng:key}
+%\item Added localisation key \texttt{byfounder}\see{aut:lng:key}
+%\item Added localisation key \texttt{bycontinuator}\see{aut:lng:key}
+%\item Added localisation key \texttt{bycollaborator}\see{aut:lng:key}
+%\item Added localisation key \texttt{inpress}\see{aut:lng:key}
+%\item Added localisation key \texttt{submitted}\see{aut:lng:key}
+%\item Added support for Dutch (translations by Alexander van Loon)
+%\item Added support for Greek (translations by Apostolos Syropoulos)
+%\item Added notes on Greek\see{use:loc:grk}
+%
+%\end{release}
+%
+%\begin{release}{0.8i}{2009-09-20}
+%
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.8h}{2009-08-10}
+%
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.8g}{2009-08-06}
+%
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.8f}{2009-07-25}
+%
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.8e}{2009-07-04}
+%
+%\item Added \cmd{mkbibordedition}\see{use:fmt:lng}
+%\item Added \cmd{mkbibordseries}\see{use:fmt:lng}
+%\item Added \cmd{mkbibendnote}\see{aut:fmt:ich}
+%\item Added several localisation keys related to \texttt{editor}\see{aut:lng:key}
+%\item Added several localisation keys related to \texttt{translator}\see{aut:lng:key}
+%\item Added localisation key \texttt{thiscite}\see{aut:lng:key}
+%\item Removed several \texttt{country...} localisation keys\see{aut:lng:key}
+%\item Removed several \texttt{patent...} localisation keys\see{aut:lng:key}
+%\item Removed several \texttt{patreq...} localisation keys\see{aut:lng:key}
+%\item Updated and clarified documentation\see{aut:lng:key}
+%\item Added support for Brazilian Portuguese (by Augusto Ritter Stoffel)
+%\item Added preliminary support for Portuguese/Portugal\see{use:opt:pre:gen}
+%\item Added revised Swedish translations (by Per Starbäck)\see{use:opt:pre:gen}
+%\item Expanded documentation\see{aut:cav:nam}
+%\item Improved concatenation of editorial and other roles
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.8d}{2009-05-30}
+%
+%\item Removed package option \opt{bibtex8}\see{use:opt:pre:gen}
+%\item Added package option \opt{backend}\see{use:opt:pre:gen}
+%\item Slightly modified package option \bibfield{loccittracker}\see{use:opt:pre:int}
+%\item Added \cmd{volcite} and \cmd{Volcite}\see{use:cit:spc}
+%\item Added \cmd{pvolcite} and \cmd{Pvolcite}\see{use:cit:spc}
+%\item Added \cmd{fvolcite}\see{use:cit:spc}
+%\item Added \cmd{tvolcite} and \cmd{Tvolcite}\see{use:cit:spc}
+%\item Added \cmd{avolcite} and \cmd{Avolcite}\see{use:cit:spc}
+%\item Added \cmd{notecite} and \cmd{Notecite}\see{use:cit:spc}
+%\item Added \cmd{Pnotecite} and \cmd{Pnotecite}\see{use:cit:spc}
+%\item Added \cmd{fnotecite}\see{use:cit:spc}
+%\item Added \cmd{addabthinspace}\see{aut:pct:spc}
+%\item Disable citation and page trackers in \acr{TOC}/\acr{LOT}/\acr{LOF}\see{aut:cav:flt}
+%\item Disable citation and page trackers in floats\see{aut:cav:flt}
+%\item Improved on-demand loading of localisation modules
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.8c}{2009-01-10}
+%
+%\item Added <idem> tracker\see{use:opt:pre:int}
+%\item Added package option \opt{idemtracker}\see{use:opt:pre:int}
+%\item Added \cmd{ifciteidem}\see{aut:aux:tst}
+%\item Added \cmd{ifentryseen}\see{aut:aux:tst}
+%\item Improved citation style \texttt{verbose-trad1}\see{use:xbx:cbx}
+%\item Improved citation style \texttt{verbose-trad2}\see{use:xbx:cbx}
+%\item Renamed \len{bibitemextrasep} to \len{bibnamesep}\see{use:fmt:len}
+%\item Slightly modified \len{bibnamesep}\see{use:fmt:len}
+%\item Added \len{bibinitsep}\see{use:fmt:len}
+%\item Increased default value of \cnt{highnamepenalty}\see{use:fmt:len}
+%\item Increased default value of \cnt{lownamepenalty}\see{use:fmt:len}
+%\item Updated documentation\see{use:loc:us}
+%\item Added \cmd{uspunctuation}\see{aut:pct:cfg}
+%\item Added \cmd{stdpunctuation}\see{aut:pct:cfg}
+%\item Added \cmd{midsentence*}\see{aut:pct:ctr}
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.8b}{2008-12-13}
+%
+%\item Added package/entry option \opt{usetranslator}\see{use:opt:bib}
+%\item Added \cmd{ifusetranslator}\see{aut:aux:tst}
+%\item Consider \bibfield{translator} when sorting\see{use:srt}
+%\item Consider \bibfield{translator} when generating \bibfield{labelname}\see{aut:bbx:fld}
+%\item Added field \bibfield{eventtitle}\see{bib:fld:dat}
+%\item Support \bibfield{eventtitle} in \bibtype{proceedings} entries\see{bib:typ:blx}
+%\item Support \bibfield{eventtitle} in \bibtype{inproceedings} entries\see{bib:typ:blx}
+%\item Added unsupported entry type \bibtype{commentary}\see{bib:typ:ctm}
+%\item Permit \cmd{NewBibliographyString} in \file{lbx} files\see{aut:lng:cmd}
+%\item Improved behavior of \cmd{mkbibquote} in <American-punctuation> mode\see{aut:fmt:ich}
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.8a}{2008-11-29}
+%
+%\item Updated documentation (important, please read)\see{int:feb}
+%\item Added package option \kvopt{hyperref}{auto}\see{use:opt:pre:gen}
+%\item Improved bibliography style \texttt{reading}\see{use:xbx:bbx}
+%\item Updated \acr{KOMA}-Script support for version 3.x\see{use:cav:scr}
+%\item Slightly modified special field \bibfield{fullhash}\see{aut:bbx:fld}
+%\item Added documentation of \cmd{DeclareNumChars*}\see{aut:aux:msc}
+%\item Added documentation of \cmd{DeclareRangeChars*}\see{aut:aux:msc}
+%\item Added documentation of \cmd{DeclareRangeCommands*}\see{aut:aux:msc}
+%\item Added \cmd{MakeSentenceCase}\see{aut:aux:msc}
+%\item Added \cmd{DeclareCaseLangs}\see{aut:aux:msc}
+%\item Support nested \cmd{mkbibquote} with American punctuation\see{aut:fmt:ich}
+%\item Improved \cmd{ifpunctmark}\see{aut:pct:chk}
+%\item Improved punctuation tracker\see{aut:pct:pct}
+%\item Added \cmd{DeclarePunctuationPairs}\see{aut:pct:cfg}
+%\item Added \cmd{DeclareLanguageMapping}\see{aut:lng:cmd}
+%\item Added support for custom localisation modules\see{aut:cav:lng}
+%\item Added extended \pdf bookmarks to this manual
+%\item Fixed various bugs
+%
+%\end{release}
+%
+%\begin{release}{0.8}{2008-10-02}
+%
+%\item Added \cmd{DefineHyphenationExceptions}\see{use:lng}
+%\item Added \cmd{DeclareHyphenationExceptions}\see{aut:lng:cmd}
+%\item Added \cmd{mkpagetotal}\see{aut:aux:msc}
+%\item Improved \acr{KOMA}-Script support\see{use:cav:scr}
+%\item Added \cmd{ifkomabibtotoc}\see{use:cav:scr}
+%\item Added \cmd{ifkomabibtotocnumbered}\see{use:cav:scr}
+%\item Added \cmd{ifmemoirbibintoc}\see{use:cav:mem}
+%\item Updated documentation\see{use:bib:hdg}
+%\item Updated documentation of \cmd{iffootnote}\see{aut:aux:tst}
+%\item Added several new localisation keys\see{aut:lng:key}
+%\item Rearranged some localisation keys (\texttt{section} vs. \texttt{paragraph})\see{aut:lng:key}
+%\item Added unsupported entry type \bibtype{letter}\see{bib:typ:ctm}
+%\item Added entry type \bibtype{suppbook}\see{bib:typ:blx}
+%\item Added entry type \bibtype{suppcollection}\see{bib:typ:blx}
+%\item Added entry type \bibtype{suppperiodical}\see{bib:typ:blx}
+%\item Support \bibtype{reference} and \bibtype{inreference}\see{bib:typ:blx}
+%\item Support \bibtype{review} as an alias\see{bib:typ:ctm}
+%\item Added field \bibfield{origpublisher}\see{bib:fld:dat}
+%\item Added field alias \bibfield{annote}\see{bib:fld:als}
+%\item Expanded documentation\see{bib:cav:enc}
+%\item Added \cmd{DeclareCapitalPunctuation}\see{aut:pct:cfg}
+%\item Removed \cmd{EnableCapitalAfter} and \cmd{DisableCapitalAfter}\see{aut:pct:cfg}
+%\item Added support for <American-style> punctuation\see{aut:pct:cfg}
+%\item Added \cmd{DeclareQuotePunctuation}\see{aut:pct:cfg}
+%\item Improved \cmd{mkbibquote}\see{aut:fmt:ich}
+%\item Expanded documentation\see{use:loc:us}
+%\item Improved all \texttt{numeric} citation styles\see{use:xbx:cbx}
+%\item Improved \texttt{numeric} bibliography style\see{use:xbx:bbx}
+%\item Added citation style \texttt{authoryear-ibid}\see{use:xbx:cbx}
+%\item Improved all \texttt{authoryear} citation styles\see{use:xbx:cbx}
+%\item Improved \texttt{authoryear} bibliography style\see{use:xbx:bbx}
+%\item Added \opt{pageref} option to \texttt{verbose-note} style\see{use:xbx:cbx}
+%\item Added \opt{pageref} option to \texttt{verbose-inote} style\see{use:xbx:cbx}
+%\item Added citation style \texttt{reading}\see{use:xbx:cbx}
+%\item Added bibliography style \texttt{reading}\see{use:xbx:bbx}
+%\item Added citation style \texttt{draft}\see{use:xbx:cbx}
+%\item Added bibliography style \texttt{draft}\see{use:xbx:bbx}
+%\item Improved \sty{natbib} compatibility style\see{use:cit:nat}
+%\item Added \cmd{ifcitation}\see{aut:aux:tst}
+%\item Added \cmd{ifbibliography}\see{aut:aux:tst}
+%\item Added \cmd{printfile}\see{aut:bib:dat}
+%\item Added package option \opt{loadfiles}\see{use:opt:pre:gen}
+%\item Added support for bibliographic data in external files\see{use:use:prf}
+%\item Expanded documentation\see{aut:cav:prf}
+%\item Modified field \bibfield{edition}\see{bib:fld:dat}
+%\item Modified special field \bibfield{labelyear}\see{aut:bbx:fld}
+%\item Modified special field \bibfield{labelalpha}\see{aut:bbx:fld}
+%\item Added special field \bibfield{extraalpha}\see{aut:bbx:fld}
+%\item Added counter \cnt{maxlabelyear}\see{aut:fmt:ilc}
+%\item Added counter \cnt{maxextraalpha}\see{aut:fmt:ilc}
+%\item Added \cmd{mknumalph}\see{use:fmt:aux}
+%\item Added \cmd{mkbibacro}\see{use:fmt:aux}
+%\item Added \cmd{autocap}\see{use:fmt:aux}
+%\item Added package option \opt{firstinits}\see{use:opt:pre:gen}
+%\item Added \cmd{iffirstinits}\see{aut:aux:tst}
+%\item Added support for eprint data\see{use:use:epr}
+%\item Added support for arXiv\see{use:use:epr}
+%\item Expanded documentation \see{aut:cav:epr}
+%\item Added field \bibfield{eprint}\see{bib:fld:dat}
+%\item Added field \bibfield{eprinttype}\see{bib:fld:dat}
+%\item Added eprint support to all standard entry types\see{bib:typ:blx}
+%\item Added package option \opt{arxiv}\see{use:opt:pre:gen}
+%\item Introduced concept of an entry set\see{use:use:set}
+%\item Expanded documentation\see{aut:cav:set}
+%\item Added entry type \bibtype{set}\see{bib:typ:blx}
+%\item Added field \bibfield{entryset}\see{bib:fld:spc}
+%\item Added special field \bibfield{entrysetcount}\see{aut:bbx:fld}
+%\item Added \cmd{entrydata}\see{aut:bib:dat}
+%\item Expanded documentation\see{aut:cav:mif}
+%\item Added \cmd{entryset}\see{aut:bib:dat}
+%\item Added \cmd{strfield}\see{aut:aux:dat}
+%\item Improved \cmd{usedriver}\see{aut:aux:msc}
+%\item Added \cmd{bibpagespunct}\see{use:fmt:fmt}
+%\item Expanded documentation\see{aut:cav:pct}
+%\item Added entry option \opt{skipbib}\see{use:opt:bib}
+%\item Added entry option \opt{skiplos}\see{use:opt:bib}
+%\item Added entry option \opt{skiplab}\see{use:opt:bib}
+%\item Added entry option \opt{dataonly}\see{use:opt:bib}
+%\item Modified special field \bibfield{namehash}\see{aut:bbx:fld}
+%\item Added special field \bibfield{fullhash}\see{aut:bbx:fld}
+%\item Added \cmd{DeclareNumChars}\see{aut:aux:msc}
+%\item Added \cmd{DeclareRangeChars}\see{aut:aux:msc}
+%\item Added \cmd{DeclareRangeCommands}\see{aut:aux:msc}
+%\item Added support for Swedish (translations by Per Starbäck and others)
+%\item Updated various localisation files
+%\item Various minor improvements throughout
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.7}{2007-12-09}
+%
+%\item Expanded documentation\see{int:feb}
+%\item New dependency on \sty{etoolbox} package\see{int:pre:req}
+%\item Made \sty{url} a required package\see{int:pre:req}
+%\item Modified package option \opt{sorting}\see{use:opt:pre:gen}
+%\item Introduced concept of an entry option\see{use:opt:bib}
+%\item Added option \bibfield{useauthor}\see{use:opt:bib}
+%\item Added option \bibfield{useeditor}\see{use:opt:bib}
+%\item Modified option \bibfield{useprefix}\see{use:opt:bib}
+%\item Removed field \bibfield{useprefix}\see{bib:fld:spc}
+%\item Added field \bibfield{options}\see{bib:fld:spc}
+%\item Updated documentation\see{use:srt}
+%\item Added citation style \texttt{authortitle-ibid}\see{use:xbx:cbx}
+%\item Added citation style \texttt{authortitle-icomp}\see{use:xbx:cbx}
+%\item Renamed citation style \texttt{authortitle-cterse} to \texttt{authortitle-tcomp}\see{use:xbx:cbx}
+%\item Renamed citation style \texttt{authortitle-verb} to \texttt{verbose}\see{use:xbx:cbx}
+%\item Renamed citation style \texttt{authortitle-cverb} to \texttt{verbose-ibid}\see{use:xbx:cbx}
+%\item Added citation style \texttt{verbose-note}\see{use:xbx:cbx}
+%\item Added citation style \texttt{verbose-inote}\see{use:xbx:cbx}
+%\item Renamed citation style \texttt{authortitle-trad} to \texttt{verbose-trad1}\see{use:xbx:cbx}
+%\item Removed citation style \texttt{authortitle-strad}\see{use:xbx:cbx}
+%\item Added citation style \texttt{verbose-trad2}\see{use:xbx:cbx}
+%\item Improved citation style \texttt{authoryear}\see{use:xbx:cbx}
+%\item Improved citation style \texttt{authoryear-comp}\see{use:xbx:cbx}
+%\item Improved citation style \texttt{authortitle-terse}\see{use:xbx:cbx}
+%\item Improved citation style \texttt{authortitle-tcomp}\see{use:xbx:cbx}
+%\item Improved all verbose citation styles\see{use:xbx:cbx}
+%\item Expanded documentation\see{bib:fld:typ}
+%\item Modified entry type \bibtype{article}\see{bib:typ:blx}
+%\item Added entry type \bibtype{periodical}\see{bib:typ:blx}
+%\item Added entry type \bibtype{patent}\see{bib:typ:blx}
+%\item Extended entry types \bibfield{proceedings} and \bibfield{inproceedings}\see{bib:typ:blx}
+%\item Extended entry type \bibfield{article}\see{bib:typ:blx}
+%\item Extended entry type \bibfield{booklet}\see{bib:typ:blx}
+%\item Extended entry type \bibfield{misc}\see{bib:typ:blx}
+%\item Added entry type alias \bibtype{electronic}\see{bib:typ:als}
+%\item Added new custom types\see{bib:typ:ctm}
+%\item Support \bibfield{pagetotal} field where applicable\see{bib:typ:blx}
+%\item Added field \bibfield{holder}\see{bib:fld:dat}
+%\item Added field \bibfield{venue}\see{bib:fld:dat}
+%\item Added field \bibfield{version}\see{bib:fld:dat}
+%\item Added field \bibfield{journaltitle}\see{bib:fld:dat}
+%\item Added field \bibfield{journalsubtitle}\see{bib:fld:dat}
+%\item Added field \bibfield{issuetitle}\see{bib:fld:dat}
+%\item Added field \bibfield{issuesubtitle}\see{bib:fld:dat}
+%\item Removed field \bibfield{journal}\see{bib:fld:dat}
+%\item Added field alias \bibfield{journal}\see{bib:fld:als}
+%\item Added field \bibfield{shortjournal}\see{bib:fld:dat}
+%\item Added field \bibfield{shortseries}\see{bib:fld:dat}
+%\item Added field \bibfield{shorthandintro}\see{bib:fld:dat}
+%\item Added field \bibfield{xref}\see{bib:fld:spc}
+%\item Added field \bibfield{authortype}\see{bib:fld:dat}
+%\item Added field \bibfield{editortype}\see{bib:fld:dat}
+%\item Added field \bibfield{reprinttitle}\see{bib:fld:dat}
+%\item Improved handling of field \bibfield{type}\see{bib:fld:dat}
+%\item Improved handling of field \bibfield{series}\see{bib:fld:dat}
+%\item Updated documentation\see{bib:use:ser}
+%\item Renamed field \bibfield{id} to \bibfield{eid}\see{bib:fld:dat}
+%\item Added field \bibfield{pagination}\see{bib:fld:dat}
+%\item Added field \bibfield{bookpagination}\see{bib:fld:dat}
+%\item Added special field \bibfield{sortinit}\see{aut:bbx:fld}
+%\item Introduced concept of a multicite command\see{use:cit:mlt}
+%\item Added \cmd{cites}\see{use:cit:mlt}
+%\item Added \cmd{Cites}\see{use:cit:mlt}
+%\item Added \cmd{parencites}\see{use:cit:mlt}
+%\item Added \cmd{Parencites}\see{use:cit:mlt}
+%\item Added \cmd{footcites}\see{use:cit:mlt}
+%\item Added \cmd{supercites}\see{use:cit:mlt}
+%\item Added \cmd{Autocite}\see{use:cit:aut}
+%\item Added \cmd{autocites}\see{use:cit:aut}
+%\item Added \cmd{Autocites}\see{use:cit:aut}
+%\item Added \cmd{DeclareMultiCiteCommand}\see{aut:cbx:cbx}
+%\item Added counter \cnt{multicitecount}\see{aut:fmt:ilc}
+%\item Added counter \cnt{multicitetotal}\see{aut:fmt:ilc}
+%\item Renamed \cmd{citefulltitle} to \cmd{citetitle*}\see{use:cit:txt}
+%\item Added \cmd{cite*}\see{use:cit:cbx}
+%\item Added \cmd{citeurl}\see{use:cit:txt}
+%\item Added documentation of field \bibfield{nameaddon}\see{bib:fld:dat}
+%\item Added field \bibfield{entrysubtype}\see{bib:fld:spc}
+%\item Added field \bibfield{execute}\see{bib:fld:spc}
+%\item Added custom fields \bibfield{verb{[a--c]}}\see{bib:fld:ctm}
+%\item Added custom fields \bibfield{name{[a--c]}type}\see{bib:fld:ctm}
+%\item Consider \bibfield{sorttitle} field when falling back to \bibfield{title}\see{use:srt}
+%\item Removed package option \opt{labelctitle}\see{use:opt:pre:int}
+%\item Removed field \opt{labelctitle}\see{aut:bbx:fld}
+%\item Added package option \opt{singletitle}\see{use:opt:pre:int}
+%\item Added \cmd{ifsingletitle}\see{aut:aux:tst}
+%\item Added \cmd{ifuseauthor}\see{aut:aux:tst}
+%\item Added \cmd{ifuseeditor}\see{aut:aux:tst}
+%\item Added \cmd{ifopcit}\see{aut:aux:tst}
+%\item Added \cmd{ifloccit}\see{aut:aux:tst}
+%\item Added package option \opt{uniquename}\see{use:opt:pre:int}
+%\item Added special counter \cnt{uniquename}\see{aut:aux:tst}
+%\item Added package option \opt{natbib}\see{use:opt:ldt}
+%\item Added compatibility commands for the \sty{natbib} package\see{use:cit:nat}
+%\item Added package option \opt{defernums}\see{use:opt:pre:gen}
+%\item Improved support for numeric labels\see{use:cav:lab}
+%\item Added package option \opt{mincrossrefs}\see{use:opt:pre:gen}
+%\item Added package option \opt{bibencoding}\see{use:opt:pre:gen}
+%\item Expanded documentation\see{bib:cav:enc}
+%\item Updated documentation\see{bib:cav:ide}
+%\item Added package option \opt{citetracker}\see{use:opt:pre:int}
+%\item Added package option \opt{ibidtracker}\see{use:opt:pre:int}
+%\item Added package option \bibfield{opcittracker}\see{use:opt:pre:int}
+%\item Added package option \bibfield{loccittracker}\see{use:opt:pre:int}
+%\item Added \cmd{citetrackertrue} and \cmd{citetrackerfalse}\see{aut:aux:msc}
+%\item Modified package option \opt{pagetracker}\see{use:opt:pre:int}
+%\item Added \cmd{pagetrackertrue} and \cmd{pagetrackerfalse}\see{aut:aux:msc}
+%\item Text commands now excluded from tracking\see{use:cit:txt}
+%\item Updated documentation of \cmd{iffirstonpage}\see{aut:aux:tst}
+%\item Updated documentation of \cmd{ifsamepage}\see{aut:aux:tst}
+%\item Removed package option \opt{keywsort}\see{use:opt:pre:gen}
+%\item Added package option \opt{refsection}\see{use:opt:pre:gen}
+%\item Added package option \opt{refsegment}\see{use:opt:pre:gen}
+%\item Added package option \opt{citereset}\see{use:opt:pre:gen}
+%\item Added option \opt{section} to \cmd{bibbysegment}\see{use:bib:bib}
+%\item Added option \opt{section} to \cmd{bibbycategory}\see{use:bib:bib}
+%\item Added option \opt{section} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Extended documentation of \env{refsection} environment\see{use:bib:sec}
+%\item Added \cmd{newrefsection}\see{use:bib:sec}
+%\item Added \cmd{newrefsegment}\see{use:bib:seg}
+%\item Added heading definition \texttt{subbibliography}\see{use:bib:hdg}
+%\item Added heading definition \texttt{subbibintoc}\see{use:bib:hdg}
+%\item Added heading definition \texttt{subbibnumbered}\see{use:bib:hdg}
+%\item Make all citation commands scan ahead for punctuation\see{use:cit}
+%\item Updated documentation of \cmd{DeclareAutoPunctuation}\see{aut:pct:cfg}
+%\item Removed \cmd{usecitecmd}\see{aut:cbx:cbx}
+%\item Updated documentation of \opt{autocite} package option\see{use:opt:pre:gen}
+%\item Updated documentation of \opt{autopunct} package option\see{use:opt:pre:gen}
+%\item Added \cmd{citereset}\see{use:cit:msc}
+%\item Added \cmd{citereset*}\see{use:cit:msc}
+%\item Added \cmd{mancite}\see{use:cit:msc}
+%\item Added \cmd{citesetup}\see{use:fmt:fmt}
+%\item Added \cmd{compcitedelim}\see{use:fmt:fmt}
+%\item Added \cmd{labelnamepunct}\see{use:fmt:fmt}
+%\item Added \cmd{subtitlepunct}\see{use:fmt:fmt}
+%\item Added \cmd{finallistdelim}\see{use:fmt:fmt}
+%\item Added \cmd{andmoredelim}\see{use:fmt:fmt}
+%\item Added \cmd{labelalphaothers}\see{use:fmt:fmt}
+%\item Added \len{bibitemextrasep}\see{use:fmt:len}
+%\item Renamed \cmd{blxauxprefix} to \cmd{blxauxsuffix}\see{use:use:aux}
+%\item Added \cmd{DeclareBibliographyOption}\see{aut:bbx:bbx}
+%\item Added \cmd{DeclareEntryOption}\see{aut:bbx:bbx}
+%\item Renamed \cmd{InitializeBibliographyDrivers} to \cmd{InitializeBibliographyStyle}\see{aut:bbx:bbx}
+%\item Added \cmd{InitializeCitationStyle}\see{aut:cbx:cbx}
+%\item Added \cmd{OnManualCitation}\see{aut:cbx:cbx}
+%\item Extended documentation of \cmd{DeclareCiteCommand}\see{aut:cbx:cbx}
+%\item Modified \cmd{DeclareAutoCiteCommand}\see{aut:cbx:cbx}
+%\item Improved \cmd{printtext}\see{aut:bib:dat}
+%\item Improved \cmd{printfield}\see{aut:bib:dat}
+%\item Improved \cmd{printlist}\see{aut:bib:dat}
+%\item Improved \cmd{printnames}\see{aut:bib:dat}
+%\item Improved \cmd{indexfield}\see{aut:bib:dat}
+%\item Improved \cmd{indexlist}\see{aut:bib:dat}
+%\item Improved \cmd{indexnames}\see{aut:bib:dat}
+%\item Modified \cmd{DeclareFieldFormat}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareListFormat}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareNameFormat}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareFieldAlias}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareListAlias}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareNameAlias}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareIndexFieldFormat}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareIndexListFormat}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareIndexNameFormat}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareIndexFieldAlias}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareIndexListAlias}\see{aut:bib:fmt}
+%\item Modified \cmd{DeclareIndexNameAlias}\see{aut:bib:fmt}
+%\item Improved \cmd{iffirstonpage}\see{aut:aux:tst}
+%\item Improved \cmd{ifciteseen}\see{aut:aux:tst}
+%\item Improved \cmd{ifandothers}\see{aut:aux:tst}
+%\item Added \cmd{ifinteger}\see{aut:aux:tst}
+%\item Added \cmd{ifnumeral}\see{aut:aux:tst}
+%\item Added \cmd{ifnumerals}\see{aut:aux:tst}
+%\item Removed \cmd{ifpage}\see{aut:aux:tst}
+%\item Removed \cmd{ifpages}\see{aut:aux:tst}
+%\item Moved \cmd{ifblank} to \sty{etoolbox} package\see{aut:aux:tst}
+%\item Removed \cmd{xifblank}\see{aut:aux:tst}
+%\item Moved \cmd{docsvlist} to \sty{etoolbox} package\see{aut:aux:msc}
+%\item Updated documentation of \cmd{docsvfield}\see{aut:aux:msc}
+%\item Added \cmd{ifciteibid}\see{aut:aux:tst}
+%\item Added \cmd{iffootnote}\see{aut:aux:tst}
+%\item Added \cmd{iffieldxref}\see{aut:aux:tst}
+%\item Added \cmd{iflistxref}\see{aut:aux:tst}
+%\item Added \cmd{ifnamexref}\see{aut:aux:tst}
+%\item Added \cmd{ifmoreitems}\see{aut:aux:tst}
+%\item Added \cmd{ifbibstring}\see{aut:aux:tst}
+%\item Added \cmd{iffieldbibstring}\see{aut:aux:tst}
+%\item Added \cmd{mkpageprefix}\see{aut:aux:msc}
+%\item Added \cmd{NumCheckSetup}\see{aut:aux:msc}
+%\item Added \cmd{pno}\see{use:cit:msc}
+%\item Added \cmd{ppno}\see{use:cit:msc}
+%\item Added \cmd{nopp}\see{use:cit:msc}
+%\item Added \cmd{ppspace}\see{aut:aux:msc}
+%\item Added \cmd{psq}\see{use:cit:msc}
+%\item Added \cmd{psqq}\see{use:cit:msc}
+%\item Added \cmd{sqspace}\see{aut:aux:msc}
+%\item Expanded documentation\see{bib:use:pag}
+%\item Expanded documentation\see{use:cav:pag}
+%\item Added \cmd{RN}\see{use:cit:msc}
+%\item Added \cmd{Rn}\see{use:cit:msc}
+%\item Added \cmd{RNfont}\see{use:cit:msc}
+%\item Added \cmd{Rnfont}\see{use:cit:msc}
+%\item Added package option \opt{punctfont}\see{use:opt:pre:gen}
+%\item Added \cmd{setpunctfont}\see{aut:pct:new}
+%\item Added \cmd{resetpunctfont}\see{aut:pct:new}
+%\item Added \cmd{nopunct}\see{aut:pct:pct}
+%\item Added \cmd{bibxstring}\see{aut:str}
+%\item Added \cmd{mkbibemph}\see{aut:fmt:ich}
+%\item Added \cmd{mkbibquote}\see{aut:fmt:ich}
+%\item Added \cmd{mkbibfootnote}\see{aut:fmt:ich}
+%\item Added \cmd{mkbibsuperscript}\see{aut:fmt:ich}
+%\item Added \cmd{currentfield}\see{aut:fmt:ilc}
+%\item Added \cmd{currentlist}\see{aut:fmt:ilc}
+%\item Added \cmd{currentname}\see{aut:fmt:ilc}
+%\item Added \cmd{AtNextCite}\see{aut:fmt:hok}
+%\item Added \cmd{AtNextCitekey}\see{aut:fmt:hok}
+%\item Added \cmd{AtDataInput}\see{aut:fmt:hok}
+%\item Added several new localisation keys\see{aut:lng:key}
+%\item Added support for Norwegian (translations by Johannes Wilm)
+%\item Added support for Danish (translations by Johannes Wilm)
+%\item Expanded documentation\see{aut:cav:grp}
+%\item Expanded documentation\see{aut:cav:mif}
+%\item Numerous improvements under the hood
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.6}{2007-01-06}
+%
+%\item Added package option \kvopt{sorting}{none}\see{use:opt:pre:gen}
+%\item Renamed package option \kvopt{block}{penalty} to \kvopt{block}{ragged}\see{use:opt:pre:gen}
+%\item Changed data type of \bibfield{origlanguage} back to field\see{bib:fld:dat}
+%\item Support \bibfield{origlanguage} field if \bibfield{translator} is present\see{bib:typ:blx}
+%\item Renamed field \bibfield{articleid} to \bibfield{id}\see{bib:fld:dat}
+%\item Support \bibfield{id} field in \bibfield{article} entries\see{bib:typ:blx}
+%\item Support \bibfield{series} field in \bibfield{article} entries\see{bib:typ:blx}
+%\item Support \bibfield{doi} field\see{bib:typ:blx}
+%\item Updated documentation of all entry types\see{bib:typ:blx}
+%\item Updated documentation of field \bibfield{series}\see{bib:fld:dat}
+%\item Added field \bibfield{redactor}\see{bib:fld:dat}
+%\item Added field \bibfield{shortauthor}\see{bib:fld:dat}
+%\item Added field \bibfield{shorteditor}\see{bib:fld:dat}
+%\item Improved support for corporate authors and editors\see{bib:use:inc}
+%\item Updated documentation of field \bibfield{labelname}\see{aut:bbx:fld}
+%\item Added field alias \bibfield{key}\see{bib:fld:als}
+%\item Added package option \opt{autocite}\see{use:opt:pre:gen}
+%\item Added package option \opt{autopunct}\see{use:opt:pre:gen}
+%\item Added \cmd{autocite}\see{use:cit:aut}
+%\item Added \cmd{DeclareAutoCiteCommand}\see{aut:cbx:cbx}
+%\item Added \cmd{DeclareAutoPunctuation}\see{aut:pct:cfg}
+%\item Added option \opt{filter} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added \cmd{defbibfilter}\see{use:bib:flt}
+%\item Added package option \opt{maxitems}\see{use:opt:pre:gen}
+%\item Added package option \opt{minitems}\see{use:opt:pre:gen}
+%\item Added option \opt{maxitems} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added option \opt{minitems} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added option \opt{maxitems} to \cmd{bibbysection}\see{use:bib:bib}
+%\item Added option \opt{minitems} to \cmd{bibbysection}\see{use:bib:bib}
+%\item Added option \opt{maxitems} to \cmd{bibbysegment}\see{use:bib:bib}
+%\item Added option \opt{minitems} to \cmd{bibbysegment}\see{use:bib:bib}
+%\item Added option \opt{maxitems} to \cmd{bibbycategory}\see{use:bib:bib}
+%\item Added option \opt{minitems} to \cmd{bibbycategory}\see{use:bib:bib}
+%\item Added option \opt{maxitems} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added option \opt{minitems} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added counter \cnt{maxitems}\see{aut:fmt:ilc}
+%\item Added counter \cnt{minitems}\see{aut:fmt:ilc}
+%\item Added adapted headings for \sty{scrartcl}, \sty{scrbook}, \sty{scrreprt}\see{int:pre:cmp}
+%\item Added adapted headings for \sty{memoir}\see{int:pre:cmp}
+%\item Added \cmd{Cite}\see{use:cit:std}
+%\item Added \cmd{Parencite}\see{use:cit:std}
+%\item Added \cmd{Textcite}\see{use:cit:cbx}
+%\item Added \cmd{parencite*}\see{use:cit:cbx}
+%\item Added \cmd{supercite}\see{use:cit:cbx}
+%\item Added \cmd{Citeauthor}\see{use:cit:txt}
+%\item Added \cmd{nameyeardelim}\see{use:fmt:fmt}
+%\item Added \cmd{multilistdelim}\see{use:fmt:fmt}
+%\item Completed documenation\see{use:fmt:fmt}
+%\item Completed documenation\see{aut:fmt:fmt}
+%\item Added \cmd{usecitecmd}\see{aut:cbx:cbx}
+%\item Added \cmd{hyphenate}\see{use:fmt:aux}
+%\item Added \cmd{hyphen}\see{use:fmt:aux}
+%\item Added \cmd{nbhyphen}\see{use:fmt:aux}
+%\item Improved \cmd{ifsamepage}\see{aut:aux:tst}
+%\item Removed \cmd{ifnameequalstr}\see{aut:aux:tst}
+%\item Removed \cmd{iflistequalstr}\see{aut:aux:tst}
+%\item Added \cmd{ifcapital}\see{aut:aux:tst}
+%\item Added documentation of \cmd{MakeCapital}\see{aut:aux:msc}
+%\item Added starred variant to \cmd{setunit}\see{aut:pct:new}
+%\item Improved \cmd{ifterm}\see{aut:pct:chk}
+%\item Straightened out documentation of \cmd{thelist}\see{aut:aux:dat}
+%\item Straightened out documentation of \cmd{thename}\see{aut:aux:dat}
+%\item Added \cmd{docsvfield}\see{aut:aux:msc}
+%\item Added \cmd{docsvlist}\see{aut:aux:msc}
+%\item Removed \cmd{CopyFieldFormat}\see{aut:bib:fmt}
+%\item Removed \cmd{CopyIndexFieldFormat}\see{aut:bib:fmt}
+%\item Removed \cmd{CopyListFormat}\see{aut:bib:fmt}
+%\item Removed \cmd{CopyIndexListFormat}\see{aut:bib:fmt}
+%\item Removed \cmd{CopyNameFormat}\see{aut:bib:fmt}
+%\item Removed \cmd{CopyIndexNameFormat}\see{aut:bib:fmt}
+%\item Added \cmd{savefieldformat}\see{aut:aux:msc}
+%\item Added \cmd{restorefieldformat}\see{aut:aux:msc}
+%\item Added \cmd{savelistformat}\see{aut:aux:msc}
+%\item Added \cmd{restorelistformat}\see{aut:aux:msc}
+%\item Added \cmd{savenameformat}\see{aut:aux:msc}
+%\item Added \cmd{restorenameformat}\see{aut:aux:msc}
+%\item Added \cmd{savebibmacro}\see{aut:aux:msc}
+%\item Added \cmd{restorebibmacro}\see{aut:aux:msc}
+%\item Added \cmd{savecommand}\see{aut:aux:msc}
+%\item Added \cmd{restorecommand}\see{aut:aux:msc}
+%\item Added documentation of \texttt{shorthands} driver\see{aut:bbx:bbx}
+%\item Rearranged, renamed, and extended localisation keys\see{aut:lng:key}
+%\item Renamed counter \cnt{citecount} to \cnt{instcount}\see{aut:fmt:ilc}
+%\item Added new counter \cnt{citecount}\see{aut:fmt:ilc}
+%\item Added counter \cnt{citetotal}\see{aut:fmt:ilc}
+%\item Rearranged and expanded documentation\see{bib:use}
+%\item Expanded documentation\see{bib:cav}
+%\item Expanded documentation\see{use:cav:scr}
+%\item Expanded documentation\see{use:cav:mem}
+%\item Completed support for Spanish\see{use:loc:esp}
+%\item Added support for Italian (translations by Enrico Gregorio)
+%\item Added language alias \opt{australian}\see{bib:fld:spc}
+%\item Added language alias \opt{newzealand}\see{bib:fld:spc}
+%\item Various minor improvements throughout
+%
+%\end{release}
+%
+%\begin{release}{0.5}{2006-11-12}
+%
+%\item Added \cmd{usedriver}\see{aut:aux:msc}
+%\item Added package option \opt{pagetracker}\see{use:opt:pre:gen}
+%\item Added \cmd{iffirstonpage}\see{aut:aux:tst}
+%\item Added \cmd{ifsamepage}\see{aut:aux:tst}
+%\item Corrected documentation of \cmd{ifciteseen}\see{aut:aux:tst}
+%\item Added package option \opt{terseinits}\see{use:opt:pre:gen}
+%\item Modified default value of package option \opt{maxnames}\see{use:opt:pre:gen}
+%\item Renamed package option \opt{index} to \opt{indexing}\see{use:opt:pre:gen}
+%\item Extended package option \opt{indexing}\see{use:opt:pre:gen}
+%\item Removed package option \opt{citeindex}\see{use:opt:pre:gen}
+%\item Removed package option \opt{bibindex}\see{use:opt:pre:gen}
+%\item Added package option \opt{labelalpha}\see{use:opt:pre:int}
+%\item Updated documentation of field \bibfield{labelalpha}\see{aut:bbx:fld}
+%\item Added package option \opt{labelctitle}\see{use:opt:pre:int}
+%\item Updated documentation of field \bibfield{labelctitle}\see{aut:bbx:fld}
+%\item Added package option \opt{labelnumber}\see{use:opt:pre:int}
+%\item Updated documentation of field \bibfield{labelnumber}\see{aut:bbx:fld}
+%\item Added package option \opt{labelyear}\see{use:opt:pre:int}
+%\item Updated documentation of field \bibfield{labelyear}\see{aut:bbx:fld}
+%\item Added citation style \texttt{authortitle-verb}\see{use:xbx:cbx}
+%\item Added citation style \texttt{authortitle-cverb}\see{use:xbx:cbx}
+%\item Renamed citation style \texttt{traditional} to \texttt{authortitle-trad}\see{use:xbx:cbx}
+%\item Improved citation style \texttt{authortitle-trad}\see{use:xbx:cbx}
+%\item Added citation style \texttt{authortitle-strad}\see{use:xbx:cbx}
+%\item Improved bibliography style \texttt{authoryear}\see{use:xbx:bbx}
+%\item Improved bibliography style \texttt{authortitle}\see{use:xbx:bbx}
+%\item Added option \opt{maxnames} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added option \opt{minnames} to \cmd{printbibliography}\see{use:bib:bib}
+%\item Added option \opt{maxnames} to \cmd{bibbysection}\see{use:bib:bib}
+%\item Added option \opt{minnames} to \cmd{bibbysection}\see{use:bib:bib}
+%\item Added option \opt{maxnames} to \cmd{bibbysegment}\see{use:bib:bib}
+%\item Added option \opt{minnames} to \cmd{bibbysegment}\see{use:bib:bib}
+%\item Added option \opt{maxnames} to \cmd{bibbycategory}\see{use:bib:bib}
+%\item Added option \opt{minnames} to \cmd{bibbycategory}\see{use:bib:bib}
+%\item Added option \opt{maxnames} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Added option \opt{minnames} to \cmd{printshorthands}\see{use:bib:biblist}
+%\item Renamed \env{bibsection} to \env{refsection} (conflict with \sty{memoir})\see{use:bib:sec}
+%\item Renamed \env{bibsegment} to \env{refsegment} (consistency)\see{use:bib:seg}
+%\item Extended \env{refsection} environment\see{use:bib:sec}
+%\item Renamed \env{bibsection} counter to \env{refsection}\see{aut:fmt:ilc}
+%\item Renamed \env{bibsegment} counter to \env{refsegment}\see{aut:fmt:ilc}
+%\item Updated documentation\see{use:use:mlt}
+%\item Added counter \cnt{citecount}\see{aut:fmt:ilc}
+%\item Modified default definition of \cmd{blxauxprefix}\see{use:use:aux}
+%\item Added \cmd{CopyFieldFormat}\see{aut:bib:fmt}
+%\item Added \cmd{CopyIndexFieldFormat}\see{aut:bib:fmt}
+%\item Added \cmd{CopyListFormat}\see{aut:bib:fmt}
+%\item Added \cmd{CopyIndexListFormat}\see{aut:bib:fmt}
+%\item Added \cmd{CopyNameFormat}\see{aut:bib:fmt}
+%\item Added \cmd{CopyIndexNameFormat}\see{aut:bib:fmt}
+%\item Added \cmd{clearfield}\see{aut:aux:dat}
+%\item Added \cmd{clearlist}\see{aut:aux:dat}
+%\item Added \cmd{clearname}\see{aut:aux:dat}
+%\item Added \cmd{restorefield}\see{aut:aux:dat}
+%\item Added \cmd{restorelist}\see{aut:aux:dat}
+%\item Added \cmd{restorename}\see{aut:aux:dat}
+%\item Renamed \cmd{bibhyperlink} to \cmd{bibhyperref}\see{aut:aux:msc}
+%\item Added new command \cmd{bibhyperlink}\see{aut:aux:msc}
+%\item Added \cmd{bibhypertarget}\see{aut:aux:msc}
+%\item Renamed formatting directive \texttt{bibhyperlink} to \texttt{bibhyperref}\see{aut:fmt:ich}
+%\item Added new formatting directive \texttt{bibhyperlink}\see{aut:fmt:ich}
+%\item Added formatting directive \texttt{bibhypertarget}\see{aut:fmt:ich}
+%\item Added \cmd{addlpthinspace}\see{aut:pct:spc}
+%\item Added \cmd{addhpthinspace}\see{aut:pct:spc}
+%\item Added field \bibfield{annotator}\see{bib:fld:dat}
+%\item Added field \bibfield{commentator}\see{bib:fld:dat}
+%\item Added field \bibfield{introduction}\see{bib:fld:dat}
+%\item Added field \bibfield{foreword}\see{bib:fld:dat}
+%\item Added field \bibfield{afterword}\see{bib:fld:dat}
+%\item Updated documentation of field \bibfield{translator}\see{bib:fld:dat}
+%\item Added field \bibfield{articleid}\see{bib:fld:dat}
+%\item Added field \bibfield{doi}\see{bib:fld:dat}
+%\item Added field \bibfield{file}\see{bib:fld:dat}
+%\item Added field alias \bibfield{pdf}\see{bib:fld:als}
+%\item Added field \bibfield{indextitle}\see{bib:fld:dat}
+%\item Added field \bibfield{indexsorttitle}\see{bib:fld:spc}
+%\item Changed data type of \bibfield{language}\see{bib:fld:dat}
+%\item Changed data type of \bibfield{origlanguage}\see{bib:fld:dat}
+%\item Updated documentation of entry type \bibfield{book}\see{bib:typ:blx}
+%\item Updated documentation of entry type \bibfield{collection}\see{bib:typ:blx}
+%\item Updated documentation of entry type \bibfield{inbook}\see{bib:typ:blx}
+%\item Updated documentation of entry type \bibfield{incollection}\see{bib:typ:blx}
+%\item Extended entry type \bibfield{misc}\see{bib:typ:blx}
+%\item Added \cmd{UndefineBibliographyExtras}\see{use:lng}
+%\item Added \cmd{UndeclareBibliographyExtras}\see{aut:lng:cmd}
+%\item Added \cmd{finalandcomma}\see{use:fmt:lng}
+%\item Added localisation key \texttt{citedas}\see{aut:lng:key}
+%\item Renamed localisation key \texttt{editby} to \texttt{edited}\see{aut:lng:key}
+%\item Renamed localisation key \texttt{transby} to \texttt{translated}\see{aut:lng:key}
+%\item Added localisation key \texttt{annotated}\see{aut:lng:key}
+%\item Added localisation key \texttt{commented}\see{aut:lng:key}
+%\item Added localisation key \texttt{introduced}\see{aut:lng:key}
+%\item Added localisation key \texttt{foreworded}\see{aut:lng:key}
+%\item Added localisation key \texttt{afterworded}\see{aut:lng:key}
+%\item Added localisation key \texttt{commentary}\see{aut:lng:key}
+%\item Added localisation key \texttt{annotations}\see{aut:lng:key}
+%\item Added localisation key \texttt{introduction}\see{aut:lng:key}
+%\item Added localisation key \texttt{foreword}\see{aut:lng:key}
+%\item Added localisation key \texttt{afterword}\see{aut:lng:key}
+%\item Added localisation key \texttt{doneby}\see{aut:lng:key}
+%\item Added localisation key \texttt{itemby}\see{aut:lng:key}
+%\item Added localisation key \texttt{spanish}\see{aut:lng:key}
+%\item Added localisation key \texttt{latin}\see{aut:lng:key}
+%\item Added localisation key \texttt{greek}\see{aut:lng:key}
+%\item Modified localisation key \texttt{fromenglish}\see{aut:lng:key}
+%\item Modified localisation key \texttt{fromfrench}\see{aut:lng:key}
+%\item Modified localisation key \texttt{fromgerman}\see{aut:lng:key}
+%\item Added localisation key \texttt{fromspanish}\see{aut:lng:key}
+%\item Added localisation key \texttt{fromlatin}\see{aut:lng:key}
+%\item Added localisation key \texttt{fromgreek}\see{aut:lng:key}
+%\item Expanded documentation\see{bib:use}
+%\item Updated documentation\see{use:xbx:cbx}
+%\item Updated documentation\see{use:xbx:bbx}
+%\item Updated documentation\see{use:fmt:fmt}
+%\item Updated documentation\see{aut:fmt:fmt}
+%\item Updated and completed documentation\see{use:fmt:lng}
+%\item Updated and completed documentation\see{aut:fmt:lng}
+%\item Added support for Spanish (translations by Ignacio Fernández Galván)
+%\item Various memory-related optimizations in \path{biblatex.bst}
+%
+%\end{release}
+%
+%\begin{release}{0.4}{2006-10-01}
+%
+%\item Added package option \opt{sortlos}\see{use:opt:pre:gen}
+%\item Added package option \opt{bibtex8}\see{use:opt:pre:gen}
+%\item Made \bibfield{pageref} field local to \env{refsection} environment\see{aut:bbx:fld}
+%\item Renamed field \bibfield{labeltitle} to \bibfield{labelctitle}\see{aut:bbx:fld}
+%\item Added new field \bibfield{labeltitle}\see{aut:bbx:fld}
+%\item Added new field \bibfield{sortkey}\see{bib:fld:spc}
+%\item Updated documentation\see{use:srt}
+%\item Removed \cmd{iffieldtrue}\see{aut:aux:tst}
+%\item Renamed counter \cnt{namepenalty} to \cnt{highnamepenalty}\see{use:fmt:len}
+%\item Added counter \cnt{lownamepenalty}\see{use:fmt:len}
+%\item Added documentation of \cmd{noligature}\see{use:fmt:aux}
+%\item Added \cmd{addlowpenspace}\see{aut:pct:spc}
+%\item Added \cmd{addhighpenspace}\see{aut:pct:spc}
+%\item Added \cmd{addabbrvspace}\see{aut:pct:spc}
+%\item Added \cmd{adddotspace}\see{aut:pct:spc}
+%\item Added \cmd{addslash}\see{aut:pct:spc}
+%\item Expanded documentation\see{use:cav}
+%\item Various minor improvements throughout
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.3}{2006-09-24}
+%
+%\item Renamed citation style \texttt{authortitle} to \texttt{authortitle-terse}\see{use:xbx:cbx}
+%\item Renamed citation style \texttt{authortitle-comp} to \texttt{authortitle-cterse}\see{use:xbx:cbx}
+%\item Renamed citation style \texttt{authortitle-verb} to \texttt{authortitle}\see{use:xbx:cbx}
+%\item Added new citation style \texttt{authortitle-comp}\see{use:xbx:cbx}
+%\item Citation style \texttt{traditional} now supports <loc.~cit.>\see{use:xbx:cbx}
+%\item Added package option \opt{date}\see{use:opt:pre:gen}
+%\item Added package option \opt{urldate}\see{use:opt:pre:gen}
+%\item Introduced new data type: literal lists\see{bib:fld}
+%\item Renamed \cmd{citename} to \cmd{citeauthor}\see{use:cit:txt}
+%\item Renamed \cmd{citelist} to \cmd{citename}\see{use:cit:low}
+%\item Added new \cmd{citelist} command\see{use:cit:low}
+%\item Renamed \cmd{printlist} to \cmd{printnames}\see{aut:bib:dat}
+%\item Added new \cmd{printlist} command\see{aut:bib:dat}
+%\item Renamed \cmd{indexlist} to \cmd{indexnames}\see{aut:bib:dat}
+%\item Added new \cmd{indexlist} command\see{aut:bib:dat}
+%\item Renamed \cmd{DeclareListFormat} to \cmd{DeclareNameFormat}\see{aut:bib:fmt}
+%\item Added new \cmd{DeclareListFormat} command\see{aut:bib:fmt}
+%\item Renamed \cmd{DeclareListAlias} to \cmd{DeclareNameAlias}\see{aut:bib:fmt}
+%\item Added new \cmd{DeclareListAlias} command\see{aut:bib:fmt}
+%\item Renamed \cmd{DeclareIndexListFormat} to \cmd{DeclareIndexNameFormat}\see{aut:bib:fmt}
+%\item Added new \cmd{DeclareIndexListFormat} command\see{aut:bib:fmt}
+%\item Renamed \cmd{DeclareIndexListAlias} to \cmd{DeclareIndexNameAlias}\see{aut:bib:fmt}
+%\item Added new \cmd{DeclareIndexListAlias} command\see{aut:bib:fmt}
+%\item Renamed \cmd{biblist} to \cmd{thename}\see{aut:aux:dat}
+%\item Added new \cmd{thelist} command\see{aut:aux:dat}
+%\item Renamed \cmd{bibfield} to \cmd{thefield}\see{aut:aux:dat}
+%\item Renamed \cmd{savelist} to \cmd{savename}\see{aut:aux:dat}
+%\item Added new \cmd{savelist} command\see{aut:aux:dat}
+%\item Renamed \cmd{savelistcs} to \cmd{savenamecs}\see{aut:aux:dat}
+%\item Added new \cmd{savelistcs} command\see{aut:aux:dat}
+%\item Renamed \cmd{iflistundef} to \cmd{ifnameundef}\see{aut:aux:tst}
+%\item Added new \cmd{iflistundef} test\see{aut:aux:tst}
+%\item Renamed \cmd{iflistsequal} to \cmd{ifnamesequal}\see{aut:aux:tst}
+%\item Added new \cmd{iflistsequal} test\see{aut:aux:tst}
+%\item Renamed \cmd{iflistequals} to \cmd{ifnameequals}\see{aut:aux:tst}
+%\item Added new \cmd{iflistequals} test\see{aut:aux:tst}
+%\item Renamed \cmd{iflistequalcs} to \cmd{ifnameequalcs}\see{aut:aux:tst}
+%\item Added new \cmd{iflistequalcs} test\see{aut:aux:tst}
+%\item Renamed \cmd{iflistequalstr} to \cmd{ifnameequalstr}\see{aut:aux:tst}
+%\item Added new \cmd{iflistequalstr} test\see{aut:aux:tst}
+%\item Renamed \cmd{ifcurrentlist} to \cmd{ifcurrentname}\see{aut:aux:tst}
+%\item Added new \cmd{ifcurrentlist} test\see{aut:aux:tst}
+%\item Entry type alias \bibtype{conference} now resolved by \bibtex\see{bib:typ:als}
+%\item Entry type alias \bibtype{mastersthesis} now resolved by \bibtex\see{bib:typ:als}
+%\item Entry type alias \bibtype{phdthesis} now resolved by \bibtex\see{bib:typ:als}
+%\item Entry type alias \bibtype{techreport} now resolved by \bibtex\see{bib:typ:als}
+%\item Entry type alias \bibtype{www} now resolved by \bibtex\see{bib:typ:als}
+%\item Added new custom fields \bibfield{lista} through \bibfield{listf}\see{bib:fld:ctm}
+%\item Changed data type of \bibfield{location}\see{bib:fld:dat}
+%\item Changed data type of \bibfield{origlocation}\see{bib:fld:dat}
+%\item Changed data type of \bibfield{publisher}\see{bib:fld:dat}
+%\item Changed data type of \bibfield{institution}\see{bib:fld:dat}
+%\item Changed data type of \bibfield{organization}\see{bib:fld:dat}
+%\item Modified values of \bibfield{gender} field for \sty{jurabib} compatibility\see{bib:fld:spc}
+%\item Modified and extended \texttt{idem\dots} keys for \sty{jurabib} compatibility\see{aut:lng:key}
+%\item Improved \cmd{addtocategory}\see{use:bib:cat}
+%\item Removed formatting command \cmd{mkshorthand}\see{use:fmt:fmt}
+%\item Added field formatting directive \texttt{shorthandwidth}\see{aut:fmt:ich}
+%\item Added documentation of \cmd{shorthandwidth}\see{aut:fmt:ilc}
+%\item Removed formatting command \cmd{mklabelnumber}\see{use:fmt:fmt}
+%\item Added field formatting directive \texttt{labelnumberwidth}\see{aut:fmt:ich}
+%\item Added documentation of \cmd{labelnumberwidth}\see{aut:fmt:ilc}
+%\item Removed formatting command \cmd{mklabelalpha}\see{use:fmt:fmt}
+%\item Added field formatting directive \texttt{labelalphawidth}\see{aut:fmt:ich}
+%\item Added documentation of \cmd{labelalphawidth}\see{aut:fmt:ilc}
+%\item Renamed \cmd{bibitem} to \cmd{thebibitem}\see{aut:bbx:env}
+%\item Renamed \cmd{lositem} to \cmd{thelositem}\see{aut:bbx:env}
+%\item Modified \cmd{AtBeginBibliography}\see{aut:fmt:hok}
+%\item Added \cmd{AtBeginShorthands}\see{aut:fmt:hok}
+%\item Added \cmd{AtEveryLositem}\see{aut:fmt:hok}
+%\item Extended \sty{showkeys} compatibility to list of shorthands\see{int:pre:cmp}
+%\item Added compatibility code for the \sty{hyperref} package\see{int:pre:cmp}
+%\item Added package option \opt{hyperref}\see{use:opt:pre:gen}
+%\item Added package option \opt{backref}\see{use:opt:pre:gen}
+%\item Added field \bibfield{pageref}\see{aut:bbx:fld}
+%\item Added \cmd{ifhyperref}\see{aut:aux:msc}
+%\item Added \cmd{bibhyperlink}\see{aut:aux:msc}
+%\item Added field formatting directive \texttt{bibhyperlink}\see{aut:fmt:ich}
+%\item Renamed \cmd{ifandothers} to \cmd{ifmorenames}\see{aut:aux:tst}
+%\item Added new \cmd{ifandothers} test\see{aut:aux:tst}
+%\item Removed field \bibfield{moreauthor}\see{aut:bbx:fld}
+%\item Removed field \bibfield{morebookauthor}\see{aut:bbx:fld}
+%\item Removed field \bibfield{moreeditor}\see{aut:bbx:fld}
+%\item Removed field \bibfield{morelabelname}\see{aut:bbx:fld}
+%\item Removed field \bibfield{moretranslator}\see{aut:bbx:fld}
+%\item Removed field \bibfield{morenamea}\see{aut:bbx:fld}
+%\item Removed field \bibfield{morenameb}\see{aut:bbx:fld}
+%\item Removed field \bibfield{morenamec}\see{aut:bbx:fld}
+%\item Updated documentation\see{aut:int}
+%\item Updated documentation\see{aut:bbx:bbx}
+%\item Updated documentation\see{aut:bbx:env}
+%\item Updated documentation\see{aut:bbx:drv}
+%\item Expanded documentation\see{aut:fmt}
+%\item Modified internal \bibtex interface
+%\item Fixed some typos in the manual
+%\item Fixed some bugs
+%
+%\end{release}
+%
+%\begin{release}{0.2}{2006-09-06}
+%
+%\item Added bibliography categories\see{use:bib:cat}
+%\item Added \cmd{DeclareBibliographyCategory}\see{use:bib:cat}
+%\item Added \cmd{addtocategory}\see{use:bib:cat}
+%\item Added \texttt{category} and \texttt{notcategory} filters\see{use:bib:bib}
+%\item Added \cmd{bibbycategory}\see{use:bib:bib}
+%\item Added usage examples for bibliography categories\see{use:use:div}
+%\item Added documentation of configuration file\see{use:cfg:cfg}
+%\item Added documentation of \cmd{ExecuteBibliographyOptions}\see{use:cfg:opt}
+%\item Added documentation of \cmd{AtBeginBibliography}\see{aut:fmt:hok}
+%\item Added \cmd{AtEveryBibitem}\see{aut:fmt:hok}
+%\item Added \cmd{AtEveryCite}\see{aut:fmt:hok}
+%\item Added \cmd{AtEveryCitekey}\see{aut:fmt:hok}
+%\item Added optional argument to \cmd{printtext}\see{aut:bib:dat}
+%\item Added \cmd{ifpage}\see{aut:aux:tst}
+%\item Added \cmd{ifpages}\see{aut:aux:tst}
+%\item Added field \bibfield{titleaddon}\see{bib:fld:dat}
+%\item Added field \bibfield{booktitleaddon}\see{bib:fld:dat}
+%\item Added field \bibfield{maintitleaddon}\see{bib:fld:dat}
+%\item Added field \bibfield{library}\see{bib:fld:dat}
+%\item Added field \bibfield{part}\see{bib:fld:dat}
+%\item Added field \bibfield{origlocation}\see{bib:fld:dat}
+%\item Added field \bibfield{origtitle}\see{bib:fld:dat}
+%\item Added field \bibfield{origyear}\see{bib:fld:dat}
+%\item Added field \bibfield{origlanguage}\see{bib:fld:dat}
+%\item Modified profile of field \bibfield{language}\see{bib:fld:dat}
+%\item Extended entry type \bibtype{book}\see{bib:typ:blx}
+%\item Extended entry type \bibtype{inbook}\see{bib:typ:blx}
+%\item Extended entry type \bibtype{collection}\see{bib:typ:blx}
+%\item Extended entry type \bibtype{incollection}\see{bib:typ:blx}
+%\item Extended entry type \bibtype{proceedings}\see{bib:typ:blx}
+%\item Extended entry type \bibtype{inproceedings}\see{bib:typ:blx}
+%\item Added entry type alias \bibtype{www}\see{bib:typ:als}
+%\item Added compatibility code for the \sty{showkeys} package\see{int:pre:cmp}
+%\item Support printable characters in \bibfield{keyword} and \texttt{notkeyword} filters\see{use:bib:bib}
+%\item Support printable characters in \bibfield{keywords} field\see{bib:fld:spc}
+%\item Ignore spaces after commas in \bibfield{keywords} field\see{bib:fld:spc}
+%\item Internal rearrangement of all bibliography styles
+%\item Fixed various bugs
+%
+%\end{release}
+%
+%\begin{release}{0.1}{2006-09-02}
+%
+%\item Initial public release
+%
+%\end{release}
+
+\end{changelog} 

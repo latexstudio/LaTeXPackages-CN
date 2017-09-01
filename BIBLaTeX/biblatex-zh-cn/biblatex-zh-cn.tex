@@ -1,0 +1,224 @@
+
+%注意:ltxdockit相关的文件包括:btxdockit.sty,ltxdockit.sty,ltxdockit.cls
+%ltxdockit.def,scratcl.cls,tocbasic.sty,ltxdockit.cgf等
+%需要修改文档的排版样式等，可以从这些文件入手去查。
+
+% 使用 ltxdoc.sty 定义的标记命令与效果
+% command string: \cs{foo}		\foo
+% command: \cmd{foo}		\foo
+% environment: \env{foo}		foo
+% length: \len{foo}		\foo
+% count: \cnt{foo}		foo
+% primary key: \prm{foo}		<foo>
+% mandatory prm: \mprm{foo}	{<foo>}
+% optional prm: \oprm{foo}	[<foo>]
+% option: \opt{foo}		foo
+% key-value option: \kvopt{foo}{bar}	foo=bar
+% file name: \file{foo}		foo
+% style name: \sty{foo}		foo
+% binary file: \bin{foo}	foo
+% acronym: acr{Foo}		\textsc{foo}	
+% key-value: \keyval 	<key>=<value>
+
+
+\documentclass{ltxdockit}[2011/03/25]
+\usepackage{btxdockit}
+\usepackage{format-biblatex-zh-cn}
+\usepackage{hyperref}
+\usepackage{zref-xr}
+\setmonofont[Scale=MatchLowercase, Ligatures=TeX]{DejaVu Sans Mono}
+\setmainfont[Ligatures=TeX]{Linux Libertine O}
+\setsansfont[Ligatures=TeX]{Linux Biolinum O}
+%\usepackage[american]{babel}%增加回来，因为一些表述需要用到比如low"=level等
+\usepackage[strict]{csquotes}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{shortvrb}
+\usepackage{pifont}
+\usepackage{microtype}
+\usepackage{typearea}
+\usepackage{mdframed}
+
+\areaset[current]{370pt}{700pt}
+\lstset{
+    basicstyle=\ttfamily,
+    keepspaces=true,
+    upquote=true,
+    frame=single,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}
+}
+\KOMAoptions{numbers=noenddot}
+\addtokomafont{title}{\sffamily}
+\addtokomafont{paragraph}{\spotcolor}
+\addtokomafont{section}{\spotcolor}
+\addtokomafont{subsection}{\spotcolor}
+\addtokomafont{subsubsection}{\spotcolor}
+\addtokomafont{descriptionlabel}{\spotcolor}
+\setkomafont{caption}{\bfseries\sffamily\spotcolor}
+\setkomafont{captionlabel}{\bfseries\sffamily\spotcolor}
+\pretocmd{\cmd}{\sloppy}{}{}
+\pretocmd{\bibfield}{\sloppy}{}{}
+\pretocmd{\bibtype}{\sloppy}{}{}
+\makeatletter
+\patchcmd{\paragraph}
+  {3.25ex \@plus1ex \@minus.2ex}{-3.25ex\@plus -1ex \@minus -.2ex}{}{}
+\patchcmd{\paragraph}{-1em}{1.5ex \@plus .2ex}{}{}
+\makeatother
+
+\MakeAutoQuote{«}{»}
+\MakeAutoQuote*{<}{>}
+\MakeShortVerb{\|}
+
+\newcommand*{\biblatexml}{\sty{biblatexml}\xspace}
+\newcommand*{\biber}{Biber\xspace}
+\newcommand*{\biblatex}{Biblatex\xspace}
+\newcommand*{\biblatexhome}{http://sourceforge.net/projects/biblatex/}
+\newcommand*{\biblatexctan}{http://ctan.org/pkg/biblatex/}
+
+\titlepage{%
+  title={The \biblatex Package},
+  subtitle={Programmable Bibliographies and Citations},
+  url={\biblatexhome},
+  author={Philipp Lehman \\(with Philip Kime, Audrey Boruvka and Joseph Wright)},
+  email={},
+  revision={3.7},
+  date={16/11/2016}}
+
+\hypersetup{%
+  pdftitle={The \biblatex Package},
+  pdfsubject={Programmable Bibliographies and Citations},
+  pdfauthor={Philipp Lehman, Philip Kime},
+  pdfkeywords={tex, latex, bibtex, bibliography, references, citation}}
+
+% tables
+
+\newcolumntype{H}{>{\sffamily\bfseries\spotcolor}l}
+\newcolumntype{L}{>{\raggedright\let\\=\tabularnewline}p}
+\newcolumntype{R}{>{\raggedleft\let\\=\tabularnewline}p}
+\newcolumntype{C}{>{\centering\let\\=\tabularnewline}p}
+\newcolumntype{V}{>{\raggedright\let\\=\tabularnewline\ttfamily}p}
+
+\newcommand*{\sorttablesetup}{%
+  \tablesetup
+  \ttfamily
+  \def\new{\makebox[1.25em][r]{\ensuremath\rightarrow}\,}%
+  \def\alt{\par\makebox[1.25em][r]{\ensuremath\hookrightarrow}\,}%
+  \def\note##1{\textrm{##1}}}
+
+\newcommand{\tickmarkyes}{\Pisymbol{psy}{183}}
+\newcommand{\tickmarkno}{\textendash}
+\providecommand*{\textln}[1]{#1}
+\providecommand*{\lnstyle}{}
+
+% markup and misc
+
+\setcounter{secnumdepth}{4}
+\makeatletter
+
+\newenvironment{nameparts}
+  {\trivlist\item
+   \tabular{@{}ll@{}}}
+  {\endtabular\endtrivlist}
+
+\newenvironment{namedelims}
+  {\trivlist\item
+   \tabularx{\textwidth}{@{}c@{=}l>{\raggedright\let\\=\tabularnewline}X@{}}}
+  {\endtabularx\endtrivlist}
+
+\newenvironment{namesample}
+  {\def\delim##1##2{\@delim{##1}{\normalfont\tiny\bfseries##2}}%
+   \def\@delim##1##2{{%
+     \setbox\@tempboxa\hbox{##1}%
+     \@tempdima=\wd\@tempboxa
+     \wd\@tempboxa=\z@
+     \box\@tempboxa
+     \begingroup\spotcolor
+     \setbox\@tempboxa\hb@xt@\@tempdima{\hss##2\hss}%
+     \vrule\lower1.25ex\box\@tempboxa
+     \endgroup}}%
+   \ttfamily\trivlist
+   \setlength\itemsep{0.5\baselineskip}}
+  {\endtrivlist}
+
+\makeatother
+
+\newrobustcmd*{\Deprecated}{%
+  \textcolor{spot}{\margnotefont Deprecated}}
+\newrobustcmd*{\DeprecatedMark}{%
+  \leavevmode\marginpar{\Deprecated}}
+\newrobustcmd*{\BiberOnly}{%
+  \textcolor{spot}{\margnotefont Biber only}}
+\newrobustcmd*{\BiberOnlyMark}{%
+  \leavevmode\marginpar{\BiberOnly}}
+\newrobustcmd*{\BibTeXOnly}{%
+  \textcolor{spot}{\margnotefont BibTeX only}}
+\newrobustcmd*{\BibTeXOnlyMark}{%
+  \leavevmode\marginpar{\BibTeXOnly}}
+\newrobustcmd*{\LF}{%
+  \textcolor{spot}{\margnotefont Label field}}
+\newrobustcmd*{\LFMark}{%
+  \leavevmode\marginpar{\LF}}
+\newrobustcmd*{\CSdelim}{%
+  \textcolor{spot}{\margnotefont Context Sensitive}}
+\newrobustcmd*{\CSdelimMark}{%
+  \leavevmode\marginpar{\CSdelim}}
+
+% following snippet is based on code by Michael Ummels (TeX Stack Exchange)
+% <http://tex.stackexchange.com/a/13073/8305>
+\makeatletter
+  \newcommand\fnurl@[1]{\footnote{\url@{#1}}}
+  \DeclareRobustCommand{\fnurl}{\hyper@normalise\fnurl@}
+
+\makeatother
+
+\hyphenation{%
+  star-red
+  bib-lio-gra-phy
+  white-space
+}
+
+\begin{document}
+
+\printtitlepage
+
+\begin{trivlist}\setlength{\parskip}{2mm}\setlength{\itemindent}{2em}\item\relax
+	{\hfill\heiti\zihao{3}Biblatex宏包说明文档摘译 \hfill\hspace*{1pt}}\par
+	{\hfill\fangsong\zihao{-4}Zhenzhen Hu\footnote{Email:hzzmail@163.com}\hspace*{1cm}%
+    	Wenbo Sheng \footnote{Email:wbsheng88@foxmail.com}\hfill\hspace*{1pt}}\par
+	{\hfill\kaiti\zihao{-4}{2016-02-08}\hfill\hspace*{1pt}}\par
+	%\begin{quote}
+	{\fangsong\zihao{5}
+译者按:
+之所以摘译biblatex，一是出于对keep texing的兴趣，二是考虑到中文资料里总体介绍latex的资料其实较多，
+反而是在一些专项部分中文资料较少，看宏包的英文说明当然没有问题，但有的文档内容长达几百页，一般用户真心没有精力去看，即便是找一些自己需要的功能也比较麻烦，所以考虑对参考文献的biblatex宏包文档进行摘译，是希望能在这一方面有所贡献。关于这一点Wenbo兄也很有同感，在几年前biblatex还是2.x版本的时候他就深入研究了biblatex并翻译了1--4节很多内容。我在biblatex-gb7714-2015样式宏包中提议翻译biblatex文档之后，我们决定合作来推进这个事情，尽管都只有部分业余时间可以利用，但我们认为只要有空就积累一点，那么终有完成的时候。
+
+如同我在biblatex-gb7714-2015样式宏包说明文档中介绍的那样，biblatex宏包具有很多强大功能比如参考文献表划分、文献集、样式定制、动态数据处理等等，在科技论文或书籍写作中特别有用(尤其是在对参考文献著录和标注格式有特殊要求的情况下)。可以说，biblatex是latex文档写作中参考文献问题的完整解决方案，也一定程度上代表了这一方面的未来趋势。总之，本项目的总体任务是完成biblatex宏包说明文档关键内容的摘译，希望能对使用biblatex和对参考文献样式有深度定制要求的用户有所帮助，当然也希望能使中文latex资料库更为全面和深入。需要说明的是，限于作者水平，其中难免存在一些错误和理解不到位的地方，欢迎批评指正，欢迎@译者邮箱。最后感谢CTEX和Latexstudio论坛，感谢论坛上各位作者关于biblatex参考文献方面的工作分享和经验介绍。
+
+}
+	%\end{quote}
+\end{trivlist}
+%\renewcommand{\contentsname}{目录}
+%\renewcommand{\listtablename}{表格}
+\tableofcontents
+\listoftables
+
+%\printglossary[type=trans,style=longragged3colborder,nopostdot=true,nogroupskip]%long3colborder
+
+\input{Introduction}
+
+\input{DatabaseGuide}
+
+\input{UserGuide}
+
+\input{AuthorGuide}
+
+\input{Appendix}
+
+\end{document}
+%%% Local Variables:
+%%% coding: utf-8
+%%% eval: (auto-fill-mode -1)
+%%% eval: (visual-line-mode)
+%%% End:

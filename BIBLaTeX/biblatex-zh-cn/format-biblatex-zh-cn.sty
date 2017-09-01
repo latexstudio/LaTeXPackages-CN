@@ -1,0 +1,110 @@
+% formats and patches for biblatex-zh-cn
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{format-biblatex-zh-cn}
+
+\RequirePackage{etoolbox}
+\RequirePackage{ltxdockit}
+\RequirePackage{hologo}
+% set Chinese formats
+\RequirePackage[UTF8, scheme=chinese, heading=false]{ctex}
+\RequirePackage{indentfirst}
+
+\RequirePackage[xindy]{glossaries}
+\RequirePackage{glossary-longragged}
+
+\newglossary[glg2]{trans}{gls2}{glo2}{中英文术语对照表}
+\makeglossaries
+
+\loadglsentries{biblatex-localcnstring}
+
+% scheme=chinese 的默认设置
+%\ctexset{listtablename=表格, tablename=表}%还是用两个字和目录两字对应
+
+% 取消 babel 宏包，low"=level等表述由以下代码实现，见 ltxdockit.cfg, line 17
+\catcode`\'=12 \catcode`\"=\active \lccode`\"=`\'
+\def"#1{\ifx#1=\penalty\@M-\hskip\z@skip\else\char`\"#1\fi}
+
+% environment patches for btxdockit.sty
+\renewenvironment*{fieldlist}
+  {\list{}{%
+     \setlength{\labelwidth}{\marglistwidth}%
+     \setlength{\labelsep}{\marglistsep}%
+     \setlength{\leftmargin}{0pt}%
+     \renewcommand*{\makelabel}[1]{\hss\marglistfont##1}}%
+   \def\fielditem##1##2{%
+     \item[##1]%
+     \ltd@pdfbookmark{##1}{##1}%
+     \Field (##2)\par\nobreak
+     \vspace{\itemsep}}%
+   \def\listitem##1##2{%
+     \item[##1]%
+     \ltd@pdfbookmark{##1}{##1}%
+     \ListName (##2)\par\nobreak
+     \vspace{\itemsep}}}
+  {\endlist}
+
+\renewenvironment*{typelist}
+  {\list{}{%
+     \setlength{\labelwidth}{\marglistwidth}%
+     \setlength{\labelsep}{\marglistsep}%
+     \setlength{\leftmargin}{0pt}%
+     \renewcommand*{\makelabel}[1]{\hss\marglistfont##1}}%
+   \def\typeitem##1{%
+     \item[{##1}]%
+     \ltd@pdfbookmark{##1}{##1}}%
+   \def\reqitem{%
+     \par\begingroup\itemsep0.5\itemsep\item
+     \RequireFields\btd@fieldloop}
+   \def\optitem{%
+     \par\begingroup\itemsep0.5\itemsep\item
+     \OptionalFields\btd@fieldloop}}
+  {\endlist}
+
+\def\Field{域}
+\def\ListName{列表}
+\def\RequireFields{必选域：}
+\def\OptionalFields{可选域：}
+
+
+% command patches for ltxdockit.sty
+
+\renewcommand*{\apxref}{\refs{附录}{附录}}
+\renewcommand*{\Apxref}{\refs{附录}{附录}}
+\renewcommand*{\tabref}{\refs{表}{表}}
+\renewcommand*{\Tabref}{\refs{表}{表}}
+
+\renewrobustcmd*{\refs}[3]{%
+  \begingroup
+  \@tempcnta\z@
+  \def\do##1{\advance\@tempcnta\@ne}%
+  \docsvlist{#3}%
+  \@tempcntb\@ne
+  \def\@tempa{\def\@tempa{%
+    \advance\@tempcntb\@ne
+    \ifnumequal{\@tempcnta}{2}
+      { 和 }
+      {、}}}%
+  \def\do##1{\@tempa\ref{##1}}%
+  \ifnumgreater{\@tempcnta}{1}{#2}{#1}~\docsvlist{#3}%
+  \endgroup}
+
+% cancel two-column format in toc defined by ltxdockit.def
+% \g@addto@macro的定义见source2e中的68.1 hooks
+\AtBeginDocument{
+ 	\renewcommand*{\@begintochook}{}
+ 	\renewcommand*{\@endtochook}{}
+    \renewcommand*{\@beginlothook}{}
+    \renewcommand*{\@endlothook}{}
+ 	\setcounter{tocdepth}{3}
+}
+% alias
+\let\kaiti\kaishu
+\def\BibTeX{\hologo{BibTeX}\xspace}
+\def\eTeX{\hologo{eTeX}\xspace}
+\def\XeTeX{\hologo{XeTeX}\xspace}
+\def\LuaTeX{\hologo{LuaTeX}\xspace}
+\def\pdfTeX{\hologo{pdfTeX}\xspace}
+\def\XeLaTeX{\hologo{XeLaTeX}\xspace}
+
+\endinput
