@@ -1,0 +1,195 @@
+% epslatex-cn
+
+\documentclass[oneside,UTF8]{ctexart}
+\usepackage{amsmath}
+\usepackage{nicefrac}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[style=numeric,sorting=nty]{biblatex}
+\usepackage{geometry}
+\usepackage{etoolbox}
+\usepackage{cprotect}
+\usepackage{environ}
+\usepackage[nottoc,section]{tocbibind}
+\usepackage{etoolbox}
+
+\usepackage{placeins}
+\usepackage{fancybox}
+\usepackage[cymk,rgb]{xcolor}
+\usepackage{lscape}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{sidecap}
+\usepackage{rotating}
+\usepackage{wrapfig}
+\usepackage{picinpar}
+\usepackage{psfrag}
+\usepackage{overpic}
+\usepackage{eso-pic}
+
+\usepackage{fancyvrb}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{makeidx}
+\usepackage{hologo}
+\usepackage{array,booktabs}
+\usepackage[nopagecolor=white]{pagecolor}
+\usepackage{afterpage}
+\usepackage{hyperref}
+
+% settings
+\geometry{a4paper,includemp,reversemp,left=0.9in,right=0.85in,top=1in,bottom=1in,%
+	marginparwidth=50pt}
+
+\let\marginpartemp=\marginpar
+\renewcommand{\marginpar}[1]{\reversemarginpar\marginpartemp{\raggedright\CJKfamily{zhkai} #1}}
+
+\defbibheading{mybibintoc}[\refname]{%
+ 	\section*{#1}%
+ 	\phantomsection%
+ 	\addcontentsline{toc}{section}{#1}%
+ 	\label{references}
+ 	\markboth{\MakeUppercase{#1}}{\MakeUppercase{#1}}
+ 	\thispagestyle{plain}}
+%\renewcommand{\marinpar}[1]{\reversemarginpar\marginpartemp{\CJKfamily{zhkai}#1}}
+\graphicspath{{images/}}
+\def\pdfTeX{\hologo{pdfTeX}}
+\def\pdfLaTeX{\hologo{pdfLaTeX}}
+\def\XeTeX{\hologo{XeTeX}}
+\def\LuaTeX{\hologo{LuaTeX}}
+\def\HanTheThanh{\hologo{HanTheThanh}}
+\def\MetaFont{\hologo{METAFONT}}
+\def\MetaPost{\hologo{METAPOST}}
+
+\lstset{
+	basicstyle=\ttfamily\small\color{VerbatimColor},
+	commentstyle=\ttfamily\slshape,
+	language=[LaTeX]{TeX},
+	tabsize=4,
+	xleftmargin=1em}
+\NewEnviron{fixedfigure}[1]{%
+	\noindent\begin{minipage}{#1}%
+		\vspace{\intextsep}
+		\captionsetup{type=figure}%
+		\BODY%
+	\end{minipage}}
+\NewEnviron{fixedtable}[1]{%
+	\noindent\begin{minipage}{#1}%
+		\vspace{\intextsep}
+		\captionsetup{type=table}%
+		\BODY%
+	\end{minipage}}
+
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\prgname}[1]{\textsf{#1}}
+\newcommand{\pkg}[1]{\texttt{#1}}
+\newcommand{\env}[1]{\texttt{#1}}
+\newcommand{\cmd}[1]{{\textcolor{blue}{\texttt{\char`\\#1}}}} % \foo
+\newcommand{\cmdM}[2]{\cmd{#1}\texttt{\{#2\}}} % \foo{bar}
+\newcommand{\cmdO}[2]{\cmd{#1}\texttt{[#2]}} % \foo[bar]
+\newcommand{\cmdMM}[3]{\cmd{#1}\texttt{\{#2\}\{#3\}}} % \foo{bar1}{bar2}
+\newcommand{\cmdOM}[3]{\cmd{#1}\texttt{[#2]\{#3\}}} % \foo[bar1]{bar2}
+\newcommand{\cmdMO}[3]{\cmd{#1}\texttt{\{#2\}[#3]}}
+\newcommand{\cmdOOM}[4]{\cmd{#1}\texttt{[#2][#3]\{#4\}}} % \foo[bar1][bar2]{bar3}
+\newcommand{\cmdMOM}[4]{\cmd{#1}\texttt{\{#2\}[#3]\{#4\}}} % \foo{bar1}[bar2]{bar3}
+\newcommand{\cmdOMM}[4]{\cmd{#1}\texttt{[#2]\{#3\}\{#4\}}}
+\newcommand{\cmdOMOOM}[6]{\cmd{#1}\texttt{[#2]\{#3\}[#4][#5]\{#6\}}}
+\newcommand{\cmdMOMOM}[6]{\cmd{#1}\texttt{\{#2\}[#3]\{#4\}[#5]\{#6\}}}
+\newcommand{\opt}[1]{\texttt{#1}}
+\newcommand{\pkgi}[1]{\pkg{#1}%
+	\index{#1@{\textsf{#1} 宏包}}}
+\makeatletter
+\def\cmdi{\@ifnextchar[{\@@cmdi}{\@cmdi}}
+\def\@cmdi#1{\@@cmdi[#1]{#1}}
+\def\@@cmdi[#1]#2{\cmd{#2}\index{#1@{\texttt{\textbackslash#2} 命令}}}
+\makeatother
+\newcommand{\envi}[1]{\env{#1}%
+	\index{#1@{\texttt{#1} 环境}}}
+\newcommand{\emphi}[1]{\emph{#1}\index{#1}}
+\newcommand{\ascii}{\textsc{ascii}}
+\newcommand{\HR}{\rule{1em}{0.4pt}}
+\newcommand{\percent}{\char37}
+\newcommand{\pt}{\ensuremath{\,\mathtt{pt}}}
+\newcommand{\metacmd}[1]{{\rm\textlangle\it#1\rm\textrangle}}
+
+%test dvips mode
+\newif\ifdvips
+\makeatletter
+\ifdefstring{\Gin@driver}{dvips.def}{\dvipstrue}{\dvipsfalse}
+\makeatother
+
+% store some graphics for accelerating compiling
+\newsavebox{\boxgraphic}
+\newsavebox{\boxgraphictwo}
+\newsavebox{\boxw}
+\newsavebox{\boxrosette}
+\newsavebox{\boxrosettebox}
+\sbox{\boxgraphic}{\includegraphics{graphic.eps}}
+\sbox{\boxgraphictwo}{\includegraphics{graphic2.pdf}}
+\sbox{\boxw}{\includegraphics{w.eps}}
+\sbox{\boxrosette}{\includegraphics{rosette.eps}}
+\sbox{\boxrosettebox}{\includegraphics{rosettebox.eps}}
+
+\newenvironment{narrow}[2]{%
+	\begin{list}{}{%
+			\setlength{\topsep}{0pt}%
+			\setlength{\leftmargin}{#1}%
+			\setlength{\rightmargin}{#2}%
+			\setlength{\listparindent}{\parindent}%
+			\setlength{\itemindent}{\parindent}%
+			\setlength{\parsep}{\parskip}}%
+	\item[]}{\end{list}}
+\DeclareCaptionStyle{BigLeft}{style=default, labelsep=period,
+	font=Large, labelfont=bf,
+	justification=RaggedRight,
+	singlelinecheck=false}
+\DeclareCaptionFont{BigAndBold}{\Large\bfseries}
+\DeclareCaptionLabelFormat{hash}{\bothIfFirst{#1}{ }{\#}#2}
+\DeclareCaptionLabelSeparator{arrow}{\quad\ensuremath{\Rightarrow}\quad}
+\DeclareCaptionFormat{reverse}{#3#2\ensuremath{\ll}#1\ensuremath{\gg}}
+\renewcommand\theContinuedFloat{\alph{ContinuedFloat}}
+
+%% Highlight color definition, from WangLei's epslatex-cn, ver 2000
+\definecolor{highlightcolor}{rgb}{1,1,0.8}
+\definecolor{mygreen}{rgb}{0,0.5,0}
+\definecolor{RoyalBlue}{cmyk}{1,0.50,0,0}
+\definecolor{light}{cmyk}{0,0,0,0.50}
+\definecolor{morelight}{cmyk}{0,0,0,0.20}
+\definecolor{Newlight}{cmyk}{0,0,0,0.20}
+\definecolor{SkyBlue}{cmyk}{0.62,0,0.12,0}
+\definecolor{NiceColor}{rgb}{0.21,0.42,0.73}
+\definecolor{PartColor}{cmyk}{0.12,0.59,0,0}
+\definecolor{VerbatimColor}{cmyk}{0.45,0.86,0,0}
+\definecolor{PageColor}{rgb}{0.21,0.42,0.73}
+
+\addbibresource{ref.bib}
+
+\makeindex
+
+\begin{document}
+
+\include{title}
+
+\include{preface}
+
+\tableofcontents\label{toc}
+
+\include{part1}
+
+\include{part2}
+
+\include{part3}
+
+\include{part4}
+
+\include{part5}
+
+\clearpage
+
+\printbibliography[title={参考文献},heading=mybibintoc]
+
+\clearpage
+\phantomsection\label{sec:index}
+\printindex
+
+\end{document}
