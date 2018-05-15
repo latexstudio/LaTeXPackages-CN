@@ -86,4 +86,4 @@ clean:
 	$(RM) *.tui *.tuo *.tmp *-mpgraph.mp
 
 distclean: clean
-	$(RM) mp*.pdf mp*.ps
+	$(RM) mp?*.pdf mp?*.ps

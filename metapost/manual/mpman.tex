@@ -1,4 +1,4 @@
-% $Id: mpman.tex 2059 2015-04-30 21:56:18Z karl $
+% $Id: mpman.tex 2133 2017-04-03 09:00:28 lscarso $
 % MetaPost manual, by John Hobby.  License at end.
 \listfiles
 \RequirePackage{ifpdf}
@@ -12,8 +12,9 @@
 \fi
 \documentclass{article} % article is NOT the original style
 \usepackage[nofancy]{svninfo}% Access VCS information.
-\svnInfo $Id: mpman.tex 2059 2015-04-30 21:56:18Z karl $
-\newcommand*{\mpversion}{1.999}
+\svnInfo $Id: mpman.tex 2133 2017-04-03 09:00:28 lscarso $
+%\svnInfo $Id: mpman.tex 2059 2017-04-30 21:56:18Z karl $
+\newcommand*{\mpversion}{2.000}
 
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -112,9 +113,9 @@
     \vskip3bp
     \centerline{and the MetaPost development team}
     \vskip20.8bp% actually 31.8bp (-11bp)
-    \centerline{\large documented version: \mpversion}
+    \centerline{\large documented version: \mpversion\ (2.0rc1)}
     \vskip3bp
-    \centerline{\svnInfoMaxToday}
+\tracingall    \centerline{\svnInfoMaxToday} \tracingnone
     \vfil
     \vfil
     \vfil
@@ -179,8 +180,8 @@ written about MetaPost.  For general help, try the
 \url{http://tug.org/mailman/listinfo/metapost}.
 
 The development is currently hosted at
-\url{http://foundry.supelec.fr/projects/metapost/}; visit this site for
-the current development team members, sources, and much else.
+\url{https://serveur-svn.lri.fr/svn/modhel/metapost}; visit this site for
+the current development team members and  sources (currently no web interface, only anonymouse svn access).
 
 Please report bugs and request enhancements either on the
 \url{metapost@tug.org} list, or through the address given above.
