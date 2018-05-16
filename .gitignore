@@ -242,4 +242,4 @@ TSWLatexianTemp*
 *.spl
 
 # 各翻译项目生成的文档pdf
-metapost/tutorial/previewer.pdf
+metapost/tutorial/mpintro.pdf
