@@ -20,7 +20,11 @@ manual：
 
 
 ## 编译
-- manual  <- 需要texexec <- 需要[ruby](https://rubyinstaller.org/downloads/)
-	然后根目录直接 `make pdf`
-- tutorial 在我的电脑上 直接 `make pdf` 报错  
-	把 Makefile 里面的 `pdflatex` 改为 `xelatex` 则可以正常编译
+
+1. 使用 Makefile
+	- manual  <- 需要texexec <- 需要[ruby](https://rubyinstaller.org/downloads/)
+		然后根目录直接 `make pdf`
+	- tutorial 在我的电脑上 直接 `make pdf` 报错  
+		把 Makefile 里面的 `pdflatex` 改为 `xelatex` 则可以正常编译
+2. 使用 .bat 
+	- 安装好 TeXLive 后双击 `makePDF.bat` 即可生成pdf文件
