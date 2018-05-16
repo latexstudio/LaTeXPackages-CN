@@ -46,9 +46,9 @@
 \StartTitlePage
 \centerline{\definedfont[TitleFont at 50pt]{\MPLIB}}
 \blank[3*line]
-\centerline{\definedfont[SubTitleFont at 24pt]{API documentation, version 1.800}}
+\centerline{\definedfont[SubTitleFont at 24pt]{API documentation, version 2.000}}
 \blank[3*line]
-\centerline{Taco Hoekwater, September 2012}
+\centerline{Taco Hoekwater, September 2012 -- Luigi Scarso, April 2017}
 \StopTitlePage
 
 \section{Table of contents}
@@ -382,6 +382,14 @@ immediately after the call to this function.
 
 Returns the current value of the interpreter error state, as a \type{mp_history_state}.
 This function is useful after \type{mp_initialize}.
+
+\cfunction{boolean }{mp_finished}{(MP mp)}
+
+Returns the current value of \type{mp->finished}.
+This function is useful to check if \type{mp_execute} will execute the string, because
+if \type{mp->finished} is \type{true} it will return after resetting the streams.
+
+
 
 \cfunction{int }{mp_run}{(MP mp)}
 
