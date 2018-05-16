@@ -242,4 +242,10 @@ TSWLatexianTemp*
 *.spl
 
 # 各翻译项目生成的文档pdf
+
+## Metapost-base
 metapost/tutorial/mpintro.pdf
+metapost/manual/mpman.pdf
+metapost/manual/mpboxes.pdf
+metapost/manual/mpgraph.pdf
+metapost/manual/mplibapi.pdf

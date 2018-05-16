@@ -1,9 +1,25 @@
 @echo off
-del  *.toc /s
-del  *.out  /s
-del  *.aux  /s
-del  *.log  /s
-del  *.bak  /s
-del  document\*.bak  /s 
-del  texcode\*.bak  /s
+
+rem .tex temp file
+del *.aux
+del *.out
+del *.log
+del *.toc
+
+rem bibtex temp file
+del *.bbl
+del *.blg
+
+rem makeidx temp file
+del *.idx
+del *.ilg
+del *.ind
+: del *.ist
+
+rem metapost pic file
+del *.mps
+del *.mpx
+del *.tui
+del *.tuo
+del *.tmp
 
