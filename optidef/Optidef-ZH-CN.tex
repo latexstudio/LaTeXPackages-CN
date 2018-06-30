@@ -1,0 +1,688 @@
+ % !Mode:: "TeX:UTF-8"
+\documentclass[UTF8]{ctexart}
+\usepackage[short]{optidef}
+\usepackage[hidelinks=true]{hyperref}
+\xeCJKsetup{
+	AutoFakeSlant = true
+	}
+\xeCJKsetslantfactor{0.17}
+\linespread{1.667}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage{minted}
+\usepackage{amsmath,amssymb,amsfonts}
+\title{\textbf{Optidef}\\一个用于最优化问题的\LaTeX{}宏包\\Version-2.7}
+\author{Jesus Lago\footnote{翻译：夜神小哥哥}}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\section{功能介绍}\label{sec:intro}
+本包为最优化问题的写作提供了一个标准的环境。最重要的功能如下：
+\begin{enumerate}
+\item 宏包参考了最优化问题使用中的三个不同的方式：无等式引用，这个问题可以通过一个标签(label)引用，每个公式有一个单独的引用。更详细的介绍参考第3节和第4
+\item 宏包定义了两种尺寸：一个长的一个短的。更详细的介绍请参考第3节和第5节。
+\item 宏包允许四种不同的约束位置的输出，更详细的介绍请参考第3节和第6节。
+\item 宏包允许给约束一个限制数，更详细的介绍请参考第3.2节。
+\item 四种不同问题：\emph{minimize, maximize, arg min} and \emph{arg max}，更详细的介绍参考第3节和第4。
+\item 在不服从问题对其格式或问题结构的情况下，目标函数可以断开为多行。更详细的介绍请参考第7节。
+\end{enumerate}
+\section{宏包的使用}
+通过直接将
+\begin{minted}[stepnumberfromfirst,linenos,breaklines,breakanywhere,style=colorful]{latex}
+\usepackage{optidef}
+\end{minted}
+添加到文档导言区引用本包。添加本包时，有三个选项可以使用，\mintinline{latex}{short}，\mintinline{latex}{nocaomma}以及\mintinline{latex}{c1}\mintinline{latex}{c2}或者\mintinline{latex}{c3}：
+\begin{minted}[stepnumberfromfirst,linenos,breaklines,breakanywhere,style=colorful]{latex}
+\usepackage[short,c1|c2|c3,nocomma]{optidef}
+\end{minted}
+第一个选项修改默认的最优化问题的长格式为短格式；有关短格式的更详细的解释（包括示例）查看第5节。
+
+选项\mintinline{latex}{c1}\mintinline{latex}{c2}和\mintinline{latex}{c3}改变默认的约束条件格式；默认格式是格式0（在第6节定义）；\mintinline{latex}{c1}\mintinline{latex}{c2}或者\mintinline{latex}{c3}分别改变默认的约束格式为格式1，2和3。有关这四种格式的更详细的说明和示例，我们可以参考第6节。
+
+关于\mintinline{latex}{nocaomma}选项参考第8节。有关如何使用本包的详细说明，且看下节分解。
+
+\section{环境语法定义}
+设\mintinline{latex}{Const.i}表示约束$i$，\mintinline{latex}{LHS.i}表示约束$i$的左边，而对应的\mintinline{latex}{RHS.i}表示约束$i$的右边，定义一般的有$N$个约束的最优化问题的基本结构如下：
+\begin{minted}[stepnumberfromfirst,stepnumber=2,linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini#}|sizeFormat|[constraintFormat]
+{optimizationVariable}
+{objectiveFunction\label{objective}}
+{\label{optimizationProblem}}
+{optimizationResult}
+\addConstraint{LHS.1}{RHS.1\label{Const1}}{extraConst1}
+\addConstraint{LHS.2}{RHS.2\label{Const2}}{extraConst2}
+.
+.
+\addConstraint{LHS.N}{RHS.N\label{ConstN}}{extraConstN}
+\end{mini#}
+\end{minted}
+\subsection{问题参数的定义}
+\begin{enumerate}
+\item \mintinline{latex}{mini#}：定义环境的类型的引用。这里有四种环境：\mintinline{latex}{mini}，\mintinline{latex}{maxi}，\mintinline{latex}{argmini}以及\mintinline{latex}{argmaxi}。有三种类型的引用：\mintinline{latex}{mini}，\mintinline{latex}{mini*}以及\mintinline{latex}{mini!}。详细请看第四节。
+\item (可选)\mintinline{latex}{sizeFormat}：定义问题大小格式的可选参数。可能的值：
+\begin{itemize}
+\item \mintinline{latex}{l}：长格式，在第5节定义。
+\item \mintinline{latex}{s}：长格式，在第5节定义。
+\end{itemize}
+\item (可选)\mintinline{latex}{constraintFormat}：改变约束格式的可选参数。参数\mintinline{latex}{constraintFormat}可使用以下值：
+\begin{itemize}
+\item \mintinline{latex}{0}：对应第6节的标准定义。
+\item \mintinline{latex}{1}：对应第6节的可选项1。
+\item \mintinline{latex}{2}：对应第6节的可选项2。
+\item \mintinline{latex}{3}：对应第6节的可选项3。
+\end{itemize}
+\item \mintinline{latex}{optimizationVariable}：问题中的最优化变量范围，如：$\omega\in\mathfrak{R}^N$。
+\item \mintinline{latex}{objectiveFunction\label{objective}}：最小化\/最大化一个函数为一个最优化变量函数，如$\|\omega\|_2$。如果需要，目标函数标签应该包含在这一项里面
+\item \mintinline{latex}{\label{optimizationProblem}}：定义最优化问题的主要引用和一般引用。这个选项在\mintinline{latex}{mini}和\mintinline{latex}{mini!}环境中使用。在\mintinline{latex}{mini*}环境中应该置空，也就是\mintinline{latex}{{}}，\textbf{g不能省略}。
+\item \mintinline{latex}{optimizationResult}：用来表达最优化问题结果的选项，如$J(\omega^*)=$。若不需要，请置空，\textbf{g不能省略}。
+\end{enumerate}
+
+最后两个定义的问题参数，\mintinline{latex}{optimizationProblem}和\mintinline{latex}{optimizationResult}，可选。而且，为了增强问题的可读性，在第7个参数中，可断行已经实现；不幸的是，可断行和可选参数不兼容，这两个参数不得不强制处理。
+\subsection{添加约束}
+在定义了问题参数之后，本环境可以接受定义无限个约束。下面这些命令可用于定义约束：
+\begin{minted}[stepnumberfromfirst,stepnumber=2,linenos,breaklines,breakanywhere,style=colorful]{latex}
+\addConstraint{LHS.k}{RHS.k\label{Const.k}}{extraConst.k}
+\end{minted}
+
+命令接受以下三个不同的参数：
+\begin{enumerate}
+\item \mintinline{latex}{LHS.k}：约束$k$的左侧，如$3w^\mathsf{T}w$。
+\item (可选)\mintinline{latex}{RHS.k\label{Const.k}}：约束$k$的右侧，如果等式需要在等号和不等号处对其，如$\leq\|w\|_\infty$。若需要，约束标签也应该包含在此项中。
+\item (可选)\mintinline{latex}{extraConst.k}：给约束信息添加一个额外的对齐点。一个例子就是约束名。相关请查看例11.10或第6.5节。
+\end{enumerate}
+\subsubsection{约束引用}
+注意到约束的标签通常包含在右侧表达式内，并且它只在\mintinline{latex}{mini!}环境中起作用。目标函数的标签也可以以同样的方式引入。
+\section{环境类型}
+基于引用类型，这里有四种基本的环境可以使用：
+\begin{enumerate}
+\item \textbf{mini}环境用来定义只有一个标签的问题
+	\begin{mini}
+		{w}{f(w)+R(w+6x)}
+		{\label{eq:Ex1}}{}
+		\breakObjective{+L(x)}
+		\addConstraint{g(w)}{=0}
+	\end{mini}
+\item 如果问题不需要引用可以使用\textbf{mini*}环境：
+\begin{mini*}
+		{w}{f(w)+ R(w+6x)}
+		{}{}
+		\addConstraint{g(w)}{=0}
+	\end{mini*}
+\item 如果每个等式都需要引用，可以使用\textbf{mini!}环境：
+\begin{mini!}
+		{w}{f(w)+ R(w+6x)\label{eq:Ex2}}
+		{\label{eq:Ex1}}{}
+		\addConstraint{g(w)}{=0}
+	\end{mini!}
+\item \textbf{minie}环境：和\textbf{mini!}环境同样的功能，并且在babel包中某些语言中，在使用\textsf{optidef}包的时候，可替代\textbf{mini!}。更详细的内容参考第10.2节。
+\end{enumerate}
+\noindent 此外，这里有四种基本的最优化问题的定义：
+\begin{enumerate}
+	\item \textbf{mini}环境:
+	\begin{mini}
+		{w}{f(w)+ R(w+6x)}
+		{}{}
+		\addConstraint{g(w)}{=0}
+	\end{mini}
+	\item The \textbf{maxi}环境:
+	\begin{maxi}
+		{w}{f(w)+ R(w+6x)}
+		{}{}
+		\addConstraint{g(w)}{=0}
+	\end{maxi}	
+	\item The \textbf{argmini}环境:
+	\begin{argmini}
+		{w}{f(w)+ R(w+6x)}
+		{}{}
+		\addConstraint{g(w)}{=0}
+	\end{argmini}	
+	\item The \textbf{argmaxi}环境:
+	\begin{argmaxi}
+		{w}{f(w)+ R(w+6x)}
+		{}{}
+		\addConstraint{g(w)}{=0}
+	\end{argmaxi}
+\end{enumerate}
+\section{长短输出格式}
+\label{sec:longshort}
+本包允许定义两个不同的问题尺寸：一个长格式和一个短格式。
+\subsection{长格式}
+通过选择\verb|sizeFormat|=l. 就可以使用\textit{subject to}和\textit{minimize/maximize}
+\begin{mini*}|l|
+	{w}{f(w)+ R(w+6x)}{}{}
+	\addConstraint{g(w)}{=0}
+\end{mini*}
+\subsection{短格式}
+通过选择\verb|sizeFormat|=s. 用来替代\textit{s.t.}和\textit{min/max}
+\begin{mini*}|s|
+	{w}{f(w)+ R(w+6x)}{}{}
+	\addConstraint{g(w)}{=0}
+\end{mini*}
+
+\noindent 默认是长格式。要想把默认格式改为短格式，在引用宏包时需要加上\verb|short|选项:
+\begin{minted}[stepnumberfromfirst,stepnumber=2,linenos,breaklines,breakanywhere,style=colorful]{latex}
+\usepackage[short]{optidef}
+\end{minted}
+\section{约束的输出格式}
+\label{sec:format}
+对于约束的位置有四种输出格式。它们由环境参数\verb|constraintFormat|控制。
+\subsection{选项0}
+在这个选项中，约束被放在\textit{subject to}的右侧，并且与目标函数对齐。而且它有第二个对齐点在$=,~\leq,~\geq$符号上：
+ 	\begin{mini}
+ 		{w}{f(w)+ R(w+6x)}
+ 		{\label{eq:Ex1}}{}
+ 		\addConstraint{g(w)+h(w)}{=0}
+ 		\addConstraint{t(w)}{=0.}
+ 	\end{mini}
+
+\noindent	如果没有格式选项设置那么代表默认选项. 或者，也可以通过设置\verb|constraintFormat|=0来设置默认选项.  
+
+\subsection{选项1} 	
+	设置\verb|constraintFormat|=1. 它把约束放在\textit{subject to}下方，并且使这些约束在等于不等于符号处对齐：
+ 	\begin{mini}[1]
+ 		{w}{f(w)+ R(w+6x)}
+ 		{\label{eq:Ex1}}{}
+ 		\addConstraint{g(w)+h(w)}{=0}
+ 		\addConstraint{t(w)}{=0.}
+ 	\end{mini}
+     
+ \subsection{选项2} 		
+  	设置\verb|constraintFormat|=2. 使所有约束与目标函数对齐.
+  	\begin{mini}[2]
+  		{w}{f(w)+ R(w+6x)}
+  		{\label{eq:Ex1}}{}
+  		\addConstraint{g(w)+h(w)}{=0}
+  		\addConstraint{t(w)}{=0.}
+  	\end{mini}
+      
+ \subsection{选项3} 		
+ 	设置\verb|constraintFormat|=3. 使所有约束在\textit{subject to}下方对齐:
+ 	\begin{mini}[3]
+ 		{w}{f(w)+ R(w+6x)}
+ 		{\label{eq:Ex1}}{}
+ 		\addConstraint{g(w)+h(w)}{=0}
+ 		\addConstraint{t(w)}{=0.}
+ 	\end{mini}
+     
+\begin{minted}[stepnumberfromfirst,stepnumber=2,linenos,breaklines,breakanywhere,style=colorful]{latex}
+\usepackage[c1|c2|c3]{optidef}
+\end{minted} 
+
+ \subsection{额外的对齐选项} 		
+ \label{sec:extraAlign}
+ 默认情况下，约束有两个对齐元素。然而，也可以使用第三个对齐点来设置一些约束特征。一个完整的使用约束名的示例：
+\begin{mini*}
+	{w}{f(w)+ R(w+6x)}{}{}
+	\addConstraint{g(w)+h(w)}{=0,}{\text{(Topological Constraint)}}
+	\addConstraint{l(w)}{=5w,\quad}{\text{(Boundary Constraint)}}
+\end{mini*} 
+或者约束的索引：
+\begin{mini*}
+	{w,u}{f(w)+ R(w+6x)}{}{}
+	\addConstraint{g(w_k)+h(w_k)}{=0,}{k=0,\ldots,N-1}
+	\addConstraint{l(w_k)}{=5u,\quad}{k=0,\ldots,N-1}
+\end{mini*}
+可以设置第三个输入参数\verb|\addConstraint|来添加额外的对齐点。一个使用前一示例的最后一个约束可以是这样：
+\begin{minted}[stepnumberfromfirst,stepnumber=2,linenos,breaklines,breakanywhere,style=colorful]{latex}
+\addConstraint{l(w_k)}{=5u,\quad}{k=0,\ldots,N-1}
+\end{minted} 
+
+\subsection{默认格式}
+默认格式是选项0。可以在整个文档层面修改默认模式修改默认选项，在引用宏包的时候，使用\verb|c1|, \verb|c2|, \verb|c3|, 三个选项之一，例如：
+
+\section{将目标函数断开为多行}
+\label{sec:breakObj}
+在很多情况下，人们会遇到这种问题，在一个最优化问题中，有一个很长的目标函数，无法将其放在单独的一行中。在这种情况下，我们期望断行剩下的文章讨论断行问题。由于，可以使用\verb|\breakObjective|命令。想法是这样的，如果目标函数可以被分成$n$个不同的函数，如$f_1,\ldots,f_n$, 默认目标函数参数可以引入$f_1$或者其他，我们可以在\verb|\addConstraint|命令之前引入$n-1$个\verb|\breakObjective|($f_k$), $\forall k=2,\ldots,n$这样的声明。
+
+我们用一个示例来说明这种情况。我们可以从之前问题中考虑这样一个例子：
+
+\begin{mini}
+	{w,u}{f(w)+ R(w+6x)}{}{}
+	\addConstraint{g(w_k)+h(w_k)}{=0,}{k=0,\ldots,N-1}
+	\addConstraint{l(w_k)}{=5u,\quad}{k=0,\ldots,N-1}
+\end{mini}
+如果现在价值函数太长，如：
+\[
+f(w)+ R(w+6x)+ H(100w-x*w/500)-g(w^3-x^2*200+10000*w^5)
+\]
+我们可以像这样拆分它：
+
+\begin{mini}
+{w,u}{f(w)+ R(w+6x)+ H(100w-x*w/500)}{}{}
+\breakObjective{-g(w^3-x^2*200+10000*w^5)}
+\addConstraint{g(w_k)+h(w_k)}{=0,}{k=0,\ldots,N-1}
+\addConstraint{l(w_k)}{=5u,\quad}{k=0,\ldots,N-1}
+\end{mini}
+参过简单的使用如下命令：
+
+\begin{minted}[stepnumberfromfirst,stepnumber=2,linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini*}
+{w,u}{f(w)+ R(w+6x)+ H(100w-x*w/500)}{}{}
+\breakObjective{-g(w^3-x^2*200+10000*w^5)}
+\addConstraint{g(w_k)+h(w_k)}{=0,}{k=0,\ldots,N-1}
+\addConstraint{l(w_k)}{=5u,\quad}{k=0,\ldots,N-1}
+\end{mini*}
+\end{minted}
+
+注意\verb|\breakObjective|的具体位置是很重要的。为了正常工作，我们不得不在\verb|\addConstraint|命令之前以及环境参数之后定义该对象；如在任何情况下我们应该在目标函数第一部分之后和强制环境参数结束之前使用该命令。
+
+\section{约束后面的默认逗号}
+\label{sec:comma}
+默认情况下，除了最后一个约束外，算法在所有约束结束位置添加一个逗号。实现这个功能是由于数学概念的正确性。另外，可以通过在引入宏包时设置~\verb|nocomma|选项来去除逗号：
+
+\begin{minted}[stepnumberfromfirst,stepnumber=2,linenos,breaklines,breakanywhere,style=colorful]{latex}
+\usepackage[nocomma]{optidef}
+\end{minted}
+
+\section{长的最优化变量}
+长的最优化变量的标准形式如下：
+
+\begin{mini!}
+	{x_0,u_0,x_1,\hdots,u_{N-1},x_N}
+	{\sum_{k=0}^{N-1} L(x_k,u_k)\!\!+\!\!E(x_N)\label{OCPobj}}
+	{\label{eq:OCP}}{}
+	\addConstraint{x_{k+1}-f(x_k,u_k)}{=  0, \label{dOCP:modelc}\quad k=0,\dots,N-1}
+	\addConstraint{h(x_k,u_k)}{\leq 0,  \quad k=0,\dots,N-1}
+	\addConstraint{r(x_0,x_N)}{= 0.  \label{dOCP:boundary}}
+\end{mini!}
+
+\noindent 减少较大的可变距离的一种可能的方式是使用：\begin{verbatim}
+\substack{x_0,u_0,x_1,\hdots,\\u_{N-1},x_N}
+\end{verbatim}
+命令来把它们堆积一起。
+
+\begin{mini!}
+	{\substack{x_0,u_0,x_1,\hdots,\\ u_{N-1},x_N}}
+	{\sum_{k=0}^{N-1} L(x_k,u_k)\!\!+\!\!E(x_N)\label{OCPobj}}
+	{\label{eq:OCP}}{}
+	\addConstraint{x_{k+1}-f(x_k,u_k)}{=  0, \label{dOCP:modelc}\quad k=0,\dots,N-1}
+	\addConstraint{h(x_k,u_k)}{\leq 0,  \quad k=0,\dots,N-1}
+	\addConstraint{r(x_0,x_N)}{= 0.  \label{dOCP:boundary}}
+\end{mini!}
+
+\section{与其它宏包的兼容问题}
+已经有与两个不同的宏包的兼容问题被提交上来，这两个包是cleveref和babel.
+\subsection{Cleveref}
+在cleveref与optidef包同时使用的时候，可以通过这两种方法来解决问题：
+
+\begin{enumerate}
+	\item 正如cleveref包说明文档中所说，迷秒有包需要在cleveref包之前加载。
+	\item 为了避免这种情况，optidef环境中的\verb|\label|命令得用被保护的相对应的命令\verb|\protect\label|替代。这种需要是由于标准\LaTeX{}的移动参数和脆弱命令问题\footnote{\url{goo.gl/wmKbNU}}.
+\end{enumerate} 
+
+\noindent 考虑如下代码示例，其中同时使用了两种方法：
+
+\begin{minted}[stepnumberfromfirst,stepnumber=2,linenos,breaklines,breakanywhere,style=colorful]{latex}
+  \documentclass{article}
+  \usepackage{optidef}
+  \usepackage{cleveref}
+  
+  \begin{document}
+  
+  \begin{mini!}
+    {w}{f(w)+ R(w+6x) \protect\label{eq:ObjectiveExample1}}
+    {\label{eq:Example1}}{}
+    \addConstraint{g(w)}{=0 \protect\label{eq:C1Example3}}
+    \addConstraint{n(w)}{= 6 \protect\label{eq:C2Example1}}
+    \addConstraint{L(w)+r(x)}{=Kw+p \protect\label{eq:C3Example1}}
+  \end{mini!}
+
+  Example labels: \cref{eq:Example1} and \cref{eq:ObjectiveExample1}.
+
+  \end{document}
+\end{minted}
+
+第二步也可以这样，如保护\verb|\label|命令，这个命令可以在导言区鲁棒化，然后\verb|\protect|命令就不再需要了。为了鲁棒化\verb|\label|命令，以下代码需要添加到导言区：
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\usepackage{etoolbox}
+\robustify{\label} 
+\end{minted}
+
+\subsection{Babel}
+\label{sec:babel}
+在引用babel包的同时使用一些特定的语言的时候，如法语，\verb|mini!|环境会报错，由于感叹号的使用。 
+
+这个问题已经在Optidef 2.7里面得到了解决，其中\verb|mini!|的可替代方案是\verb|minie|环境环境的引入。这两个环境有同样的功能，但是在使用babel包的时候，推荐使用\verb|minie|环境来避免以上问题。 
+
+
+\section{例子}
+\subsection{例1 - mini环境}
+代码如下:
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini}
+{w}{f(w)+ R(w+6x)}
+{\label{eq:Example1}}{}
+
+\addConstraint{g(w)}{=0} 
+\addConstraint{n(w)}{= 6}
+\addConstraint{L(w)+r(x)}{=Kw+p}
+\addConstraint{h(x)}{=0.}
+\end{mini}
+\end{minted}
+
+
+\noindent 输出:
+
+\begin{mini}
+	{w}{f(w)+ R(w+6x)}
+	{\label{eq:Ex11}}{}
+	\addConstraint{g(w)}{=0}
+	\addConstraint{n(w)}{= 6}
+	\addConstraint{L(w)+r(x)}{=Kw+p}
+	\addConstraint{h(x)}{=0.}
+\end{mini}
+
+\subsection{例2 - mini*环境}
+另一种情况:
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini*}
+{w}{f(w)+ R(w+6x)}
+{}{}
+
+\addConstraint{g(w)}{=0}   
+\addConstraint{n(w)}{= 6,}
+\addConstraint{L(w)+r(x)}{=Kw+p}
+\addConstraint{h(x)}{=0.}  
+\end{mini*}
+\end{minted}
+
+\noindent 几乎相同的输出，只是移除了引用:
+
+\begin{mini*}
+	{w}{f(w)+ R(w+6x)}
+	{}{}
+	\addConstraint{g(w)}{=0}
+	\addConstraint{n(w)}{= 6}
+	\addConstraint{L(w)+r(x)}{=Kw+p}
+	\addConstraint{h(x)}{=0.}
+\end{mini*}
+
+\subsection{例3 - mini!环境}
+
+\noindent 最后是多引用环境输出:
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini!}
+{w}{f(w)+ R(w+6x) \label{eq:ObjectiveExample1}}
+{\label{eq:Example1}}{}
+
+\addConstraint{g(w)}{=0 \label{eq:C1Example3}}
+\addConstraint{n(w)}{= 6 \label{eq:C2Example1}}
+\addConstraint{L(w)+r(x)}{=Kw+p \label{eq:C3Example1}}
+\addConstraint{h(x)}{=0. \label{eq:C4Example1}}
+\end{mini!}
+\end{minted}
+
+\begin{mini!}
+	{w}{f(w)+ R(w+6x)\label{eq:ObjectiveExample3}}
+	{\label{eq:Example3}}
+	{}
+	\addConstraint{g(w)}{=0 \label{eq:C1Example3}}
+	\addConstraint{n(w)}{= 6 \label{eq:C2Example3}}
+	\addConstraint{L(w)+r(x)}{=Kw+p \label{eq:C3Example3}}
+	\addConstraint{h(x)}{=0.\label{eq:C4Example3}}
+\end{mini!}
+
+\subsection{例4 - 问题结果}
+
+\noindent 添加一个问题结果：
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini}
+{w}{f(w)+ R(w+6x)}
+{\label{eq:Example1}}
+{J(w^*)=}
+
+\addConstraint{g(w)}{=0}
+\addConstraint{n(w)}{= 6}
+\addConstraint{L(w)+r(x)}{=Kw+p}
+\addConstraint{h(x)}{=0.}
+\end{mini}
+\end{minted}
+
+\noindent 输出:
+
+\begin{mini}
+	{w}{f(w)+ R(w+6x)}
+	{\label{eq:Ex1}}{J(w^*)~=~}
+	\addConstraint{g(w)}{=0}
+	\addConstraint{n(w)}{= 6}
+	\addConstraint{L(w)+r(x)}{=Kw+p}
+	\addConstraint{h(x)}{=0.}
+\end{mini}
+
+\subsection{例5 - 短格式}
+
+\noindent 添加短格式参数:
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini}|s|
+{w}{f(w)+ R(w+6x)}
+{\label{eq:Example1}}
+{}
+
+\addConstraint{g(w)}{=0}
+\addConstraint{n(w)}{= 6}
+\addConstraint{L(w)+r(x)}{=Kw+p}
+\addConstraint{h(x)}{=0.}
+\end{mini}
+\end{minted}
+
+\noindent 输出:
+
+\begin{mini}|s|
+	{w}{f(w)+ R(w+6x)}
+	{\label{eq:Ex1}}{}
+	\addConstraint{g(w)}{=0}
+	\addConstraint{n(w)}{= 6}
+	\addConstraint{L(w)+r(x)}{=Kw+p}
+	\addConstraint{h(x)}{=0.}
+\end{mini}
+
+\subsection{例6 - 约束选项1}
+
+\noindent 若引入1作为可选参数, 第一个约束会在\textit{subject to}在正下方左对齐.
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini}[1]
+{w}{f(w)+ R(w+6x)}
+{\label{eq:Example1}}
+{}
+
+\addConstraint{g(w)}{=0}
+\addConstraint{n(w)}{= 6}
+\addConstraint{L(w)+r(x)}{=Kw+p}
+\addConstraint{h(x)}{=0.}
+\end{mini}
+\end{minted}
+\noindent 输出:
+
+\begin{mini}[1]
+	{w}{f(w)+ R(w+6x)}
+	{\label{eq:Ex1}}{}
+	\addConstraint{g(w)}{=0}
+	\addConstraint{n(w)}{= 6}
+	\addConstraint{L(w)+r(x)}{=Kw+p}
+	\addConstraint{h(x)}{=0.}
+\end{mini}
+
+\subsection{例7 - 约束选项2}
+
+\noindent 若引入2作为可选参数，比上约束会出现在\textit{subject to}的右侧，并且只有一个单独的对齐点。
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini}[2]
+{w}{f(w)+ R(w+6x)}
+{\label{eq:Example1}}
+{}
+
+\addConstraint{g(w)}{=0}
+\addConstraint{n(w)}{= 6}
+\addConstraint{L(w)+r(x)}{=Kw+p}
+\addConstraint{h(x)}{=0.}
+\end{mini}
+\end{minted}
+
+\noindent 输出:
+
+\begin{mini}[2]
+	{w}{f(w)+ R(w+6x)}
+	{\label{eq:Ex1}}{}
+	\addConstraint{g(w)}{=0}
+	\addConstraint{n(w)}{= 6}
+	\addConstraint{L(w)+r(x)}{=Kw+p}
+	\addConstraint{h(x)}{=0.}
+\end{mini}
+
+\subsection{例8 - 约束选项3}
+
+\noindent 若引入3作为可选参数, 第一个约束会出现在\textit{subject to}下方与之左对齐，且只有一个对齐点。
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini}[3]
+{w}{f(w)+ R(w+6x)}
+{\label{eq:Example1}}
+{}
+
+\addConstraint{g(w)}{=0}
+\addConstraint{n(w)}{= 6}
+\addConstraint{L(w)+r(x)}{=Kw+p}
+\addConstraint{h(x)}{=0.}
+\end{mini}
+\end{minted}
+
+\noindent 输出:
+
+\begin{mini}[3]
+	{w}{f(w)+ R(w+6x)}
+	{\label{eq:Ex1}}{}
+	\addConstraint{g(w)}{=0}
+	\addConstraint{n(w)}{= 6}
+	\addConstraint{L(w)+r(x)}{=Kw+p}
+	\addConstraint{h(x)}{=0.}
+\end{mini}
+
+\subsection{例9 - 长目标函数的分割}
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini*}
+{w,u}{f(w)+ R(w+6x)+ H(100w-x*w/500)}{}{}
+\breakObjective{-g(w^3-x^2*200+10000*w^5)}
+\addConstraint{g(w_k)+h(w_k)}{=0,}
+\addConstraint{l(w_k)}{=5u,\quad}
+\end{mini*}
+\end{minted}
+输出:
+\begin{mini}
+	{w,u}{f(w)+ R(w+6x)+ H(100w-x*w/500)}{}{}
+	\breakObjective{-g(w^3-x^2*200+10000*w^5)}
+	\addConstraint{g(w_k)+h(w_k)}{=0}
+	\addConstraint{l(w_k)}{=5u.}
+\end{mini}
+
+
+\subsection{例9 - 约束额外对齐}
+\label{ex:extra}
+参过添加对齐点附加约束名称：
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini*}
+{w}{f(w)+ R(w+6x)}
+{}{}
+\addConstraint{g(w)}{=0,}{ \quad  \text{(Dynamic constraint)}}
+\addConstraint{n(w)}{= 6,}{ \quad  \text{(Boundary constraint)}}
+\addConstraint{L(w)+r(x)}{=Kw+p,}{ \quad  \text{(Random constraint)}}
+\addConstraint{h(x)}{=0,}{ \quad  \text{(Path constraint).}}
+\end{mini*}
+\end{minted}
+
+\subsection{例10 - \textit{argmini}环境}
+与\verb|mini|, \verb|mini*|以及\verb|mini!|相似，\verb|argmini|, \verb|argmini*| 以及 \verb|argmini!|环境也是很相似的环境，它们使用相同的语法，但是输出有些许不同：
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{argmini}
+{w}{f(w)+ R(w+6x)}
+
+{\label{eq:Example1}}{w^*=}
+
+\addConstraint{g(w)}{=0}
+\addConstraint{n(w)}{= 6}
+\addConstraint{L(w)+r(x)}{=Kw+p}
+\addConstraint{h(x)}{=0.}
+\end{argmini}
+\end{minted}
+
+\noindent 输出:
+
+\begin{argmini}
+	{w}{f(w)+ R(w+6x)}
+	{\label{eq:Ex1}}{w^*~=~}
+	\addConstraint{g(w)}{=0}
+	\addConstraint{n(w)}{= 6}
+	\addConstraint{L(w)+r(x)}{=Kw+p}
+	\addConstraint{h(x)}{=0.}
+\end{argmini}
+
+\subsection{例11 - \textit{maxi}和\textit{argmaxi}环境}
+与之前的环境完全相同的语法的定义，但是这里是定义最大化环境。通过以下代码来演示：
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{maxi}
+{w}{f(w)+ R(w+6x)}
+{g(w)}{=0}
+
+{\label{eq:Example1}}{}
+
+\addConstraint{g(w)}{=0}
+\addConstraint{n(w)}{= 6}
+\addConstraint{L(w)+r(x)}{=Kw+p}
+\addConstraint{h(x)}{=0.}
+\end{maxi}
+\end{minted}
+
+\noindent 输出:
+
+\begin{maxi}
+	{w}{f(w)+ R(w+6x)}
+	{\label{eq:Example1}}{}
+	\addConstraint{g(w)}{=0}
+	\addConstraint{n(w)}{= 6}
+	\addConstraint{L(w)+r(x)}{=Kw+p}
+	\addConstraint{h(x)}{=0.}
+\end{maxi}
+
+
+\subsection{例12 - 所有可用的参数}
+
+\begin{minted}[linenos,breaklines,breakanywhere,style=colorful]{latex}
+\begin{mini!}|s|[1]
+{w}{f(w)+ R(w+6x)}
+{}{w^*=}
+\addConstraint{g(w)}{=0,}{ \quad  \text{(Dynamic constraint)}}
+\addConstraint{n(w)}{= 6,}{ \quad  \text{(Boundary constraint)}}
+\addConstraint{L(w)+r(x)}{=Kw+p,}{ \quad  \text{(Random constraint)}}
+\addConstraint{h(x)}{=0,}{ \quad  \text{(Path constraint).}}
+\end{mini!}
+\end{minted}
+
+\begin{mini!}|s|[2]
+	{w}{f(w)+ R(w+6x)\label{eq:ObjectiveExample3}}
+	{\label{eq:Example3}}
+	{w^*=}
+	\addConstraint{g(w)}{=0 \label{eq:C1Example3}}
+	\addConstraint{n(w)}{= 6 \label{eq:C2Example3}}
+	\addConstraint{L(w)+r(x)}{=Kw+p \label{eq:C3Example3}}
+	\addConstraint{h(x)}{=0.\label{eq:C4Example3}}
+\end{mini!}
+
+\section{报告问题和功能需求}
+提交bug和一些功能上的需求可以通过在github仓库\url{https://github.com/jeslago/optidef/issues}的issue部分提交。
+
+\end{document}
