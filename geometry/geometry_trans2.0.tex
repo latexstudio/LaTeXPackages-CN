@@ -1,0 +1,1141 @@
+\documentclass[titlepage]{ctexart}
+
+\usepackage{color}
+\usepackage[colorlinks, linkcolor=blue]{hyperref}
+\usepackage{graphicx}
+\CTEXsetup[number={\arabic{section}.\arabic{subsection}}]{subsection}
+\CTEXsetup[name={第,章},number={\chinese{section}},format+={\flushleft\bfseries\zihao{3}}]{section}
+
+\usepackage[a4paper, hmargin=2.5cm, vmargin=1cm, 
+        includeheadfoot]{geometry}
+
+\DeclareRobustCommand\XeTeX{%
+      X\lower.5ex\hbox{\kern-.07em\reflectbox{E}}%
+      \kern-.15em\TeX}
+\DeclareRobustCommand\XeLaTeX{%
+      X\lower.5ex\hbox{\kern-.07em\reflectbox{E}}%
+      \kern-.15em\LaTeX}
+\def\Gm{\textsf{geometry}}
+\def\onlypre{\llap{$^{\dagger\:}$}}%
+\newcommand{\gpart}[1]{\textsf{\textsl{\color[rgb]{.0,.45,.7}#1}}}
+\newcommand\glen[1]{\textsf{#1}}
+
+ \newenvironment{Spec}%
+  {\begin{list}{}{%
+   \renewcommand{\makelabel}[1]{\fbox{##1}\hfil}%
+   \setlength{\itemsep}{-.5\parsep}
+   \settowidth{\labelwidth}{\texttt{S(x,x)}}%
+   \setlength{\leftmargin}{\labelwidth}%
+   \addtolength{\leftmargin}{\labelsep}%
+   \addtolength{\leftmargin}{2em}%
+   \setlength{\rightmargin}{2em}}%
+   \raggedright}
+  {\end{list}}
+%  
+%  
+ \newenvironment{Options}%
+  {\begin{list}{}{%
+   \renewcommand{\makelabel}[1]{\texttt{##1}\hfil}%
+   \setlength{\itemsep}{-.5\parsep}
+   \settowidth{\labelwidth}{\texttt{xxxxxxxxxxx\space}}%
+   \setlength{\leftmargin}{\labelwidth}%
+   \addtolength{\leftmargin}{\labelsep}}%
+   \raggedright}
+  {\end{list}}
+
+\begin{document}
+\title{\textsf{geometry}宏包使用说明}
+\date{}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\begin{abstract}
+	这个宏包提供了一个能够方便灵活地管理页面规格的接口。用户能够利用直观的参数来改变页面的布局。
+	比如说：如果你想让文章边缘和纸张边缘的距离为2厘米，你只需要输入如下命令：\verb|\usepackage[margin=2cm]{geometry}|。页面的布局可以利用\verb|\newgeometry|命令在文章的任意位置来修改。
+\end{abstract}
+\section{第五版前言}
+	\begin{itemize}
+	\item \textbf{能够在文章中改变页面样式}\par
+	这里要利用两个新的命令：\verb|\newgeometry|\{$\cdots$\}和\verb|\restoregeometry|。
+	这两个新的命令使得用户能够在文章中改变页面的布局。
+	\verb|\newgeometry|这个命令使得在之前声明的所有关于页面布局的选项无效化，并将忽略一切与纸张大小相关的参数，这些参数包括：\verb|landscape|，\verb|portrait|和纸张大小的参数（比如说\verb|papersize|，\verb|paper=a4paper|等）。在其他的方面\verb|\newgeometry|和\verb|\geometry|命令相同。	
+	\item \textbf{加入了一些新的表示布局区域的参数}\par
+	一些新的参数在计算页面区域和布局的时候可以用到，这些参数有：\verb|layout|，\verb|layoutsize|，\verb|layoutwidth|，\verb|layoutheight|等等。这些参数可以帮助我们在不同的纸张大小下打印特定的页面布局。
+	举例来说，在\verb|a4paper|和\verb|layout=a5paper|这两个命令的作用下，\Gm 宏包会在'A4'的纸张上使用'A5'的布局来计算边界。
+	\item \textbf{一个新的\textcolor{red}{驱动}选项——\textsf{xetex}}\par
+	在第五版中新加入了一个驱动选项\verb|xetex|。程序自动检测驱动系统已经做了完善，以避免'undefined control sequences'这种错误。在\TeX{} Live中的'geometry.cfg'的文件中，它禁止了程序自动检测驱动和设置\verb|pdftex|的功能，虽然这个文件在第五版的宏包中仍然存在，但是他已经是不必要的，也不会引起任何错误的了。我们强烈建议在\XeLaTeX 中使用\verb|xetex|选项。
+	\item \textbf{为JIS B-series和ISO C-series设计的新的纸张大小}\par
+	新加入了满足JIS(Japanese Industrial Standards)B-series的纸张大小（\verb|b0j|到\verb|b6j|）和满足ISO C-series(v5.4$\sim$)的纸张大小（\verb|c0paper|到\verb|c6paper|）。
+	\item \textbf{改变了没有被设置的边距的默认值}\par
+	在之前的版本中，如果只有一个边距被改变了，比如说\verb|bottom=1cm|这个命令，\Gm 会通过一个比例设置它的另一边的边距（在垂直的排版中，这个比例是1:1），也就是说会使得同时执行\verb|top=1cm|这个命令。第五版中设置了这个比例为0.7，并以此来确定这些没有被设置的边距。（\ref{sec:rules}）
+	\item \textbf{参数\textsf{showframe}和\textsf{showcrop}在每一页都起作用}\par
+	在参数\verb|showframe|的作用下，页边框在每一页都会显示。另外，一个新的参数\verb|showcrop|在每一页的每个角上打印crop标记。注意如果不设置页面布局尺寸小于纸张尺寸时，这个标记是不可见的。Version 5.4 introduced a new\verb|shipout| overloading process using \textsf{atbegshi} package，所以\textsf{atbegshi}宏包需要在showframe和showcrop参数调用时被使用。
+	\item \textbf{在处理类之前读取geometry.cfg文件}
+	之前的版本是在处理类之后才读取的geometry.cfg文件。现在因为在处理类之前就读取了配置文件，所以用户可以在\verb|\documentclass|、\verb|\usepackage|和\verb|\geometry|中加入参数以改变在\textsf{geometry.cfg}中使用的一些设置。
+	\item \textbf{删除了一些参数：compat2和twosideshift}\par
+	第五版不兼容之前的版本，因此为求简洁，\textsf{compat2}和\textsf{twosideshift}这两个参数被删除了。
+	\end{itemize}
+\section{简介}
+	在\LaTeX{}中设置页面的布局不是一件容易的事。用户需要适应几种\LaTeX{}原生的尺寸来将文字区域放置在期望的位置。如果用户想要将文字区域放在使用的纸的中心，举例来说，你需要按如下的方法来设置页面尺寸：
+	\begin{quote}
+		\verb|\usepackage{calc}|\\
+		\verb|\setlength\textwidth{7in}|\\
+		\verb|\setlength\textheight{10in}|\\
+		\verb|\setlength\oddsidemargin{(\paperwidth-\textwidth)/2-1in}|\\
+		\verb|\setlength\topmargin{(\paperheight-\textheight|\\
+		\verb|                      -\headheight-\headsep-\footskip)/2-1in}|
+	\end{quote}
+	如果不使用calc宏包，上面的例子需要更多复杂的设置，\Gm 宏包提供了一个设置页面布局参数的简单的方法。利用\Gm{} 宏包，你所做的只是敲入如下命令：
+	\begin{quote}
+		\verb|\usepackage[text={7in,10in},centering]{geometry}|
+	\end{quote}
+	除开文章居中的问题，设置页边距也很麻烦。但是\Gm 宏包也让它变得容易实现了。如果你想设置每个页边距为1.5in，你可以输入：
+	\begin{quote}
+		\verb|\usepackage[margin=1.5in]{geometry}|
+	\end{quote}
+	因此，\Gm 宏包具有“自动完成设置”的功能，也就是说，没有指定的一些布局都可以被自动设置。\Gm 宏包还可以在你需要设置极为严格的页面布局时变得十分有用，比如说：
+	\begin{quote}\textsl{
+	文字区域的尺寸是6.5英尺宽和8.75英尺高。每页顶部的页边距应该是1.2英尺。左边的页边距是0.9英尺，脚注和页码必须在文字区域的底部
+	}\end{quote}
+	在这种情况下，使用\Gm{} 宏包，你可以输入如下命令：
+	\begin{quote}
+		\verb|\usepackage[total={6.5in,8.75in}],|\\
+		\verb|           top=1.2in,left=0.9in,incluefoot]{geometry}|
+	\end{quote}
+	在文件制作系统中设置一个文字区域和在一个视窗系统中放置一个窗口类似，'geometry'这个名字来自于在\textbf{X Windows}系统中用于设置窗口大小和位置的参数 \textbf{-geometry}。
+\section{页面 geometry}
+	图~\ref{fig:layout}表示了在\Gm{} 宏包中定义的页面布局。这个页面布局包括：
+	\gpart{total body}（可打印区域）和 \gpart{margins}（页边距）。\gpart{total body} 是由 \gpart{body}（文字区域）和一个可修改的 \gpart{header},\gpart{footer} 和页边批注组成。一共有四类页边距：\gpart{left},\gpart{right},\gpart{top} 和 \gpart{bottom}。对双面打印的文章来说，水平的页边距通常被叫做 \gpart{inner} 和 \gpart{outer}。
+	
+	\begin{center}
+	\begin{tabular}{rcl}
+	\gpart{paper} & : & \gpart{total body} 和 \gpart{margins}\\
+	\gpart{total body} & : & \gpart{body}（文字区域）（可以修改的有：\gpart{head},\gpart{foot},\gpart{marginpar}）\\
+	\gpart{margins} & : & \gpart{left}(\gpart{inner}),\gpart{right}(\gpart{outer}),\gpart{top}和\gpart{bottom}	
+	\end{tabular}
+	\end{center}
+	每一个页边距都是从它对应纸张的边上开始测量的。例如，左页边距（内页边距）是指从纸张的最左边到\gpart{total body}的水平距离。因此，左和上页边距和原来的页面定义 \verb|\leftmargin| 和 \verb|\topmargin| 是不同的。\gpart{body}（文字区域）的大小可以通过命令 \verb|\textwidth| 和 \verb|\textheight| 来修改。纸张的尺寸，\gpart{total body} 和 \gpart{margin} 有如下的关系：
+	\begin{eqnarray}
+	\label{eq:paperwidth}
+	\verb|paperwidth| &=& \verb|left|+\verb|width|+\verb|right|\\
+	\verb|paperheight| &=& \verb|top|+\verb|height|+\verb|bottom| 
+	\end{eqnarray}
+	
+	\begin{figure}[hbt]
+	\centering\small
+	{\unitlength=.65pt
+	\begin{picture}(450,250)(0,-10)
+	\put(20,0){\framebox(170,230){}}
+	\put(20,235){\makebox(170,230)[br]{\gpart{paper}}}
+	\begingroup\thicklines
+	\put(40,30){\framebox(120,170){}}\endgroup
+	\put(40,30){\makebox(120,165)[tr]{\gpart{total body}~}}
+	\put(45,30){\makebox(0,170)[l]{\textbf{height}}}
+	\put(40,35){\makebox(120,0)[bc]{\textbf{width}}}
+	\put(50,-20){\makebox(120,0)[bc]{\textbf{paperwidth}}}
+	\put(10,45){\makebox(0,170)[r]{\textbf{paperheight}}}
+	\put(90,200){\makebox(0,30)[lc]{\textbf{top}}}
+	\put(90,0){\makebox(0,30)[lc]{\textbf{bottom}}}
+	\put(10,70){\makebox(0,0)[r]{\textbf{left}}}
+	\put(10,55){\makebox(0,0)[r]{(\textbf{inner})}}
+	\put(200,70){\makebox(0,0)[l]{\textbf{right}}}
+	\put(200,55){\makebox(0,0)[l]{(\textbf{outer})}}
+	\put(80,230){\vector(0,-1){30}}\put(80,30){\vector(0,-1){30}}
+	\put(80,200){\vector(0,1){30}}\put(80,0){\vector(0,1){30}}
+	\put(20,70){\vector(1,0){20}}\put(40,70){\vector(-1,0){20}}
+	\put(160,70){\vector(1,0){30}}\put(190,70){\vector(-1,0){30}}
+	\multiput(160,30)(5,0){24}{\line(1,0){2}}
+	\multiput(160,200)(5,0){24}{\line(1,0){2}}
+	\begingroup\thicklines
+	\put(280,30){\framebox(120,170){}}\endgroup
+	\put(283,133){\makebox(0,12)[l]{\textbf{textheight}}}
+	\put(295,130){\vector(0,-1){100}}\put(295,150){\vector(0,1){50}}
+	\multiput(280,220)(5,0){24}{\line(1,0){3}}
+	\put(280,208){\makebox(120,20)[bc]{\gpart{head}}}
+	\multiput(280,207)(5,0){24}{\line(1,0){3}}
+	\put(420,225){\makebox(0,0)[l]{\textbf{headheight}}}
+	\put(418,225){\line(-2,-1){20}}
+	\put(420,213){\makebox(0,0)[l]{\textbf{headsep}}}
+	\put(418,213){\line(-2,-1){20}}
+	\put(420,12){\makebox(0,0)[l]{\textbf{footskip}}}
+	\put(418,12){\line(-2,1){20}}
+	\put(280,40){\makebox(120,140)[c]{\gpart{body}}}
+	\put(305,45){\vector(-1,0){25}}\put(375,45){\vector(1,0){25}}
+	\put(80,230){\vector(0,-1){30}}\put(80,30){\vector(0,-1){30}}
+	\put(280,48){\makebox(120,0)[c]{\textbf{textwidth}}}
+	\put(280,15){\makebox(120,10)[c]{\gpart{foot}}}
+	\multiput(280,14)(5,0){24}{\line(1,0){2}}
+	\put(410,30){\dashbox{3}(30,170){}}
+	\put(415,30){\makebox(30,170)[l]{\gpart{marginal note}}}
+	\put(425,45){\vector(-1,0){15}}\put(425,45){\vector(1,0){15}}
+	\put(450,70){\makebox(0,0)[l]{\textbf{marginparsep}}}
+	\put(448,70){\line(-3,-1){43}}
+	\put(450,45){\makebox(0,0)[l]{\textbf{marginparwidth}}}
+	\end{picture}
+	}
+	\caption[Dimension names for \Gm]{
+	\begin{minipage}[t]{.8\textwidth}\raggedright\small\kaishu
+	在\Gm 宏包中使用了一些独有的表示方法：\\
+	比如：\emph{width} $=$ \emph{textwidth} 和 \emph{height} $=$ \emph{textheight}。
+	而\emph{left}， \emph{right}， \emph{top} 和 \emph{bottom} 这四个参数用来表示页边距。
+	如果文章通过 \emph{twoside} 这个参数修改过，那么可以使用 \emph{left}(\emph{inner}) 和 \emph{right}(\emph{outer}) 来确定靠里页面和靠外页面的页边距。
+	\end{minipage}}
+	\label{fig:layout}
+	\end{figure}
+	\gpart{total body}的宽度和高度定义如下：
+	\begin{eqnarray}
+	\label{eq:width}
+	width &=& textwidth (+marginparsep+marginparwidth)\\
+	\label{eq:height}
+	height &=& textheight (+headheight+headsep+footskip)
+	\end{eqnarray}
+	当 \verb|marginparsep| 和 \verb|marginparwidth| 在 \verb|width| 的范围之内，也即 \verb|includemp| 这个参数被指定为 \verb|true| 时，等式~(\ref{eq:width})是系统在水平方向默认的设置。等式~(\ref{eq:height})是系统在垂直方向默认的设置。但是当 \verb|includehead| 这个参数被设置为 \verb|true| 时，\verb|headheight| 和 \verb|headsep| 则被包括在了 \verb|height| 中。同样，\verb|includefoot| 这个参数将 \verb|footskip| 包含在了 \verb|height| 中。
+	
+	图~\ref{fig:includes}表示了这些参数是怎样在垂直的方向起作用的。
+	 \begin{figure}[btp]
+	  \centering\small
+	  {\unitlength=.65pt
+	  \begin{picture}(490,280)(0,-10)
+	  \put(60,250){\makebox(120,0)[bl]{\textbf{(a)}~\textit{default}}}%
+	  \put(20,0){\framebox(170,230){}}
+	  \put(20,230){\makebox(170,15)[r]{\gpart{paper}}}
+	  \begingroup\thicklines
+	  \put(40,30){\framebox(120,165){}}\endgroup
+	  \put(70,165){\vector(0,1){30}}
+	  \put(55,145){\makebox(0,20)[lc]{\textbf{textheight}}}
+	  \put(70,145){\vector(0,-1){115}}
+	  \multiput(40,203)(5,0){24}{\line(1,0){3}}
+	  \multiput(40,213)(5,0){24}{\line(1,0){3}}
+	  \multiput(40,10)(5,0){24}{\line(1,0){3}}
+	  \put(40,203){\makebox(120,20)[bc]{\gpart{head}}}
+	  \put(40,40){\makebox(120,140)[c]{\gpart{body}}}
+	  \put(40,11){\makebox(120,10)[c]{\gpart{foot}}}
+	  \put(150,230){\vector(0,-1){35}}\put(150,30){\vector(0,-1){30}}
+	  \put(150,195){\vector(0,1){35}}\put(150,0){\vector(0,1){30}}
+	  \put(160,197){\makebox(0,30)[lc]{\textbf{top}}}
+	  \put(160,0){\makebox(0,30)[lc]{\textbf{bottom}}}
+	  \multiput(160,30)(5,0){24}{\line(1,0){2}}
+	  \multiput(160,195)(5,0){24}{\line(1,0){2}}
+	  \put(255,250){\makebox(120,0)[bl]
+	      {\textbf{(b)}~\textbf{includehead and includefoot}}}%
+	  \put(260,0){\framebox(170,230){}}
+	  \put(260,230){\makebox(170,15)[r]{\gpart{paper}}}
+	  \begingroup\thicklines
+	  \put(280,30){\framebox(120,165){}}\endgroup
+	  \put(310,152){\vector(0,1){25}}
+	  \put(295,130){\makebox(0,20)[lc]{\textbf{textheight}}}
+	  \put(310,130){\vector(0,-1){80}}
+	  \multiput(280,184)(5,0){24}{\line(1,0){3}}
+	  \multiput(280,177)(5,0){24}{\line(1,0){3}}
+	  \multiput(280,50)(5,0){24}{\line(1,0){3}}
+	  \put(280,184){\makebox(120,10)[c]{\gpart{head}}}
+	  \put(280,40){\makebox(120,140)[c]{\gpart{body}}}
+	  \put(400,140){\line(1,1){45}}
+	  \put(437,187){\makebox(50,10)[l]{\gpart{total body}}}
+	  \put(280,31){\makebox(120,10)[c]{\gpart{foot}}}
+	  \put(370,230){\vector(0,-1){35}}\put(370,30){\vector(0,-1){30}}
+	  \put(370,195){\vector(0,1){35}}\put(370,0){\vector(0,1){30}}
+	  \put(380,197){\makebox(0,30)[lc]{\textbf{top}}}
+	  \put(380,0){\makebox(0,30)[lc]{\textbf{bottom}}}
+	  \end{picture}}
+	  \caption[An effect of \texttt{includehead} and \texttt{includefoot}.]{
+	  \begin{minipage}[t]{.8\textwidth}\raggedright\small\kaishu
+	    \emph{includehead} 和 \emph{includefoot} 分别将 \emph{head} 和 \emph{foot} 包括到了 \gpart{total body} 中。\textbf{(a)}图表示了\emph{height} $=$ \emph{textheight}（默认值）。\textbf{(b)}图表示了如果设置了 \emph{includehead}和 \emph{includefoot}，那么 \emph{height} $=$ \emph{textheight} $+$ \emph{headheight} $+$ \emph{headsep} $+$ \emph{footskip}。显然，如果定义了\emph{top} 和 \emph{bottom} 参数\emph{inludehead} 和 \emph{includefoot} 会导致更短的\emph{textheight}。
+	  \end{minipage}}
+	  \label{fig:includes}
+	 \end{figure}	
+	 \newpage
+	 这样，这个页面的布局在每个方向上就包括了三个部分的长度：一个主体(body)和两个边距(margin)。如果他们中的两个被设置了，那么第三个就确定了，也就不用再单独地设置了。
+	 
+	 图~\ref{fig:Labc}表示了一个简单的页面尺寸关系的模型。当长度\verb|L| 给定并且分成 \gpart{body} \verb|b|，边距 \verb|a| 和 \verb|c|，显然有如下的等式成立：
+	 \begin{equation}
+	 	L = a+b+c \label{eq:Labc}
+	 \end{equation}
+	 这个等式表明了当a,b,c其中的两个参数确定之后，另外一个参数就可以解出来。如果两个或两个以上的参数没有被确定，那么等式~(\ref{eq:Labc})就不能在没有两者其他关系的情况下被解出来。如果所有的参数都是确定的，那么则需要检查他们是否能够满足等式~(\ref{eq:Labc})。
+	  \begin{figure}[hbt]
+	  \centering
+	  {\unitlength=0.8pt
+	  \begin{picture}(300,60)(0,-5)
+	  \begingroup\linethickness{5pt}
+	  \put(0,5){\textcolor{green}{\line(1,0){60}}}
+	  \put(60,5){\textcolor{black}{\line(1,0){160}}}
+	  \put(220,5){\textcolor{green}{\line(1,0){80}}}
+	  \endgroup
+	  \put(0,15){\makebox(60,10)[b]{a}}
+	  \put(60,0){\line(0,1){20}}
+	  \put(60,15){\makebox(160,10)[b]{b}}
+	  \put(220,0){\line(0,1){20}}
+	  \put(220,15){\makebox(80,10)[b]{c}}
+	  \put(0,0){\line(0,1){50}}
+	  \put(150,35){\vector(-1,0){150}}
+	  \put(0,40){\makebox(300,10){L}}
+	  \put(150,35){\vector(1,0){150}}
+	  \put(300,0){\line(0,1){50}}
+	  \end{picture}}
+	  \caption{\kaishu 一个关于页面尺寸关系的简单的模型}
+	  \label{fig:Labc}
+	 \end{figure}
+	 \Gm 宏包具有的自动完成的功能可以帮助用户确定页面的尺寸关系。比如说，你可以在A4的纸张大小系输入如下命令：
+	 \begin{quote}
+	 \verb|\usepackage[width=14cm,left=3cm]{geometry}|
+	 \end{quote}
+	 这种情况下，你不需要输入右边距的命令。关于自动完成这个命令将会在第~\ref{sec:rules}章中详细被讨论。
+	 \section{用户接口}
+	 \Gm 宏包提供了如下的命令：
+	 \begin{itemize}\setlength{\itemsep}{-.5\parsep}
+	 \item \verb|\geometry{|<\emph{options}>\verb|}|
+	 \item \verb|\newgeometry{|<\emph{options}>\verb|}| 和 \verb|\restoregeometry|
+	 \item \verb|\savegeometry{|<\emph{name}>\verb|}| 和 \verb|loadgeometry{|<\emph{name}>\verb|}|
+	 \end{itemize}
+	 \verb|\geometry{|<\emph{options}>\verb|}|通过\emph{options}中参数的来改变页面的布局。这个命令一般需要放置在引言区（在\verb|\begin{document}|之前）。
+	 
+	 \Gm{} 宏包可能会被当做类或者用户在文档中使用的其他宏包的一部分来使用，也就是说 \verb|\geometry| 命令可能会覆盖引言区得其他的一些设定。用户可以多次地使用 \verb|\geometry| 命令，相关的设置都会起作用。在\Gm{} 宏包加载之前，用户可以通过 \verb|\uspackage{|<\emph{option}>\verb|}| 来代替单独的命令 \verb|\geometry|
+	 
+	 \medskip
+	 \verb|\savegeometry{|<\emph{name}>\verb|}| 能够保存页面的尺寸信息为<\emph{name}>，而\verb|\loadgeometry{|<\emph{name}>\verb|}|能够读取页面的尺寸信息为<\emph{name}>的设置。在第~\ref{sec:didchange}会有更多的介绍。
+	 
+	 \subsection{可修改的参数}
+	 \Gm 宏包采用\textsf{keyval}接口：'<\emph{key}>=<\emph{value}>'。这个接口格式适用于\verb|\usepackage|,\verb|\geometry|和\verb|\newgeometry|。
+	 
+	 这个参数包括了一系列的命令分隔的\textsf{keyval}选项，并具有一些基本的规则：
+	 \begin{itemize}\setlength{\itemsep}{-0.5\parsep}
+	 \item 支持多行命令，但是不支持空白行命令
+	 \item 单词之间的所有空白将被忽略
+	 \item 参数之间的顺序不会影响结果（但是有一些例外，具体参见第~\ref{sec:optionorder}章）
+	 \end{itemize}
+	 比如以下命令：
+	 \begin{quote}
+	 \verb|\usepackage[ a5paper,  hmargin = {3cm,|\\
+	 \verb|                  .8in }, height|\\
+	 \verb|          =   10in   ]{geometry}|
+	 \end{quote}
+	 和：
+	 \begin{quote}
+	 \verb|\usepackage[a5paper,height=10in,hmargin={3cm,0.8in}]{geometry}|
+	 \end{quote}
+	 是等同的。
+	 
+	 一些参数可能会有下一层的参数列表，比如说\verb|{3cm,0.8in}|。在下一层的参数列表中，各个参数的顺序是至关重要的。上面的例子和下面的例子的作用也是一样的：
+	 \begin{quote}
+	 \verb|\usepackage{geometry}|\\
+	 \verb|\geomegry{height=10in,a5paper,hmargin={3cm,0.8in}}|
+	 \end{quote}
+	 或者：
+	 \begin{quote}
+	 \verb|\usepackage[a5paper]{geometry}|\\
+	 \verb|\geometry{hmargin={3cm,0.8in},height=8in}|\\
+	 \verb|\geometry{height=10in}|
+	 \end{quote}
+	 通常来说，多次使用\verb|\geometry|命令只是用来定义附加的参数。
+	 
+	 \Gm 支持\textsl{calc}宏包\footnote{CTAN:~\texttt{macros/latex/required/tools}}。调用方法如下：
+	 \begin{quote}
+	 	\verb|\usepackage{calc}|\\
+	 	\verb|\usepackage[textheight=20\baselineskip+10pt]{geometry}|
+	 \end{quote}
+	 
+	 \subsection{参数类型}
+	 \Gm 参数被分成四类：
+	 \begin{enumerate}\itemsep=0pt
+	 \item \textbf{Bollen} 型
+	 
+	 表示一个 boolean 型参数的值（\verb|true| 或 \verb|false|）。如果没有定义，默认为 \verb|true|。
+	 \begin{quote}
+	 <\emph{key}>\verb|=ture| | \verb|false|\\
+	 <\emph{key}>如果没有赋值则相当于: <\emph{key}>\verb|=ture|
+	 \end{quote}
+	 \textit{一些定义的例子：}~\verb|verbose=ture|, \verb|includehead|, \verb|twoside=false|。\\
+	 使用的纸张的名字是个例外。选择的纸张必须被设置为没有赋值。不管赋给这类参数什么值都会被忽略。比如说：\verb|a4paper=XXX| 和 \verb|a4paper| 的作用是相同的。
+	 
+	 \item \textbf{Single-valued} 型
+	 
+	 这类参数必须要赋一个值。
+	 \begin{quote}
+	 <\emph{key}>\verb|=|<\emph{value}>
+	 \end{quote}
+	 \textit{例子：}~\verb|width=7in|, \verb|left=1.25in|, \verb|footskip=1cm|,\verb|height=.86\paperheight|。
+	 
+	 \item \textbf{Double-valued} 型
+	 
+	 在大括号中含有一对以逗号分隔的参数值。当某个参数相同的时候可以只写一个参数。
+	 \begin{quote}
+	 <\emph{key}>\verb|=|\{<\emph{value1}>, <\emph{value2}>\}.\\
+	 <\emph{key}>\verb|=|<\emph{value}> 和 <\emph{key}>\verb|=|\{<\emph{value1}>,<\emph{value1}>\} 是等价的
+	 \end{quote}
+	 \textit{例子：}~\verb|hmargin={1.5in,1in}|, \verb|scal=0.8|, \verb|body={7in,10in}|.
+	 
+	 \item \textbf{Triple-valued} 型
+	 
+	 在大括号中含有三个通过逗号分隔并且必须定义的参数值
+	 \begin{quote}
+	<\emph{key}>\verb|=|\{<\emph{value1}>, <\emph{value2}>, <\emph{value3}>\}
+	 \end{quote}
+	 每个参数的值必须是数或者是 null 。当用户赋给了参数空值或者 '\verb|*|' 时，这意味着用户让系统的自动完成功能为这个参数选择一个合适的值。；用户需要赋予至少一个参数的值，一般是两个参数。用户可以给所有参数不赋值，但是这个不会起任何作用。\\
+	 \textit{例如：}~ \verb|hdivide={2cm,*,1cm}|, \verb|vdivide={3cm,19cm, }|, \verb|divide={1in,*,1in}|.
+	 \end{enumerate}
+	 
+	 \section{参数的详细介绍}
+	 这一章描述了在\Gm ~宏包中可以使用的所有参数。前面有$^\dagger$符号的参数表示不能再\verb|\newgeometry|中使用（参见第~\ref{sec:midchange}章）
+	 
+	 \subsection{页面大小}\label{sec:paper}
+	 
+	 下面介绍的选项主要用于设置页面的大小和方向
+	 \begin{Options}
+	 \item[\onlypre paper | papername] ~\\
+	 用名字来定义纸张大小：\verb|paper=|<\emph{paper-name}>。方便起见，用户可以省去 \verb|paper| 来定义纸张大小。比如：\verb|a4paper| 和 \verb|paper=a4paper| 作用相同。
+	\item[\onlypre \vtop{
+	  \hbox{a0paper, a1paper, a2paper, a3paper, a4paper, a5paper, a6paper,}
+	  \hbox{b0paper, b1paper, b2paper, b3paper, b4paper, b5paper, b6paper,}
+	  \hbox{c0paper, c1paper, c2paper, c3paper, c4paper, c5paper, c6paper,}
+	  \hbox{b0j, b1j, b2j, b3j, b4j, b5j, b6j,}
+	  \hbox{ansiapaper, ansibpaper, ansicpaper, ansidpaper, ansiepaper,}
+	  \hbox{letterpaper, executivepaper, legalpaper}}]~\\[1ex] 
+	  定义纸张的名字。赋值的部分总是会省略。比如说，接下来的这些例子拥有相同的排版效果：
+	  \verb|a5paper|, \verb|a5paper=true|, \verb|a5paper=false| 等等。
+	  \verb|a[0-6]paper|, \verb|b[0-6]paper| 和 \verb|c[0-6]paper| 分别是 ISO A, B 和 C的纸张大小标准系列。
+	  JIS(Japanese Industrial Standards) A 系列和 ISO A系列是相同的，但是 JIS B 系列 和 ISO B系列有所差别。\verb|b[0-6]j|专门用于 JIS B系列。
+	  \item[\onlypre screen] 一个宽度和高度分别为 225mm 和 180mm 的特别的纸张大小，在 PC 和放映机上显示时，利用 ''\verb|screen,centering|''和'slide'的\verb|\documentclass|会得到比较好的显示效果。
+	  \item[\onlypre paperwidth] 表示纸张的宽度，\verb|paperwidth=|<\emph{length}>
+	  \item[\onlypre paperheight] 表示纸张的高度，\verb|paperheight=|<\emph{height}>
+	  \item[\onlypre papersize] 表示纸张的高度和宽度。\verb|paperwidth=|\{<\emph{width}>, <\emph{length}>\} 或者 \verb|paperwidth=|<\emph{length}>
+	  \item[\onlypre landscape] 表示纸张的方向，当设置了这个参数时，表示纸张为水平放置
+	  \item[\onlypre portrait] 表示纸张的方向，当设置了这个参数时，表示纸张为竖直放置。
+	  和 \verb|landscap=false| 作用相同。
+	 \end{Options}
+	 表示纸张大小（比如：\verb|a4paper|）和纸张方向的参数（\verb|portrait| 和 \verb|landscape|）可以在 \verb|\documenclass| 中设置。比如，用户可以用 \verb|\documentclass[a4paper, landscap]{article}|命令，这个命令和 \verb|a4paper| 和 \verb|landscape| 参数在 \Gm{} 中设置的作用是相同的。同样，\verb|twoside| 和 \verb|twocolumn| 这两个参数也可以这样设置。
+	 
+	 \subsection{布局大小}
+	 
+	 用户可以利用在本节中提到的参数来定义纸张的布局，这个布局不管在什么大小的纸张下都是生效的。这些参数可以帮助用户在不同的纸张大小下定义布局。比如说：利用 \verb|a4paper| 和 \verb|layout=a5paper| 这两个参数，\Gm{} 宏包会使用'A5'纸张的布局在'A4'的纸张上来计算页边距。\verb|layout| 这个参数默认和纸张大小相同。
+	 并且 \verb|layout| 这个参数可以在 \verb|\newgeometry| 中被定义，因此，用户可以在文档中改变布局的大小，但是纸张大小是不能改变的。图~\ref{fig:layoutandpaper}说明了 \verb|layout| 和 \verb|paper| 的区别。
+	 \begin{Options}
+	 \item[layout] 通过纸张的名字定义页面的布局。\verb|layout|=<\emph{paper-name}>。所有在\Gm{} 宏包中定义的纸张名字都是可用的。第~\ref{sec:paper}有详细的介绍。
+	 \item[layoutwidth] 表示页面布局的宽度。\verb|layoutwidth=|<\emph{length}>。
+	 \item[layoutheight] 表示页面布局的高度。\verb|layoutheight=|<\emph{length}>。
+	 \item[layoutsize] 表示页面布局的宽度和高度。\verb|layoutsize=|\{<\emph{width}>, <\emph{height}>\}，或者\verb|layoutsize=|<\emph{length}>。
+	 \item[layouthoffset] 表示页面布局相对于纸张左边的水平偏移。\verb|layoutoffset=|<\emph{length}>。
+	 \item[layoutvoffset] 表示页面布局相对于纸张顶边的垂直偏移。\verb|layoutvoffset=|<\emph{length}>。
+	 \item[layoutoffset] 表示页面布局的水平和垂直偏移。\verb|layoutoffset=|\{<\emph{hoffset}>, <\emph{voffset}>\}，或者\verb|layoutoffset=|<\emph{length}>。
+	 \end{Options}
+	  \begin{figure}[hbtp]
+	  \centering\small
+	  {\unitlength=.6pt
+	  \begin{picture}(450,250)(0,-10)
+	  \put(20,0){\makebox(168,12)[r]{\gpart{paper}}}
+	  \put(20,0){\framebox(170,230){}}
+	  \put(21,40){\dashbox{3}(140,189){}}
+	  \put(21,28){\makebox(140,12)[r]{\gpart{layout}}}
+	  \put(40,50){\makebox(100,10){\gpart{foot}}}
+	  \put(40,50){\line(1,0){100}}
+	  \put(40,65){\framebox(100,125){\gpart{body}}}
+	  \put(40,200){\framebox(100,10){\gpart{head}}}
+	  \put(20,230){\makebox(140,20){\textbf{layoutwidth}}}
+	  \put(40,240){\vector(-1,0){20}}
+	  \put(140,240){\vector(1,0){20}}
+	  \put(10,145){\vector(0,1){85}}
+	  \put(15,125){\makebox(0,20)[r]{\textbf{layoutheight}}}
+	  \put(10,125){\vector(0,-1){85}}
+	  \put(280,0){\makebox(168,12)[r]{\gpart{paper}}}
+	  \put(280,0){\framebox(170,230){}}
+	  \put(293,35){\dashbox{3}(140,189){}}
+	  \put(293,23){\makebox(140,12)[r]{\gpart{layout}}}
+	  \put(312,45){\makebox(100,10){\gpart{foot}}}
+	  \put(312,45){\line(1,0){100}}
+	  \put(312,60){\framebox(100,125){\gpart{body}}}
+	  \put(312,195){\framebox(100,10){\gpart{head}}}
+	  \put(235,230){\makebox(80,20)[l]{\textbf{layouthoffset}}}
+	  \put(260,210){\vector(1,0){20}}
+	  \put(308,210){\vector(-1,0){15}}
+	  \put(260,210){\line(-1,2){10}}
+	  \put(355,230){\makebox(100,20){\textbf{layoutvoffset}}}
+	  \put(350,250){\vector(0,-1){20}}
+	  \put(350,209){\vector(0,1){15}}
+	  \end{picture}}
+	  \caption[layout and paper]{%
+	  \begin{minipage}[t]{.7\textwidth}\raggedright\small\kaishu
+	  页面的尺寸和页面布局大小相关。注意，页面布局的大小默认和纸张大小一致，因此用户在绝大部分情况下都不用单独地给页面布局相关的参数赋值。
+	  \end{minipage}}
+	  \label{fig:layoutandpaper}
+	 \end{figure}
+	 
+	 \subsection{\textsf{\textsl{body}} 的尺寸}\label{sec:body}
+	  这节所列出的参数主要用于改变 \gpart{total body} 的尺寸。
+	  
+	  \begin{Options}
+	  \item[hscale] \gpart{total body} 的宽度和 \verb|\paperwidth| 的比例。\verb|hscal=|<\emph{h-scale}>。比如：\verb|hscale=0.8| 和 \verb|\width=0.8\paperwidth| 作用相同。这个参数的默认值是\verb|0.7|
+	  \item[vscale] \gpart{total body} 的高度和 \verb|\paperheight| 的比例。\verb|vscale=|<\emph{v-scale}>。比如：\verb|vscale=0.9| 和 \verb|height=0.9\paperheight| 的作用相同。这个参数的默认值是\verb|0.7|。
+	  \item[scale] \gpart{totale body} 和纸张大小的比例。\verb|scale=|\{<\emph{h-scale}>, <\emph{v-scale}>\} 或者 \verb|scale=<\emph{scale}>|。这个参数的默认值为\verb|0.7|。
+	  \item[width | totalwidth] ~\\
+	  \gpart{total body} 的宽度。\verb|width=|<\emph{length}>或者\verb|totalwidth=|<\emph{length}>。这个参数默认与 \verb|textwidth| 相同。但是如果 \verb|includemp| 被设置为 \verb|true|时，\verb|width|$\ge$ \verb|textwidth|。因为这时 \verb|width| 还包括了页边批注的宽度。如果 \verb|textwidth| 和 \verb|width| 同时被赋值，那么\verb|textwidth| 的值会比\verb|width| 具有更高的优先级。
+	  \item[height | totalheight] ~\\
+	  \gpart{total body} 的高度，默认地包括了页眉和页脚的高度。如果\verb|includehead| 或者 \verb|includefoot| 被设置后，\verb|height| 和 \verb|textheight| 都会包括页眉和页脚的高度。\verb|height=|<\emph{length}> 或者 \verb|totalheight=|=<\emph{length}>。如果 \verb|textheight| 和 \verb|height| 同时被赋值的话，\verb|height| 这个参数会被忽略。
+	  \item[total] 表示 \gpart{total body} 的宽度和高度。\\
+	  \verb|total=|\{<\emph{width}>, <\emph{height}>\} 或者\verb|total=|<\emph{length}>。
+	  \item[textwidth] 设置\verb|\textwidth|。表示 \gpart{body}（文字区域） 的宽度。\verb|textwidth=|<\emph{length}>。
+	  \item[textheight] 设置\verb|\textheight|。表示 \gpart{body}（文字区域）的高度。\verb|textlength=|<\emph{length}>。
+	  \item[text | body] 表示 \gpart{body}（文字区域）的宽度和高度。\verb|body=|\{<\emph{width}>, <\emph{height}>\} 或者 \verb|text=|<\emph{length}>。
+	  \item[lines] 允许让用户通过行数来定义 \verb|textheight|这个参数。\verb|lines=|<\emph{整数}>。
+	  \item[includehead] 将页面的页眉，\verb|\headheight| 和 \verb|\headsep| 包括进了\gpart{total body}。这个参数默认值为 \verb|false|，作用和\verb|ignorehead| 作用相反。参看图~\ref{fig:includes}和图~\ref{fig:modes}。
+	  \item[includefoot] 将页脚和 \verb|\footskip| 包括进了\gpart{total body}，作用和\verb|ignorefoot|相反。这个参数的默认值为 \verb|false|。参看图~\ref{fig:includes} 和图~\ref{fig:modes}。
+	  \item[includeheadfoot]~\\
+	  同时设置 \verb|includehead| 和 \verb|includefoot| 为 \verb|true|，这个参数的作用和\verb|ignoreheadfoot| 作用相反。参看图~\ref{fig:includes} 和图~\ref{fig:modes}。
+	  \item[includemp] 在计算水平参数时，将页边批注，\verb|\marginparwidth| 和\verb|\marginparsep| 都加入\gpart{body}。
+	  \item[includeall] 同时将 \verb|includeheadfoot| 和 \verb|includemp| 设置为 \verb|true|。参看图~\ref{fig:modes}。
+	  \item[ignorehead] 在计算垂直布局时不考虑页眉，\verb|headheight| 和 \verb|headsep|，但是并不改变这些参数的值。这个参数和 \verb|includehead=false| 作用相同。\verb|ignorehead| 默认为 \verb|true|。参看\verb|includehead|。
+	  \item[ignorefoot] 在计算垂直布局时不考虑页脚和 \verb|footskip|。但是并不改变这两个参数的值。这个参数和 \verb|includefoot=false| 作用相同。\verb|ignorefoot| 默认为 \verb|true|。参看\verb|includefoot|。
+	  \item[ignoreheadfoot]~\\
+	  同时设置 \verb|ignorehead| 和 \verb|ignorefoot| 为 \verb|true|。参看\verb|includeheadfoot|。
+	  \item[ignoremp] 在计算水平页边距是不考虑页边批注，这个参数默认为 \verb|true|。如果页边批注的范围超过了页面的范围，当 \verb|verbose=true|时，系统会显示警告信息。参见 \verb|includemp| 和 图~\ref{fig:modes}。
+	  \item[ignoreall] 同时设置 \verb|ignoreheadfoot| 和 \verb|ignoremp| 为 \verb|true|。参见 \verb|includeall|。
+	  \item[heightrounded]~\\
+	  这个选项使得 \verb|textheight| 成为 \textit{n}倍（\textit{n}为整数）的 \verb|\baselineskip|加上\verb|\topskip|，以避免在垂直方向上空间的剩余。比如说：如果 \verb|\textheight| 是486pt，\verb|\baselineskip| 是12pt，\verb|\topskip|是10pt，那么：
+	  \begin{quote}
+	  $(39\times12\textrm{pt}+10\textrm{pt}=)\: 478\textrm{pt}
+	  < 486\textrm{pt} <
+	  490\textrm{pt} \:(=40\times12\textrm{pt}+10\textrm{pt})$,
+	  \end{quote}
+	  结果 \verb|\textheight| 被自动优化成了 490pt。
+	  
+	  \verb|heightrounded| 默认值为 \verb|false|。
+	   \end{Options}
+	 图~\ref{fig:modes} 展示了在不同的页面布局模式下的各种页面布局。页眉和页脚可以通过\verb|nohead| 和 \verb|nofoot| 模式来控制，这个模式设置了页眉页脚的高度为 0pt。另一方面，具有 \verb|ignore| 前缀的选项并\textit{不}改变响应的尺寸。
+	 \begin{figure}
+	  \centering\small
+	  {\unitlength=.65pt
+	  \begin{picture}(460,525)(0,0)
+	  \put( 20,310){\framebox(120,170){}}
+	  \put( 20,507){\makebox(120,0)[bl]%
+	  {\textbf{(a)}~\textbf{includeheadfoot}}}
+	  \put( 20,460){\line(1,0){120}}\put( 20,450){\line(1,0){120}}
+	  \put( 20,330){\line(1,0){120}}
+	  \put( 20,485){\makebox(120,0)[br]{\gpart{total body}}}
+	  \put( 20,335){\makebox(120,0)[bc]{textwidth}}
+	  \put(150,470){\makebox(0,0)[l]{\textbf{headheight}}}
+	  \put(150,450){\makebox(0,0)[l]{\textbf{headsep}}}
+	  \put(150,390){\makebox(0,0)[l]{\textbf{textheight}}}
+	  \put(150,320){\makebox(0,0)[l]{\textbf{footskip}}}
+	  \put( 10,460){\makebox(120,20)[bc]{\gpart{head}}}
+	  \put( 10,320){\makebox(120,140)[c]{\gpart{body}}}
+	  \put( 10,310){\makebox(120,10)[c]{\gpart{foot}}}
+	  \put(250,310){\framebox(120,170){}}
+	  \put(250,507){\makebox(120,0)[bl]%
+	  {\textbf{(b)}~\textbf{includeall}}}
+	  \put(250,460){\line(1,0){95}}\put(250,450){\line(1,0){95}}
+	  \put(250,330){\line(1,0){95}}\put(345,330){\line(0,1){120}}
+	  \put(350,330){\line(0,1){120}}\put(350,450){\line(1,0){20}}
+	  \put(350,330){\line(1,0){20}}
+	  \put(250,485){\makebox(120,0)[br]{\gpart{total body}}}
+	  \put(250,460){\makebox(95,20)[bc]{\gpart{head}}}
+	  \put(250,320){\makebox(95,140)[c]{\gpart{body}}}
+	  \put(385,390){\makebox(95,0)[cl]%
+	  {\gpart{\shortstack[l]{marginal\\note}}}}
+	  \put(250,310){\makebox(95,10)[c]{\gpart{foot}}}
+	  \put(250,335){\makebox(95,0)[bc]{textwidth}}
+	  \multiput(360, 390)(4,0){6}{\line(1,0){2}}
+	  \multiput(348,333)(0,-4){12}{\line(0,1){2}}
+	  \multiput(360,333)(0,-4){8}{\line(0,1){2}}
+	  \put(355,292){\makebox(0,0)[bl]{marginparwidth}}
+	  \put(345,275){\makebox(0,0)[bl]{marginparsep}}
+	  \put( 20, 40){\framebox(120,170){}}
+	  \put( 20,237){\makebox(120,0)[bl]%
+	  {\textbf{(c)}\textbf{includefoot}}}
+	  \put( 20, 60){\line(1,0){120}}
+	  \put( 20,215){\makebox(120,0)[br]{\gpart{total body}}}
+	  \put(150,130){\makebox(0,0)[l]{\textbf{textheight}}}
+	  \put(150, 50){\makebox(0,0)[l]{\textbf{footskip}}}
+	  \put( 20, 50){\makebox(120,160)[c]{\gpart{body}}}
+	  \put( 20, 40){\makebox(120,10)[c]{\gpart{foot}}}
+	  \put( 20, 65){\makebox(120,10)[c]{\textbf{textwidth}}}
+	  \put(250, 40){\framebox(120,170){}}
+	  \put(250,237){\makebox(120,0)[bl]%
+	  {\textbf{(d)}~\textbf{includefoot,includemp}}}
+	  \put(250, 60){\line(1,0){95}}\put(350, 60){\line(1,0){20}}
+	  \put(250,215){\makebox(120,0)[br]{\gpart{total body}}}
+	  \put(250, 50){\makebox(95,160)[c]{\gpart{body}}}
+	  \put(385,130){\makebox(95,0)[cl]%
+	  {\gpart{\shortstack[l]{marginal\\note}}}}
+	  \put(250, 40){\makebox(95,10)[c]{\gpart{foot}}}
+	  \put(250, 65){\makebox(95,0)[bc]{\textbf{textwidth}}}
+	  \put(345, 60){\line(0,1){150}}\put(350, 60){\line(0,1){150}}
+	  \multiput(360, 130)(4,0){6}{\line(1,0){2}}
+	  \multiput(348, 63)(0,-4){12}{\line(0,1){2}}
+	  \multiput(360, 63)(0,-4){8}{\line(0,1){2}}
+	  \put(355,22){\makebox(0,0)[bl]{\textbf{marginparwidth}}}
+	  \put(345, 5){\makebox(0,0)[bl]{\textbf{marginparsep}}}
+	  \end{picture}}
+	  \caption[Sample layouts for \gpart{total body} with different 
+	     layout modes]{%
+	  \begin{minipage}[t]{.8\textwidth}\small\kaishu
+	    不同选项下的 \gpart{total body} 的不同尺寸的示例。
+	    (a) \textbf{includeheadfoot}, (b) \textbf{includeall}, (c) \textbf{includefoot}
+	     and (d) \textbf{includefoot,includemp}. 
+	    如果 \textbf{reversemp} 设置为 \textbf{true}，页边批注的位置将会在每一页交换方向。参数\textbf|twoside| 交换页边距和页边批注在反面页上的位置。注意如果有页边批注的话，不管是有参数\textbf{ignoremp} 或者 \textbf{includemp=false}，还是超出了页面的范围，页边批注都会被打印出来。
+	  \end{minipage}}
+	  \label{fig:modes}
+	 \end{figure}
+	 下面几个参数可以利用三个在大括号里用逗号分开的值同时设置 \gpart{body} 和 \gpart{margins}。
+	 \begin{Options}
+	 \item[hdivide] 水平方向的参数（left,width,right）
+	 \verb|hdivide=|\{<\emph{left margin>}, \emph{<width>}, \emph{<right margin>}\}
+	 注意，用户并不需要设置所有的三个参数。使用这个参数最好的方法是设置其中的两个，然后设置另一个为null，或者'\verb|*|'。比如，当用户设置\verb|hdivide={2cm,15cm, }|时，右边距就会被自动设置成\verb|paperwidth-2cm-15cm|。
+	 \item[vdivide] 垂直方向的参数（top,height,bottom）
+	\verb|vdivide=|\{<\emph{top margin>}, \emph{<height>}, \emph{<bottom margin>}\}。
+	\item[divide] \verb|divide=|\{\emph{<A>, <B>, <C>}\} 和 \verb|hdivide=|\{\emph{<A>, <B>, <C>}\} 和 \verb|vdivide=|\{\emph{<A>, <B>, <C>}\}两者合起来作用相同。
+	\end{Options}
+	
+	\subsection{页边距大小}\label{sec:margin}
+	 定义页边距的参数将在下表中列出：
+	 
+	 \begin{Options}
+	 \item[left | lmargin | inner]~\\
+	 表示了 \gpart{total body} 的左页边距（一面打印时）或内边距（双面打印时）。换句话说，也就是表示从纸张的最左边到 \gpart{total body} 最左边的距离。\verb|left=|<\emph{length}>
+	 \item[right | rmargin | outer]~\\
+	 表示了 \gpart{total body} 的右边距或者外边距。\verb|right=|<\emph{length}>。
+	 \item[top | tmargin] 表示了页面的顶部边距。\verb|top=|<\emph{length}>。\textcolor{red}{注意，这个参数和本来的尺寸} \verb|\topmargin| 没有关系。
+	 \item[bottom | bmargin]~\\
+	 表示了页面的底部边距。\verb|bottom=|<\emph{length}>
+	 \item[hmargin]
+	 表示了左边距和右边距。\verb|hmargin=|\{\emph{<left margin>, <right margin>}\} 或者 \verb|hmargin=|<\emph{length}>。
+	 \item[vmargin] 表示了页面的顶部和底部边距。
+	 \verb|vmargin=|\{\emph{<top margin>, <bottom margin>}\} 或者 \verb|vmargin=|<\emph{length}>。
+	 \item[margin] \verb|margin=|\{\emph{<A>, <B>}\} 和 \verb|hmargin=|\{\emph{<A>, <B>}\} 和 \verb|vmargin=|\{\emph{<A>, <B>}\} 联合起来的作用相同。
+	 \item[hmarginratio]
+	  表示水平方向的页边距 \verb|left|(inner) 和 \verb|right|(outer) 之比。
+	  <\emph{ratio}> 中的两个数必须用冒号分隔开来。每个值必须为小于100的整数。比如说：\verb|2:3|是正确的，而\verb|1:1.5|是错误的。默认的比例是：\verb|1:1|（单面印刷），\verb|2:3|（双面印刷）。
+	  \item[vmarginratio]
+	  表示垂直方向的页边距 \verb|top| 和 \verb|bottom| 的比例。默认值是\verb|2:3|。
+	  \item[marginration | ratio]~\\
+	  表示了水平方向和垂直方向各自页边界的比例。\verb|marginratio=|\{\emph{<horizontal ratio>, <vertical ratio>}\} 或 \verb|marginratio=|<\emph{ratio}>。
+	  \item[hcentering] 设置水平方向自动居中，和 \verb|hmarginratio=1:1| 等价。在单面打印（\verb|oneside|）时，这个参数默认为 \verb|true|。参见 \verb|hmarginratio|。
+	  \item[vcentering] 设置垂直方向自动居中，和 \verb|vmarginratio=1:1| 等价。默认为 \verb|false|，参见 \verb|vmarginratio|。
+	  \item[centering] 设置自动居中，和 \verb|marginratio=1:1| 等价。默认值为 \verb|false|。参见 \verb|marginratio|。
+	  \item[twoside] \textcolor{red}{选择两面印刷模式，这时左边距和右边距的设置会翻页互换。这个参数设置了} \verb|\@twoside| 和 \verb|\@mparswitch|。参见\verb|asymmetric|。
+	  \item[asymmetric] 完成了一个两面印刷的布局，在这个布局里面左边距和右边距不会因翻页而互换（通过设置 \verb|\oddsidemargin=|\verb|\evensidemargin+bindingoffset| 实现奇偶页边距的不同）。在这个模式下，页边批注一直出现一侧。这个参数可以用作一个较为灵活的两面引述参数。参见 \verb|twoside|。
+	  \item[bindingoffset]~\\
+	  额外加入了对于单面印刷页面左侧的空间，或者是双面印刷页面内侧的空间（装订线）。\verb|bindingoffset=|<\emph{length}>。这个参数在\textcolor{red}{if pages are bound by a press binding \ldots}很有用。参看图~\ref{fig:bindingoffset}。
+	  \item[hdivide] 参看第~\ref{sec:body}章。
+	  \item[vdivide] 参看第~\ref{sec:body}章。
+	  \item[divide] 参看第~\ref{sec:body}章。  
+	 \end{Options}
+	  \begin{figure}
+	  \centering\small
+	  {\unitlength=.65pt
+	  \begin{picture}(500,270)(0,0)
+	  \put(20,0){\framebox(170,230){}}
+	  \put(20,255){\makebox(80,20)[l]{\textbf{a)}~every page for oneside or}}
+	  \put(20,240){\makebox(80,20)[l]{\hspace{3ex}odd pages for twoside}}
+	  \put(110,225){\makebox(80,20)[r]{\gpart{paper}}}
+	  \put(55,37){\framebox(110,170)[tc]{\gpart{total body}}}
+	  \multiput(38,0)(0,7){33}{\line(0,1){4}}
+	  \put(38,100){\vector(1,0){17}}\put(55,100){\vector(-1,0){17}}
+	  \put(60,95){\makebox(80,10)[l]{\textbf{left}}}
+	  \put(60,80){\makebox(80,10)[l]{(\textbf{inner})}}
+	  \put(165,100){\vector(1,0){25}}\put(190,100){\vector(-1,0){25}}
+	  \put(195,95){\makebox(80,10)[l]{\textbf{right}}}
+	  \put(195,80){\makebox(80,10)[l]{(\textbf{outer})}}
+	  \put(20,16){\vector(1,0){18}}
+	  \put(45,10){\makebox(80,10)[bl]{\textbf{bindingoffset}}}
+	  \put(280,255){\makebox(80,20)[l]{\textbf{b)}~even (back) pages for twoside}}
+	  \put(280,0){\framebox(170,230){}}
+	  \put(370,225){\makebox(80,20)[r]{\gpart{paper}}}
+	  \put(305,37){\framebox(110,170)[tc]{\gpart{total body}}}
+	  \multiput(432,0)(0,7){33}{\line(0,1){4}}
+	  \put(280,100){\vector(1,0){25}}\put(305,100){\vector(-1,0){25}}
+	  \put(310,95){\makebox(80,10)[l]{\textbf{outer}}}
+	  \put(310,80){\makebox(80,10)[l]{(\textbf{right})}}
+	  \put(415,100){\vector(1,0){17}}\put(432,100){\vector(-1,0){17}}
+	  \put(373,95){\makebox(80,10)[l]{\textbf{inner}}}
+	  \put(373,80){\makebox(80,10)[l]{(\textbf{left})}}
+	  \put(450,16){\vector(-1,0){18}}
+	  \put(330,10){\makebox(80,10)[bl]{\textbf{bindingoffset}}}
+	  \end{picture}}
+	  \caption[\texttt{bindingoffset} option]{%
+	   \begin{minipage}[t]{.8\textwidth}\raggedright\small\kaishu
+	   参数 \textbf{bindingoffset} 给内页边距加入了确定的长度。注意，\textbf{twoside} 这个参数会交换水平页边距和页边批注还有 \textbf{bindingoffset} 产生的空间（参见 \textbf{b}），但是 \textbf{asymmetric} 这个参数不交换页边距和页边批注的位置，但是会交换 \textbf{bindingoffset} 产生的空间
+	   \end{minipage}}
+	  \label{fig:bindingoffset}
+	 \end{figure}
+	 
+	 \subsection{\textcolor{red}{原始尺寸}}\label{sec:dimension}
+	 以下的这些参数会覆盖 \LaTeX{} 的原始的尺寸来改变页面布局（参见图~\ref{fig:layout}右边部分）。
+	 
+	 \begin{Options}
+	 \item[headheight | head]~\\
+	 改变表示页眉的高度 \verb|\headheight| 这个参数。\verb|headheigt=|<\emph{length}> 或 \verb|head=|<\emph{length}>。
+	 \item[headsep] 改变参数 \verb|\headsep| 的值，这个参数表示了页眉和文字(\gpart{body})之间的距离。\verb|headsep=|<\emph{length}>。
+	 \item[footskip | foot]~\\
+	 改变参数 \verb|\footskip| 的值，这个参数表示了最后一行文字''基线''和页脚的''基线''之间的距离。
+	 \verb|footskip=|<\emph{length}> 或者 \verb|foot=|<\emph{length}>。
+	 \item[nohead] 完全不考虑页眉空间。这个参数设置为真的作用和同时设置 \verb|\headheight=0pt| 和 \verb|\headsep=0pt| 作用相同。
+	 \item[nofoot] 完全不考虑页脚空间。这个参数设置为真的作用和同时设置 \verb|\footskip=0pt| 相同。
+	 \item[noheadfoot] 这个参数设置为真的作用和 \verb|nofoot| 和 \verb|nohead| 同时设置作用相同。
+	 \item[footnotesep] 这个参数改变 \verb|\skip| 和 \verb|\footins|，表示了脚注的顶端和 \gpart{text body} 的距离。
+	 \item[marginparwidth | marginpar]~\\
+	 改变 \verb|\marginparwidth| 参数的值，表示页边批注的宽度。\verb|marginparwidth=|<\emph{length}>。
+	 \item[marginparsep] 改变参数 \verb|\marginparsep| 的值，表示 \gpart{body} 和页边批注的距离。\verb|marginparsep=|<\emph{length}>
+	 \item[nomarginpar] 将页边批注的距离减小为 0pt。这个命令和同时设置 \verb|\marginparwidth=0pt| 和 \verb|\marginparsep=0pt| 作用相同。
+	 \item[columnsep] 改变参数 \verb|\columnsep| 的值。表示在 \verb|twocolumn| 模式下两列之间的距离。
+	 \item[hoffset] 改变参数 \verb|\hoffset| 的值。\verb|hoffset=|<\emph{length}>。
+	 \item[voffset] 改变参数 \verb|\voffset| 的值。\verb|voffset=|<\emph{length}>。
+	 \item[twocolumn] 利用参数 \verb|\@twocolumntrue| 设置 \verb|twocolumn| 模式。\verb|twocolumn=false| 表示单列模式，也可以用参数 \verb|\@twocolumnfalse| 设置。用户也可以设置 \verb|onecolumn|（默认为 \verb|true|）来代替设置 \verb|twocolumn=false|。
+	 \item[onecolumn] 和 \verb|twocolumn=false| 作用相同。另一方面，\verb|onecolumn=false| 和 \verb|twocolumn| 作用相同。
+	 \item[twoside] 同时设置参数 \verb|\@twosidetrue| 和 \verb|@mparswitchtrue| 为真。参见第~\ref{sec:margin}节。
+	 \item[textwidth] 直接设置参数 \verb|\textwidth|。参见第~\ref{sec:body}节。
+	 \item[textheight] 直接设置参数 \verb|\textheight|。参见第~\ref{sec:body}节。
+	 \item[reversemp | reversemarginpar]~\\
+	 让页边批注一直在页面的左侧（内侧）。这个参数并不会改变 \verb|includemp| 模式。默认为 \verb|false|。
+	 \end{Options}
+	 
+	 \subsection{驱动}\label{sec:drivers}
+	 \Gm{} 宏包支持 \verb|divps|, \verb|divpdfm|, \verb|pdftex|, \verb|xetex| 和 \verb|vtex|。用户通过设置 \verb|dvipdfm| 来使用 \textsf{dvipdfmx} 和 \textsf{xdvipdfmx}，设置 \verb|pdftex| 来使用 \textsf
+{pdflatex}，设置 \verb|vtex| 来使用 V\TeX{} 环境。
+	 这些关于相关驱动的参数和之前的有些差别。驱动可以通过 \verb|driver=|<\emph{driver name}> 来设置，也可以直接通过驱动的名字来设置比如 \verb|pdftex|。\Gm{} 宏包默认这些驱件是正确支持这个系统的。因此，用户在绝大部分情况下都不用设置这些参数。但是，如果用户需要使用 \verb|dvipdfm|，需要明确地声明这个变量。
+	 
+	 \begin{Options}
+	 \item[\onlypre driver] 用 \verb|driver=|<\emph{driver name}> 来声明需要使用的驱动。可以使用的 \emph{driver name} 有：\verb|dvips|, \verb|dvipdfm|, \verb|pdftex|, \verb|vtex|, \verb|xetex|, \verb|auto| 和 \verb|none|。除了 \verb|auto| 和 \verb|none|，其他的参数都可以不通过 \verb|driver=| 来直接设置。
+	 \verb|driver=auto| 让系统自动来决定当前使用的驱动。
+	 \verb|driver=none| 不让系统自动决定使用的驱动，并不设置驱动。这个命令在当你想让其他宏包不再当前的驱动软件设定下工作时比较有用。比如：如果用户想在 \Gm{} 下用 \textsf{crop} 宏包，用户需要在载入 \textsf|crop| 之前调用 \verb|\usepackage[driver=none]{geometry}| 命令。
+	 \item[\onlypre dvips] 使用 \verb|\special| 宏命令在 dvi 输出中打印纸张大小。如果用户把 \textsl{dvips} 当做一个 DVI-to-PS 的驱动，比如说使用 \verb|\geometry{a3paper, landscape}| 在A3之上横向打印一篇文章，用户不需要在 \textsl{dvips} 中设置 ''\verb|-t a3 -t landscape|''。
+	 \item[\onlypre dvipdfm] 和 \verb|dvips| 工作方式相似，不过 \verb|dvipdfm| 进行了水平方向的校正。当用户使用 \textsf{dvipdfmx} 和 \textsf{xdvipdfmx} 来进行 dvi 输出时可以设置这个参数。
+	 \item[\onlypre pdftex] 会自动设置 \verb|\pdfpagewidth| 和 \verb|\pdfpageheight| 这两个参数。
+	 \item[\onlypre xetex] 和 \verb|pdftex| 的作用相同，不过 \verb|xetex| 忽略了在 \XeLaTeX{} 中没有定义的 \verb|\pdf{h,v}origin|。这个参数推荐在第五版中设置。注意'geometry.cfg' 在\TeX{} Live 中已经不再需要了。如果用户想用一些在 \XeTeX{} 下 dvipdfm 的特殊的功能，除了使用 \verb|xetex|，也可以在 \XeLaTeX{} 下使用参数 \verb|dvipdfm|。
+	 \item[\onlypre vtex] 设置 V\TeX{} 下 \verb|\mediawidth| 和 \verb|\mediaheight| 的参数值。当这个参数被设置的时候，\Gm{} 会自动地决定在 V\TeX 中用哪种输出模式（DVI, PDF 或 PS），并进行相应的合适的设置。
+	 \end{Options}
+	 如果设置的驱动和使用的排版程序不相符，那么系统将会选择默认的驱动 \verb|dvips|。
+\subsection{Other options}
+	其他有用的设置在下面列出：	
+	\begin{Options}
+	\item[\onlypre verbose] 在终端上显示参数配置。
+	默认为 \verb|verbose=false|，将这些参数的结果放入 log 文件中。
+	\item[\onlypre reset] 在 \Gm{} 被在入之前设置页面布局和开关等设置回默认值。在 \verb|geometry.cfg| 文件中的参数设置也会被清除。注意，若设置了 \verb|truedimen|，这个命令不能重置 \verb|pass| 和 \verb|mag|。默认为 \verb|reset=false|，reset 没有作用但是也不能关闭之前的 \verb|reset=true| 命令。比如，当用户输入：
+	\begin{quote}
+	\verb|\documentclass[landscape]{article}|\\
+	\verb|\usepackage[twoside,reset,left=2cm]{geometry}|
+	\end{quote}
+	并在 \verb|geometry.cfg| 设置了 \verb|ExecuteOptions{scale=0.9}|。这样产生的结果是：\verb|landscape| 和 \verb|left=2cm| 仍然有效，\verb|scale=0.9| 和 \verb|twoside| 不起作用。
+	\item[\onlypre mag] 设置放大倍数 \verb|\mag| 并根据放大倍数自动设置 \verb|\hoffset| 和 \verb|\voffset| 的值。\verb|mag=|\emph{<value>}。注意，\verb|meg=|\emph{<value>} 必须是一个整数，1000是正常的值。比如，在 \verb|a4paper| 下设置 \verb|mag=1414|，会提供一个在a3大小的纸张上被放大的打印效果。打印的记过会$1.414$(=$\sqrt{2}$)倍于a4纸张。字体的放大需要额外的磁盘空间。\textbf{注意，设置 mag 必须在任何有 'true' 的前缀的命令之前，比如 1.5truein, 2truecm 等等。}参见 \verb|truedimen| 参数。
+	\item[\onlypre truedimen] 改变所有内部声明的尺寸值为 \verb|true| 尺寸。比如 \verb|1in| 会改为 \verb|1truein|。通常这个选项会和 \verb|mag| 选项一起使用。注意，这个参数对外部声明的尺寸值没有作用。比如，当用户设置了''\texttt{mag=1440, margin=10pt, truedimen}''，页边距并没有变成 'true' 而且被放大了。如果用户想设置精确的页边距，则需要像这样设置：''\texttt{mag=1440,margin=10truept,truedimen}''。
+	\item[\onlypre pass] 让所有除 \verb|verbose| 和 \verb|showframe| 之外的 \Gm{} 选项和计算结果无效。这是一个独立的命令，可以用来检查又其他宏包和手动设置的的页面布局。
+	\item[\onlypre showframe] 为文字区域和页面显示可见的外框和页眉页脚的横线。
+	\item[\onlypre showcrop] 在用户自定义的页面布局区域打印剪切记号。
+	\end{Options} 
+	
+	\section{进程选项}\label{sec:process}
+	\subsection{读取顺序}\label{sec:loadorder}
+	
+	\Gm{} 将会首先读取 \TeX{} 能够找到的 \verb|geometry.cfg| 文件。比如 在 \verb|geometry.cfg| 文件中用户定义了 \verb|\ExecuteOptions{a4paper}|，即设置了 A4 的纸张为默认的。一般说来，用户可以使用在 \Gm{} 中定义的参数加上 \verb|\ExecuteOptions{}| 来在 \verb|geometry.cfg| 中使用。 
+	
+	在用户文档的引言区读取参数的顺序如下：
+	
+	\begin{enumerate}
+	\item \verb|geometry.cfg|（如果存在的话）
+	\item 在 \verb|\documentclass[|\emph{<options>}\verb|]|\{\ldots\} 中定义的参数
+	\item 在 \verb|\usepackage[|\emph{<options>}\verb|]|\{\verb|geometry|\} 中定义的参数
+	\item 在 \verb|\geometry{|\emph{<options>}\}中定义的参数，这个命令可以被多次地调用（\verb|reset| 命令会取消之前在 \verb|\usepackage{geometry}| 和 \verb|\geometry|）中的参数设置。
+	\end{enumerate}
+	
+	\subsection{参数的顺序}\label{sec:optionorder}
+	
+	\Gm{} 的参数的定义是和顺序相关的，后来的参数会覆盖之前的或者相同的设置。比如：
+	\begin{center}
+	\verb|[left=2cm, right=3cm]| 和：\verb|right=3cm, left=2cm| 作用相同。
+	\end{center}
+	多次调用的参数会覆盖之前的参数，比如：
+	\begin{center}
+	\verb|[verbose=true, verbose=false]| 会导致 \verb|verbose=false|
+	\end{center}
+	\verb|[hmargin={3cm,2cm}, left=1cm]| 和 \verb|hmargin={1cm,2cm}| 作用相同，这个命令中的左边距是被 \verb|left=1cm| 定义的。
+	
+	\verb|reset| 和 \verb|mag| 是两个例外。
+	\verb|reset| 参数会取消它之前所有的 geometry 参数设置（除了 \verb|pass|）。如果用户定义
+	\begin{quote}
+	\verb|\documentclass[landscape]{article}|\\
+	\verb|\usepackage[margin=1cm,twoside]{geometry}|\\
+	\verb|\geometry{a5paper, reset, left=2cm}|
+	\end{quote}
+	那么 \verb|margin=1cm|, \verb|twoside| 和 \verb|a5paper| 三个设置将不会起作用，实际上它的排版效果和
+	\begin{quote}
+	\verb|\documentclass[landscape]{article}|\\
+	\verb|\usepackage[left=2cm]{geometry}|
+	\end{quote}	
+	相同。
+	\verb|mag| 参数必须设置在所有有 'true' 长度之前，比如 \verb|left=1.5truecm|, \verb|width=5truein| 等等。 \verb|\mag| 可以设置在这宏包调用之前。
+	
+	\subsection{优先级}\label{sec:priority}
+	
+	有几个方法可以定义 \gpart{body} 的尺寸： \verb|scale|, \verb|total|, \verb|text| 和 \verb|lines|。\Gm{} 宏包给了更具体的定义更高的优先级。一下是对 \gpart{body} 优先级的定义：
+	 \[\begin{array}{c}
+ \textrm{priority:}\qquad\textrm{low}\quad
+    \longrightarrow\quad\textrm{high}\\[1em]
+ \left\{\begin{array}{l}\verb|hscale|\\ \verb|vscale|\\ \verb|scale|
+        \end{array}\right\} <
+ \left\{\begin{array}{l}\verb|width|\\ \verb|height|\\ \verb|total|
+        \end{array}\right\} <
+ \left\{\begin{array}{l}\verb|textwidth|\\ \verb|textheight|
+         \\\verb|text|\end{array}\right\} < \verb|lines|.
+ \end{array}\]
+ 
+	 比如说
+	 \begin{quote}
+	 \verb|\usepackage[hscale=0.8, textwidth=7in, width=18cm]{geometry}|
+	 \end{quote}
+	 和 \verb|\usepackage[textwidth=7in]{geometry}| 有相同的排版效果。另外：
+	 \begin{quote}
+	 \verb|\usepackage[lines=30, scale=0.8, text=7in]{geometry}|
+	 \end{quote}
+	 会导致 \texttt{[lines=30, textwidth=7in]} 的排版。
+	 
+	 \subsection{默认参数}\label{sec:defaults}
+	 
+	 这一节总和了在自动完成系统中所有的默认的设置：
+	 
+	 默认的垂直的页边距之比是 $2/3$，也就是说：
+	 \begin{equation}
+	 \textrm{top} : \textrm{bottom} = 2 : 3 \qquad\textit{default}.
+	 \end{equation}
+	 对于水平页边距的比例，默认值由文档是单面印刷还是双面印刷决定的。
+	 \begin{equation}
+	  \textrm{left}\;(\textrm{inner}) : \textrm{right}\;(\textrm{outer}) 
+	       = \left\{ \begin{array}{ll}
+	              1 : 1 \qquad\textit{default for oneside},\\
+	              2 : 3 \qquad\textit{default for twoside}.
+	         \end{array}\right.
+	 \end{equation}
+	 显然，在单面印刷中默认的水平页边距是''居中''的。
+	 
+	 \Gm{} 宏包对单面印刷的文档有以下的默认设置：
+	 \begin{itemize}\setlength{\itemsep}{-.5\parsep}
+	 	\item \verb|sclae=0.7| (\gpart{body} $=0.7 \times \gpart{paper}$)
+	 	\item \verb|marginratio={1:1, 2:3}|（水平方向比例1:1，垂直方向比例2:3） 
+	 	\item \verb|ignoreall| （在计算 \gpart{body} 大小的时候，页眉页脚和页边注释都不包括在内）
+	 \end{itemize}
+	 对于使用 \verb|twoside| 参数的 \textit{twosided} 文档来说，默认的设置和 \textit{onesided} 文档相同，只不过水平的页边距比例变也成了 \verb|2:3|。	
+	 
+	\subsection{自动完成}\label{sec:rules}
+	 图~\ref{fig:specrule} 说明了有多少参数存在，并说明了怎么解决参数定义的含糊不清的问题。每个坐标轴表示了明确地给 \gpart{body} 和页边距定义长度的次数。S($m$,$b$) 用一组数来表示，$(\gpart{margin}, \gpart{body})=(m,b)$。
+	 
+	 比如，命令 \verb|width=14cm, left=3cm| 应该被分到 S(1,1) 类中，这是一个完整的定义。如果用户加上了 \verb|right=4cm|，那么组命令将会分到 S(2,1) 类中，也就会产生重复定义的情况。如果仅仅定义了 \verb|width=4cm|，那么将会被分入 S(1,0) 类中，也就是并没有完全定义。
+	 
+	 \Gm{} 宏包具有自动完成的机制，利用这个机制，如果页面布局参数没有完全定义或者重复定义了，\Gm{} 将会根据默认值或者其他关系来确定没有定义的参数。这就是参数定义和自动完成的规则。
+	 \begin{figure}[hbtp]
+	  \centering
+	  {\unitlength=1pt
+	  \begin{picture}(400,150)(40,0)
+	  \put(1,49){\makebox(90,49)[r]{\large 0}}
+	  \put(1,1){\makebox(70,99)[r]{\large \gpart{body}}}
+	  \put(1,1){\makebox(90,49)[r]{\large 1}}
+	  \put(100,100){\makebox(99,20){\large 0}}
+	  \put(100,50){\framebox(99,49){}}
+	  \put(100,80){\makebox(99,15){S(0,0)}}
+	  \put(100,50){\makebox(99,49){use \textbf{scale}}}
+	  {\linethickness{1pt}%
+	  \put(150,35){\line(0,1){30}}
+	  \put(150,35){\line(-1,3){4}}
+	  \put(150,35){\line(1,3){4}}}
+	  \put(100,0){\framebox(99,49){}}
+	  \put(100,2){\makebox(99,15){S(0,1)}}
+	  \put(100,0){\makebox(99,49){use \textbf{marginratio}}}
+	  \put(200,120){\makebox(99,12){\large \gpart{margin}}}
+	  \put(200,100){\makebox(99,20){\large 1}}
+	  \put(200,50){\framebox(99,49){use \textbf{scale}}}
+	  \put(200,55){\makebox(89,10)[r]{\scriptsize\shortstack[l]{if \textbf{ratio}\\specified}}}
+	  \put(200,2){\makebox(99,15){S(1,1)}}
+	  {\linethickness{1pt}%
+	  \put(250,35){\line(0,1){30}}
+	  \put(250,35){\line(-1,3){4}}
+	  \put(250,35){\line(1,3){4}}}
+	  {\linethickness{1pt}%
+	  \put(225,25){\line(-1,0){35}}
+	  \put(225,25){\line(-3,-1){12}}
+	  \put(225,25){\line(-3,1){12}}}
+	  \put(200,80){\makebox(99,15){S(1,0)}}
+	  \put(200,0){\framebox(99,49){\textcolor{red}{\textit{solvable}}}}
+	  \put(300,100){\makebox(99,20){\large 2}}
+	  \put(300,80){\makebox(99,15){S(2,0)}}
+	  \put(300,50){\framebox(99,49){\textcolor{red}{\textit{solvable}}}}
+	  \put(300,0){\framebox(99,49){forget \textbf{body}}}
+	  \put(300,2){\makebox(99,15){S(2,1)}}
+	  {\linethickness{1pt}%
+	  \multiput(290,65)(5,0){6}{\line(1,0){3}}
+	  \put(320,65){\line(-3,-1){12}}
+	  \put(320,65){\line(-3,1){12}}}
+	  {\linethickness{1pt}%
+	  \put(350,65){\line(0,-1){30}}
+	  \put(350,65){\line(-1,-3){4}}
+	  \put(350,65){\line(1,-3){4}}}
+	  \end{picture}}
+	  \caption[Specifications and completion rules]{%
+	  \begin{minipage}[t]{.7\textwidth}\kaishu\raggedright\small
+	  定义了 S(0,0) 到 S(2,1) 各种类别和参数的自动完成的规则（箭头方向）。行列的数字表示了单独给页边距和 \gpart{body} 定义了长度的次数。S($m$,$b$) 表示页边距的长度定义了 $m$ 次，而 \gpart{body} 定义了 $b$ 次。
+	  \end{minipage}}
+	  \label{fig:specrule}
+	 \end{figure}
+	 
+	 \begin{Spec}
+	 \item[S(0,0)]
+	 没有参数被定义，\Gm{} 宏包设置 \gpart{body} 为默认值：\verb|scale=0.7|。\\
+	 比如说，\verb|width| 被设置为 $0.7\times \verb|layoutwidth|$。注意，默认的 \verb|layoutwidth| 和 \verb|layoutheight| 和 \verb|\paperwidth| 和 \verb|\paperheight| 相等。然后，S(0,0) 转到 S(0,1)，参见 S(0,1).
+	 \bigskip
+	 
+	 \item[S(0,1)]
+	 只有 \gpart{body} 被声明，比如 \verb|width=7in|, \verb|lines=20|, \verb|body={20cm,24cm}|, \verb|scale=0.9| 等等。
+	 \Gm{} 宏包利用页边距的比例设置页边距。如果页边距的比例没有被声明，那么将会使用默认值。默认的垂直方向的页边距定义如下：
+	 \begin{equation}
+	 \verb|top| : \verb|bottom| = 2 : 3 \qquad\textit{default}
+	 \end{equation}
+	 对于水平方向的页边距来说，默认值取决于文档是单面打印还是双面打印。
+	 \begin{equation}
+	  \verb|left|\;(\verb|inner|) : \verb|right|\;(\verb|outer|) 
+	       = \left\{ \begin{array}{ll}
+	              1 : 1 \qquad\textit{default for oneside},\\
+	              2 : 3 \qquad\textit{default for twoside}.
+	         \end{array}\right.
+	 \end{equation}
+	 比如，在A4纸张中定义了 \verb|height=22cm|，\Gm{} 宏包按如下的方式计算 \verb|top|：
+	 \begin{equation}
+	 	\begin{array}{ll}
+	 	\verb|top| &= ( \verb|layoutheight| - \verb|height| ) \times 2/5\\
+	 	&= (29.7-22)\times 2/5 = 3.08\textrm{(cm)}
+	 	\end{array}
+	 \end{equation}
+	 因此，\verb|top| 页边距和 \gpart{body} 的 \verb|height| 已经被决定了，也就是说垂直方向的参数确定了，因此进入 S(1,1) 类别，所有的参数都能够确定了。
+	 \bigskip
+	 
+	 \item[S(1,0)]
+	 只有页边距确定了，比如 \verb|bottom=2cm|, \verb|left=1in|, \verb|top=3cm| 等等。
+	 
+	 \begin{itemize}\setlength{\itemsep}{-.5\parsep}
+	 \item \textbf{如果页边距比例\textit{没有}确定}，\Gm{} 宏包设置 \gpart{body} 为默认的\verb|scale|($=0.7$)。
+	 比如，如果 \verb|to=2.4cm| 确定了，\Gm{} 宏包设置
+	 \begin{center}
+	 $\verb|height|= \verb|0.7|\times\verb|layoutheight|$
+	 ~~(默认$=\verb|0.7\paperheight|$)
+	 \end{center} 
+	 这样 S(1,0) 状态就会进入到 S(1,1) 状态，\verb|bottom| 就可以由 $\verb|layoutheight|-(\verb|height|+\verb|top|)$ 计算，并最终在 A4 纸张上得到 6.51cm，如果页面布局大小和纸张大小相同的话。
+	 \medskip
+	 \item \textbf{如果页边距的比例被定义了}，比如 \verb|hamerginration={1:2}|, \verb|vratio={3:4}| 等等。\Gm{} 会通过已经设置的页边距的比例来设定其他的页边距。
+	 比如，定义了 ''\verb|top=2.4cm, vratio={3:4}|''， \Gm{} 通过计算设置 \verb|bottom| 为 \verb|3.2cm|。
+	 \begin{center}
+	 $\verb|bottom| = \verb|top|/3\times 4 = 3.2\textrm{cm}$
+	 \end{center} 
+	从而进入下一个状态 S(2,0)。
+	\end{itemize}
+	
+	注意，第四版之前的版本曾经利用页边距比例来设置也边距。在第五版中，在相同的设置下，将会出现和第四版之前不同的排版效果。比如说，如果只定义了 \verb|top=2.4cm|，在第四版之前的版本中将会得到 \verb|bottom=2,4cm| 的排版效果，但是在第五版中会得到 \verb|bottom=6.51cm| 的排版效果。
+	\bigskip
+	
+	\item[S(2,1)]
+	\gpart{body} 和两个 \gpart{margins} 都被声明了，比如 \verb|vdivide={1in,8in,1.5in}|,''\verb|left=3cm,width=13cm,right=4cm|''等等。因为 \Gm{} 宏包给予 \gpart{margins} 更高的优先级，所以如果参数被重复定义，\Gm{} 将会忽略并重置 \gpart{body} 的定义。比如，如果用户定义了“
+	\begin{center}
+	\verb|\usepackage[a4paper,left=3cm,width=13cm,right=4cm]{geometry}|
+	\end{center} 
+	\verb|width| 将会被设置为默认值14cm，因为 A4 纸张的宽度是21cm。
+	 \end{Spec}
+	 \section{在文档中改变页面布局}\label{sec:midchange}
+	 
+	 第五版提供了两个新的命令 \verb|\newgeometry|\{$\cdots$\} 和 \verb|\restoregeometry|，这两个命令允许了用户在文档中部改变页面尺寸。和引言区的 \verb|\geometry| 不同，\verb|\newgeometry| 命令只在 \verb|\begin{document}| 之后有效，并会重置除和纸张布局相关的参数之外的所有参数。和纸张布局相关的参数包括：\verb|landscape|, \verb|portrait| 和 纸张大小的参数(\verb|papersize|, \verb|paper=a4paper| 等等)，这些参数不能通过 \verb|\newgeometry| 来改变。
+	 
+	 \verb|\restoregeometry| 命令将会恢复在引言区(\verb|\begin{document}| 之前)用\verb|\usepackage{geometry}| 和 \verb|\geometry| 定义的和页面布局相关参数。
+	 
+	 注意，\verb|\newgeometry| 和 \verb|\restoregeometry| 将会在他们被调用的地方插入 \verb|\clearpage|。
+	 
+	 以下是一个在文档中部改变页边布局的例子。L1 布局通过 \verb|hmargin=3cm| 定义（\verb|left| 和 \verb|right| 页边距是 \verb|3cm|），然后会在文档中改成 L2 布局，L2 通过 \verb|left=3cm|, \verb|right=1cm| 和 \verb|bottom=0.1m| 定义。L1 布局通过 \verb|\restoregeometry| 被恢复。 
+	 \begin{center}
+	 \begin{minipage}{.8\textwidth}
+	 \verb|\usepackage[hmargin=3cm]{geometry}|\\
+	 \verb|\begin{document}|\\
+	  \medskip
+	  \hspace{1cm}\fbox{Layout L1}\\
+	 \medskip
+	 \verb|\newgeometry{left=3cm,right=1cm,bottom=0.1cm}|\\
+	 \medskip
+	  \hspace{1cm}\fbox{Layout L2 (new)}\\
+	 \medskip
+	 \verb|\restoregeometry|\\
+	 \medskip
+	  \hspace{1cm}\fbox{Layout L1 (restored)}\\
+	 \medskip
+	 \verb|\newgeometry{margin=1cm,includefoot}|\\
+	 \medskip
+	  \hspace{1cm}\fbox{Layout L3 (new)}\\
+	 \medskip
+	 \verb|\end{document}|
+	 \end{minipage}%
+	 \end{center}
+	  \begin{center}
+	  \centering\small
+	  {\unitlength=.8pt
+	  \begin{picture}(450,180)(0,0)
+	  \put(0,165){\makebox(95,12){\textit{(saved)}}}
+	  \put(15,135){\framebox(65,10){\gpart{head}}}
+	  \put(15,60){\framebox(65,70){\gpart{body}}}
+	  \put(15,45){\makebox(65,12){\gpart{foot}}}
+	  \put(15,45){\line(1,0){65}}
+	  \put(0,20){\framebox(95,140){}}
+	  \put(0,0){\makebox(95,20){\textit{L1}}}
+	  \put(104,90){\circle*{4}}
+	  \put(110,90){\circle*{4}}
+	  \put(116,90){\circle*{4}}
+	  \put(125,165){\makebox(95,12){\textit{$\backslash$newgeometry}}}
+	  \put(140,135){\framebox(71,10){\gpart{head}}}
+	  \put(140,33){\framebox(71,97){\gpart{body}}}
+	  \put(140,21){\makebox(71,12){\gpart{foot}}}
+	  \put(125,20){\framebox(95,140){}}
+	  \put(125,0){\makebox(95,20){\textit{L2 (new)}}}
+	  \put(229,90){\circle*{4}}
+	  \put(235,90){\circle*{4}}
+	  \put(241,90){\circle*{4}}
+	  \put(250,165){\makebox(95,12){\textit{$\backslash$restoregeometry}}}
+	  \put(265,135){\framebox(65,10){\gpart{head}}}
+	  \put(265,60){\framebox(65,70){\gpart{body}}}
+	  \put(265,45){\makebox(65,12){\gpart{foot}}}
+	  \put(265,45){\line(1,0){65}}
+	  \put(250,20){\framebox(95,140){}}
+	  \put(250,0){\makebox(95,20){\textit{L1 (restored)}}}
+	  \put(354,90){\circle*{4}}
+	  \put(360,90){\circle*{4}}
+	  \put(366,90){\circle*{4}}
+	  \put(375,165){\makebox(95,12){\textit{$\backslash$newgeometry}}}
+	  \put(383,41){\framebox(80,111){\gpart{body}}}
+	  \put(383,29){\makebox(80,12){\gpart{foot}}}
+	  \put(383,29){\line(1,0){80}}
+	  \put(375,20){\framebox(95,140){}}
+	  \put(375,0){\makebox(95,20){\textit{L3 (new)}}}
+	  \end{picture}}
+	 \end{center}
+	
+	\verb|\savegeometry|\{\emph{<name>}\} 和 \verb|loadgeometry|\{\emph{<name>}\} 可以使用户在文档中使用更多不同的页面布局。
+	比如： 
+	 \begin{center}
+	 \begin{verbatim}
+	     \usepackage[hmargin=3cm]{geometry}
+	     \begin{document}
+	           L1
+	     \newgeometry{left=3cm,right=1cm,bottom=0.1cm}
+	     \savegeometry{L2}
+	           L2 (new, saved)
+	     \restoregeometry
+	           L1 (restored)
+	     \newgeometry{margin=1cm,includefoot}
+	           L3 (new)
+	     \loadgeometry{L2}
+	           L2 (loaded)
+	     \end{document}
+	 \end{verbatim}
+	 \end{center}
+	 
+	\section{例子}
+	 
+	 \begin{enumerate}
+	 \item 一个单面印刷的布局，文字区域在纸张中央。
+	 下面的例子有相同的排版结果，因为水平方向的页边距比例对单面印刷默认为 \verb|1:1|。
+	 \begin{itemize}
+	 	\item \verb|centering|
+	 	\item \verb|marginratio=1:1|
+	 	\item \verb|vcentering|
+	 \end{itemize}
+	 
+	 \item 一个双面印刷的布局，内侧用于装订线的位移为 \verb|1cm|。
+	 \begin{itemize}
+	 	\item \verb|twoside,bindingoffset=1cm|
+	 \end{itemize}
+	 在这个情况中，\verb|textwidth| 比默认的双面文档要短 $0.7\times \textbf{1cm}$ ($=0.7\textrm{cm}$) 因为默认的 \gpart{body} 的宽度的比例是 \verb|scale=0.7|，也就是说$\textrm{width}=0.7\times\textrm{layoutwidth}$ (默认 $=0.7$\verb|\paperwidth|)
+	 
+	 \item 一个左，右和顶部页边距为 \verb|3cm|, \verb|2cm| 和 \verb|2.5in| 的页面布局。文档高度为 40 行，页眉页脚包含在 \gpart{total body} 中。
+	 \begin{itemize}
+	 	\item \verb|left=3cm, right=2cm, lines=40, top=2.5in, includeheadfoot|
+	 	\item \verb|hmargin={3cm,2cm}, tmargin=2.5in, lines=40, includeheadfoot|
+	 \end{itemize}
+	 
+	 \item 一个 \gpart{total body} 为 \verb|10in| ，底部页边距为 \verb|2cm|，默认宽度的布局。顶部的页边距将会自动计算。以下的每个结果会获得相同的页面布局。
+	 \begin{itemize}
+	 	\item \verb|vdivide={*, 10in, 2cm}|
+	 	\item \verb|bmargin=2cm, height=10in|
+	 	\item \verb|bottom=2cm, textheight=10in|
+	 \end{itemize}
+	 注意，\gpart{head} 和 \gpart{foot} 并没有包含在 \gpart{total body} 的 \verb|height| 里面。如果加上 \verb|includefoot| 会使得 \verb|\footskip| 也包含在 \verb|totalheight| 中。因此，在这种情况当中，由于 \verb|\footskip| 被包括进了 \verb|total body|，\verb|\textheight| 在前一种页面布局中会比后面一种短（准确地说是短 10in）。也就是说，当 \verb|includefoot=true| 时：\verb|height| = \verb|textheight| + \verb|footskip|。
+	 \begin{itemize}
+	 \item \verb|bmargin=2cm, height=10inm includefoot|
+	 \item \verb|bottom=2cm, textheight=10in, includefoot|
+	 \end{itemize} 
+	 
+	 \item 一个 \glen{textwidth} 和 \glen{textheight} 占据纸张的 90\%，并且 \gpart{body} 中央放置的页面布局。
+	 只要 \verb|layoutwidth| 和 \verb|layoutheight| 没有被改变，下面的每个处理结果都会获得相同的页面布局：
+	 \begin{itemize}
+	 \item \verb|scale=0.9, centering|
+	 \item \verb|text={.0\paperwidth,.9paperheight}, ratio=1:1|
+	 \item \verb|width=.9\paperwidth, vmargin=.05\paperheight, marginratio=1:1|
+	 \item \verb|hdivide={*,0.9\paperwidth,*}, vdivide={*,0.9\paperheighit,*}|（对于单面印刷的文档来说）
+	 \item \verb|margin={0.5\paperwidth,0.05\paperheight}|
+	 \end{itemize}
+	 用户可以加上 \verb|heightrounded| 来避免 ''underfull vbox warning''，比如：
+	 \begin{quote}\small
+	 \verb|Underfull \vbox (badnes 10000) has occurred while \output is active|
+	 \end{quote}
+	 关于 \verb|heightrounded|,请参见第~\ref{sec:body}章。
+	 
+	 \item 一个页边批注宽度为 \verb|3cm| 并包括在 \gpart{total body} 中的页面布局。以下的例子都会获得相同的排版效果：
+	 \begin{itemize}
+	 \item \verb|marginparwidth=3cm, includemp|
+	 \item \verb|marginpar=3cm, ignoremp=false|
+	 \end{itemize}
+	 
+	 \item 一个 \gpart{body} 占据 A5 纸张所有页面的的横版排版。以下的例子具有相同的排版效果：
+	 \begin{itemize}
+	 	\item \verb|a5paper, landscape, scale=1.0|
+	 	\item \verb|landscape=TRUE, paper=a5paper, margin=0pt|
+	 \end{itemize}
+	 
+	 \item 一个适应屏幕PC和录像放映机大小的页面排版
+	 \begin{verbatim}
+		 \documenclass{slide}
+		 \usepackage[screen,margin=0.8in]{geometry}
+		 ...
+		 \begin{slide}
+		    ...
+		 \end{slide}
+	 \end{verbatim}
+	 \item 一个字体和排版空间从 A4 扩展到 A3 的页面排版。以下的情况中，会获得 A3 纸张的排版。
+	 \begin{itemize}
+	 \item \verb|a4paper, mag=1414|
+	 \end{itemize}
+	 如果如果用户希望获得两倍大的字体但是不要改变页面的大小的排版，可以输入：
+	 \begin{itemize}
+	 	\item \verb|letterpaper, mag=2000, truedimen|
+	 \end{itemize}
+	 用户可以加入 \verb|dvips| 参数，这个参数对使用 \verb|dviout| 和 \verb|xdvi| 用正确的纸张大小对页面进行预览很有用。
+	 
+	 \item 在载入 \Gm{} 宏包之前改变首页的页面布局，并让其他页为默认值。使用 \verb|pass| 参数，\verb|\newgeometry| 和 \verb|\restoregeometry|。
+	 \begin{verbatim}
+	 \documentclass{book}
+	 \usepackage[pass]{geometry}
+	 	% 'pass' 会忽视宏包的布局
+	 	% 所以原始的 'book' 布局会被使用和记录
+	\begin{document}
+	\newgemetry{margin=1cm}% 盖面第一页的布局
+	      Page 1
+	\restoregeometry %恢复原始的 'book' 页面布局
+	      Page 2等
+	\end{document}\end{verbatim}
+	
+	\item 一个复合的页面布局
+	\begin{verbatim}
+	\usepackage[a5paper, landscape, twocolumn, twoside,
+		left=2cm, hmarginratio=2:1, includemp, marginparwidth=43pt, bottom=1cm,
+		 foot=.7cm, includefoot, textheight=11cm, heightrounded, columnsep=1cm, 
+		 dvips, verbos]{geometry}
+	\end{verbatim}
+	试试输入这些参数，自己来看看结果。\verb|:-)|
+	\end{enumerate}
+	
+	\section{已知的问题}
+	\begin{itemize}
+	 \item 利用 \verb|mag| $\neq 1000$ 和 \verb|truedimen|，\verb|paperwidth| 和 \verb|paperheight| 在 verbose 模式下会显示和在 PDF 中真实出现的尺寸不同。PDF 中显示的是正确的尺寸。
+	 
+	 \item 利用 \verb|mag| $\neq 1000$，\textit{无} \verb|truedimen| 和 \textsf{hyperref}，\textsf{hyperref} 必须在 \Gm{} 宏包之前载入，否则在 PDF 中会显示错误的结果。
+	 
+	 \item 利用 \textsf{crop} 宏包 和 \verb|mag| $\neq 1000$，\verb|center| 参数在 \textsf{crop} 中会存在问题。
+	\end{itemize}
+\end{document}
