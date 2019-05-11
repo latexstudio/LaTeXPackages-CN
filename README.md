@@ -9,6 +9,6 @@
 
 - 交流QQ群：91940767，[![avatar](http://pub.idqqimg.com/wpa/images/group.png)](http://shang.qq.com/wpa/qunwpa?idkey=5e839b814b0bb62d58ee283636597c121e20bc370fea6f3e0f4632f8d32cf9c2);
 - 资源站点：[LaTeX工作室](http://www.latexstudio.net)
-- 公众号：latex2015 
+- 公众号：latex工作室 
 
-![avatar](http://pics.latexstudio.net/wp-content/themes/dux/img/gongzhonghao2.jpg)
+![avatar](http://pics.latexstudio.net/wp-content/themes/dux/img/gongzhonghao5.jpg)
